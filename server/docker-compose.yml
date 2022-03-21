@@ -1,0 +1,49 @@
+version: '3.9'
+services:
+  account:
+    image: account:${MOVIE_FAV_ENV}
+    hostname: account
+    build: .
+    entrypoint: [/home/moviefav/server/start, account]
+    labels:
+        - 'com.moviefav.description=account'
+        - 'com.moviefav.server'
+        - 'kompose.service.type=nodeport'
+    restart: 'on-failure'
+    env_file:
+        - .env
+    ports:
+        - '4001:4001'
+    networks:
+        - secmsapp
+        - secmsdbs
+        - mstoapi
+
+  movie:
+    image: movie:${MOVIE_FAV_ENV}
+    hostname: movie
+    build: .
+    entrypoint: [/home/moviefav/server/start, movie]
+    labels:
+      - "com.moviefav.description=movie"
+      - "com.moviefav.server"
+      - "kompose.service.type=nodeport"
+    restart: "on-failure"
+    env_file:
+      - .env
+    ports:
+      - "4002:4002"
+    networks:
+      - secmsapp
+      - secmsdbs
+      - mstoapi
+
+# LINE-REF-DONT-DELETE
+# CONST-REF-DONT-DELETE
+###################################################
+# List of all networks needed
+#
+networks:
+  secmsapp:
+  secmsdbs:
+  mstoapi:

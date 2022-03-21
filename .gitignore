@@ -1,0 +1,8 @@
+node_modules
+pyenv
+db/tmp
+*.env
+.pytest_cache
+.benchmarks
+.vscode
+api/nginx-apollo/conf/certbot

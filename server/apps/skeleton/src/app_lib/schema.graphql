@@ -1,0 +1,47 @@
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type Query {
+    exampleHelloQuery: String
+}
+
+type Mutation {
+    exampleHelloMutation: String
+}
+
+type ExampleResponse {
+    response: GeneralResponse!
+    result: [String]
+    pageInfo: PageInfo
+}
+
+type GeneralResponse {
+    code: Int!
+    success: Boolean
+    message: String
+    version: String
+}
+
+type PageInfo{
+    page_info_count: Int
+}
+
+input PageInfoInput {
+    first: Int
+    pageNumber: Int
+    minId: Int
+    maxId: Int
+    orderBy: OrderByEnum
+    sortBy: SortByEnum
+}
+
+enum OrderByEnum {
+    ASC
+    DESC
+}
+
+enum SortByEnum {
+    example_db_col
+}

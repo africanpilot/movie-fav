@@ -1,0 +1,31 @@
+version: '3.9'
+services:
+###################################################
+# Microservices dealing with sensitive information
+#
+  apollo:
+    image: apollo:${MOVIE_FAV_ENV}
+    hostname: apollo
+    ports:
+      - "4000:4000"
+    build: .
+    entrypoint: [/usr/local/bin/node, /home/moviefav/apollo/src/gateway.js]
+    # entrypoint: [/usr/local/bin/nodemon, /home/moviefav/apollo/src/gateway.js]
+    labels:
+      - "com.moviefav.description=Apollo"
+      - "com.moviefav.api"
+      - "kompose.service.type=nodeport"
+    restart: "on-failure"
+    env_file:
+      - .env
+    networks:
+      - api
+      - mstoapi
+
+###################################################
+# List of all networks needed
+#
+networks:
+  api:
+  mstoapi:
+

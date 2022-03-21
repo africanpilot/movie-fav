@@ -1,0 +1,38 @@
+version: '3.9'
+services:
+  psqldb_secmsdb:
+    container_name: psqldb_secmsdb
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE_INIT}
+    volumes:
+      - "./tmp/data/postgres_secmsdb/data:/var/lib/postgresql/data:delegated"
+      - ./postgres.conf:/etc/postgresql/postgresql.conf
+      - ./dev/account.sql:/docker-entrypoint-initdb.d/001-account.sql
+      - ./dev/movie.sql:/docker-entrypoint-initdb.d/002-movie.sql
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    networks:
+      - secmsdbs
+  pgadmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    env_file:
+      - .env
+    ports:
+      - "5050:80"
+    networks:
+      - secmsdbs
+networks:
+  secmsdbs:
+volumes:
+  postgres_secmsdb:

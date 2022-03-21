@@ -1,0 +1,67 @@
+version: '3.9'
+services:
+  nginxtoapi:
+    image: nginxtoapi:${MOVIE_FAV_ENV}
+    hostname: nginxtoapi
+    build: .
+    restart: always
+    volumes:
+      - ./templates:/etc/nginxtoapi/templates
+    ports:
+      - "4080:4080"
+    environment:
+      NGINX_HOST: nginxtoapi
+      NGINX_PORT: 4080
+      NGINX_ID: "toapi"
+    env_file:
+      - .env
+    networks:
+      - api
+      - mstoapi
+      - secmsapp
+  nginxtoclient:
+    image: nginxtoclient:${MOVIE_FAV_ENV}
+    hostname: nginxtoclient
+    build: .
+    restart: always
+    volumes:
+      - ./templates:/etc/nginxtoclient/templates
+    ports:
+      - "4075:4075"
+    environment:
+      NGINX_HOST: nginxtoclient
+      NGINX_PORT: 4075
+      NGINX_ID: "toclient"
+    env_file:
+      - .env
+    networks:
+      - api
+      - client
+  nginxfortress:
+    image: nginxfortress:${MOVIE_FAV_ENV}
+    hostname: nginxfortress
+    build: .
+    restart: always
+    volumes:
+      - ./templates:/etc/nginxfortress/templates
+    ports:
+      - "1080:1080"
+      - "1443:1443"
+    environment:
+      NGINX_HOST: nginxfortress
+      NGINX_PORT: 1080
+      NGINX_ID: "fortress"
+    env_file:
+      - .env
+    networks:
+      - fortress
+      - api
+      - client
+
+networks:
+  api:
+  mstoapi:
+  secmsapp:
+  fortress:
+  client:
+

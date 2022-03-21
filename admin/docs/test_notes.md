@@ -1,0 +1,2 @@
+- check that env is set
+- package test for correct files
