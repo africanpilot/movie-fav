@@ -1,6 +1,7 @@
 node_modules
 pyenv
-db/tmp
+db/postgres/tmp
+db/redis/tmp
 *.env
 .pytest_cache
 .benchmarks

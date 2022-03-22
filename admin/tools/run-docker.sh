@@ -3,14 +3,14 @@
 # Copyright © 2022 by Richard Maku.
 # All Rights Reserved. Proprietary and confidential.
 
-not_in_prod_todo="\
-	db \
-"
-todo="\
-	server \
-    api/apollo \
-    client \
-"
+# check SERVICES_TODO env set
+if set|grep '^SERVICES_TODO=' >/dev/null; then
+  todo="$SERVICES_TODO"
+else
+  echo "Please set the SERVICES_TODO env"
+  return 1
+fi
+
 ##########
 
 # START_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"

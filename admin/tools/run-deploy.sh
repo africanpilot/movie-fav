@@ -3,19 +3,15 @@
 # Copyright © 2022 by Richard Maku.
 # All Rights Reserved. Proprietary and confidential.
 
-# go up to root dir
-# cd ../../
 
+# check SERVICES_TODO env set
+if set|grep '^SERVICES_TODO=' >/dev/null; then
+  todo="$SERVICES_TODO"
+else
+  echo "Please set the SERVICES_TODO env"
+  return 1
+fi
 
-not_in_prod_todo=""
-todo="\
-    db \
-	server \
-    api/apollo \
-    client \
-    api/nginx-apollo \
-        
-"
 ##########
 
 # START_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -24,7 +20,7 @@ todo="\
 
 PROJECT_OPTION=" -p services "
 not_in_prod=0
-
+not_in_prod_todo=""
 ORPHANS="--remove-orphans"
 db_host="localhost"
 
@@ -203,7 +199,7 @@ function do_subdirs
         then
             
             # extra conditions for db dir
-            if [ "$d" == "db" ]
+            if [ "$d" == "db/postgres" ]
             then
                 # update docker-compose file for correct volume
                 sed -i 's/postgres_genmsdbtest/postgres_secmsdb/' "docker-compose.yml"

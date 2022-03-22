@@ -4,11 +4,8 @@
 # Docker/build
 .dockerignore
 Dockerfile
-#
-#
-# DO NOT put docker-compose.* in here
-# Currently, we need it to parse network ports on the container side
-#
+docker-compose.*
+tmp/
 # GIT
 .git/
 *.yml
@@ -32,4 +29,3 @@ wheels/
 pip-log.txt
 pip-wheel-metadata/
 *.pyc
-pyenv
