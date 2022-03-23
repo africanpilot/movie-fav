@@ -22,7 +22,8 @@ class MovieImdbPopulateMutation:
         # check if imdb id is already
         total_sql=""
         limit = pageInfo["first"] if "first" in pageInfo and pageInfo["first"] else 5
-        movie_popular_ids = [movie.getID() for movie in lib.get_popular_movies()[:limit]]
+        all_popular_ids = [movie.getID() for movie in lib.get_popular_movies()]
+        movie_popular_ids = all_popular_ids[:limit]
         
         with lib.gen.db.get_engine("psqldb_movie").connect() as db:
         
@@ -30,6 +31,7 @@ class MovieImdbPopulateMutation:
             movie_popular_todo = list(filter(lambda x: x not in movie_popular_complete, movie_popular_ids)) 
             
             if movie_popular_todo:
+                lib.gen.log.debug(f"""movie_popular_todo: {len(movie_popular_todo)}""") 
                 for imdbId in movie_popular_todo:
                     
                     # get imdb info
@@ -48,7 +50,26 @@ class MovieImdbPopulateMutation:
             else:
                 lib.gen.log.info(f"Movie popular already up to date")
             
-            lib.gen.log.info(f"total_sql: {total_sql}")   
+            # clear old popular ids
+            pop_sql = text(f"""
+                UPDATE movie_imdb_info SET movie_imdb_info_popular_id = NULL;
+            """)
+            total_sql+=str(pop_sql)
             
+            # update popular order
+            for i,item in enumerate(all_popular_ids):
+                sql = text(f"""
+                    UPDATE movie_imdb_info SET movie_imdb_info_popular_id = {i+1}
+                    WHERE movie_imdb_info.movie_imdb_info_imdb_id = '{item}';
+                """)
+                total_sql+=str(sql)
+            
+            # lib.gen.log.debug(f"total_sql: {total_sql}")       
             # response
-            return lib.movie_imdb_response(info=info, db=db, pageInfo={"first": 5}, filterInput={"movie_imdb_info_imdb_id": movie_popular_ids}, oneQuery=total_sql)
+            response = lib.movie_imdb_response(info=info, db=db, pageInfo={"first": 5}, filterInput={"movie_imdb_info_imdb_id": movie_popular_ids}, oneQuery=total_sql)
+            
+            # find pattern match for user then delete
+            redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+            lib.gen.redis_delete_keys_pipe(redis_db, f"""movie_popular_query:*""").execute()      
+            
+            return response

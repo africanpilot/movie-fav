@@ -124,6 +124,7 @@ enum MovieSortByEnum {
     movie_fav_info_status
     movie_fav_info_rating_user
     movie_imdb_info_title
+    movie_imdb_info_popular_id
 }
 
 enum MovieEnumType {

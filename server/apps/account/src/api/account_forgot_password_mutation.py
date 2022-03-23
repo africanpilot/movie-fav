@@ -39,6 +39,10 @@ class AccountForgotPasswordMutation:
             if not msg:
                 return lib.gen.http_500_internal_server_error(msg="Unable to send email")
 
+            # find pattern match for user then delete
+            redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+            lib.gen.redis_delete_keys_pipe(redis_db, f"""account_me_query:{valid_user_cred["account_info_id"]}:*""").execute()      
+             
             return lib.gen.success_response(nullPass=True, result={})
 
             

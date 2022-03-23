@@ -192,6 +192,12 @@ function do_subdirs
         strip_text="/psqldb_secmsdb - "
         db_ip_address_value="${db_address/$strip_text/""}"
         sed -i "/DB_LOCAL_HOST/c\DB_LOCAL_HOST=$db_ip_address_value" .env
+
+        # get ip address for docker redis database
+        db_address=$(docker inspect -f '{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -qf "name=redisdb_secmsdb"))
+        strip_text="/redisdb_secmsdb - "
+        db_ip_address_value="${db_address/$strip_text/""}"
+        sed -i "/DB_REDIS_HOST/c\DB_REDIS_HOST=$db_ip_address_value" .env
     fi
     
 

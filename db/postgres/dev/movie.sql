@@ -17,7 +17,8 @@ CREATE TABLE IF NOT EXISTS movie_imdb_info(
     movie_imdb_info_episode_start INTEGER,
     movie_imdb_info_episode_end INTEGER,
     movie_imdb_info_rating_imdb Float,
-    movie_imdb_info_type VARCHAR(50)
+    movie_imdb_info_type VARCHAR(50),
+    movie_imdb_info_popular_id INTEGER
 );
 CREATE SEQUENCE IF NOT EXISTS movie_imdb_info_sequence start 1 increment 1;
 

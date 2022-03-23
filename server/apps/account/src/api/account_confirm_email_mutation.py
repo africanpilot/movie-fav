@@ -24,4 +24,12 @@ class AccountConfirmEmailMutation:
             # update user to confirmed email
             sql = lib.update_email_confirmed(ids=token_decode["user_id"])
 
+            # find pattern match for user then delete
+            redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+            search = [
+                f"""account_me_query:{token_decode["user_id"]}:*""",
+                f"""movie_fav_query:{token_decode["user_id"]}:*"""
+            ]
+            lib.gen.redis_delete_keys_pipe(redis_db, search).execute()  
+            
             return lib.account_response(info=info, db=db, oneQuery=sql, filterInput={"account_info_id": token_decode["user_id"]}) 

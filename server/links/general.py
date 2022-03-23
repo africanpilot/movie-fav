@@ -16,6 +16,7 @@ from sqlalchemy.sql import text
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
+from itertools import zip_longest
 
 class General:
     
@@ -335,6 +336,23 @@ class General:
 
     def rand_word_gen_range(self, start, end):
         return ''.join(random.choice(string.ascii_lowercase) for i in range(random.randint(start, end)))
+    
+    def _batcher(self, iterable, n):
+        args = [iter(iterable)] * n
+        return zip_longest(*args)
+    
+    def redis_delete_keys_pipe(self, db, search, n=50):
+        pipe = db.pipeline()
+        if type(search) == str:
+            search = [search]
+            
+        for item in search:
+            for keybatch in self._batcher(db.scan_iter(item), n):
+                # self.log.debug(f"""keybatch1: {keybatch}""")
+                keybatch = filter(None, keybatch)
+                pipe.delete(*keybatch)
+            
+        return pipe
     
     # general model for response and result
     def general_response_model(self):
