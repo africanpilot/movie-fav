@@ -36,6 +36,8 @@ def test_always_passes():
 def test_account_me_query_response(benchmark):
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()

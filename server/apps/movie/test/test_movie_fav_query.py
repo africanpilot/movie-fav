@@ -3,6 +3,8 @@
 
 import test_app_lib.link
 import pytest
+import json
+import random
 
 from app_lib.lib import Lib
 from app_lib.mutations import Mutations
@@ -17,9 +19,12 @@ schema = make_federated_schema(type_defs, [Queries.query, Mutations.mutation])
 QUERY_NAME = "movieFav"
 
 # graphql query
-begin_gql = """query{ movieFav{"""
-input_vars = ""
-end_gql = """response{ success code message version 
+begin_gql = """query{ movieFav( pageInfo: {"""
+input_vars = """
+    first: 3
+    pageNumber: 1
+"""
+end_gql = """}){response{ success code message version 
     } pageInfo{ page_info_count
     } result{ movie_fav_info_imdb_id movie_fav_info_episode_current movie_fav_info_status movie_fav_info_rating_user
     movie_search_info { movie_imdb_info_title 
@@ -46,6 +51,8 @@ def test_unable_to_get_token_response():
 def test_get_service_from_header_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -66,6 +73,8 @@ def test_get_service_from_header_response():
 def test_validate_token_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -87,6 +96,8 @@ def test_validate_token_response():
 def test_token_service_access_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -109,6 +120,8 @@ def test_token_service_access_response():
 def test_token_user_active_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -131,6 +144,8 @@ def test_token_user_active_response():
 def test_registration_not_complete_status_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test(reg="NOTCOMPLETE")
@@ -146,6 +161,8 @@ def test_registration_not_complete_status_response():
 def test_registration_waiting_status_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test(reg="WAITING")
@@ -161,6 +178,8 @@ def test_registration_waiting_status_response():
 def test_registration_complete_status_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test(reg="COMPLETE")
@@ -176,6 +195,8 @@ def test_registration_complete_status_response():
 def test_registration_unknown_status_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test(reg=lib.gen.rand_word_gen())
@@ -188,10 +209,52 @@ def test_registration_unknown_status_response():
     assert result["data"][QUERY_NAME]["response"]["message"] == "http_401_unauthorized: Unknown registration"
 
 @general
+def test_data_return_from_redis_response():
+    # clear db tables and reset
+    lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
+    
+    # create account
+    ACCOUNT, CRED = lib.gen.create_account_for_test()
+
+    # AUTH Info
+    AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
+
+    # create movie fav 
+    movie = lib.gen.create_movie_fav(user_id=ACCOUNT["account_info_id"])
+    
+    # create a redis entry for account
+    first = random.randint(50, 60)
+    input_vars = f"""
+        first: {first}
+        pageNumber: 1
+    """
+    graphql_info = gql(begin_gql + input_vars + end_gql)    
+    
+    redis_filter_info = {"first": first, "pageNumber": 1, "movie_fav_info_user_id": ACCOUNT["account_info_id"]}
+    list_movie_fav_cols = "movie_fav_info_imdb_id,movie_fav_info_episode_current,movie_fav_info_status,movie_fav_info_rating_user"
+    list_search_sql = f""",row_to_json((SELECT d FROM (SELECT movie_imdb_info_title) d)) AS movie_search_info"""
+    cols = list_movie_fav_cols + list_search_sql
+    
+    with lib.gen.db.get_engine("psqldb_movie").connect() as db:
+        response = lib.movie_fav_response_for_tests(db=db, cols=cols, pageInfo={"first": first, "pageNumber": 1}, filterInput={"movie_fav_info_user_id": ACCOUNT["account_info_id"]})
+    
+    redis_db.set(f"""movie_fav_query:{ACCOUNT["account_info_id"]}:{redis_filter_info}""", json.dumps(response), ex=86400)
+
+    success, result = graphql_sync(schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
+    
+    assert result["data"][QUERY_NAME]["response"] == response["response"]
+    assert result["data"][QUERY_NAME]["pageInfo"] == response["pageInfo"]
+    assert result["data"][QUERY_NAME]["result"] == response["result"]
+    
+@general
 @pytest.mark.movie_bench
 def test_movie_fav_query_response(benchmark):
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()

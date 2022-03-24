@@ -34,7 +34,7 @@ class MovieFavQuery:
             with lib.gen.db.get_engine("psqldb_movie").connect() as db:
                                 
                 response = lib.movie_fav_response(info=info, db=db, pageInfo=pageInfo, filterInput=filterInput)
-                
+                lib.gen.log.debug(f"""response: {response}""")
                 # can create pipeline if needed
                 redis_db.set(f"""movie_fav_query:{token_decode["user_id"]}:{redis_filter_info}""", json.dumps(response), ex=86400) #ex is in secs 86400
                 

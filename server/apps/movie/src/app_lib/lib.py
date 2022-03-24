@@ -129,6 +129,26 @@ class Lib:
         
         return delete_sql
     
+    def movie_add_imdb(self, imdb_ids):
+        total_sql = ""
+        for imdbId in imdb_ids:
+                    
+            # get imdb info
+            self.gen.log.info(f"""Adding imdbId: {imdbId}""")
+            movie_search_info = self.get_movie_by_id(imdbId=imdbId)
+            movie_payload = self.get_movie_info(imdbId, movie_search_info)
+
+            # request values 
+            request_key_imdb,request_val_imdb = self.gen.request_fields(data=movie_payload)
+            
+            sql = text(f"""
+                INSERT INTO movie_imdb_info(movie_imdb_info_id,{request_key_imdb})
+                VALUES(nextval('movie_imdb_info_sequence'),{request_val_imdb});
+            """)
+            total_sql+=str(sql)
+            
+        return total_sql
+    
     def _sql_db_join_types(self, sqlType=None):
         if sqlType == "MovieFavResponse":
             sql = """ 
@@ -261,5 +281,28 @@ class Lib:
         # exe filter sql
         result,page_info = self._filter_sql(info=info, db=db, pageInfo=pageInfo, filterInput=filterInput, oneQuery=oneQuery, dbJoinTpye="MovieImdbResponse", cols=list_cols)
         return self.gen.success_response(result=result, pageInfo=page_info)
+
+
+#################### For Tests ###################
+ 
+    def movie_fav_response_for_tests(self, db, cols, filterInput, oneQuery="", pageInfo={}):
         
+        # exe filter sql
+        result,page_info = self._filter_sql(info=None, db=db, pageInfo=pageInfo, filterInput=filterInput, oneQuery=oneQuery, dbJoinTpye="MovieFavResponse", cols=cols)
+                
+        # remove page_info_count
+        result = [{k: v for k, v in d.items() if k != "page_info_count"} for d in result]
+        
+        return self.gen.success_response(result=result, pageInfo=page_info)
+    
+    def movie_imdb_response_for_tests(self, db, cols, pageInfo={}, filterInput={}, oneQuery="", userId=None):
+      
+        # exe filter sql
+        result,page_info = self._filter_sql(info=None, db=db, pageInfo=pageInfo, filterInput=filterInput, oneQuery=oneQuery, dbJoinTpye="MovieImdbResponse", cols=cols)
+        
+        # remove page_info_count
+        result = [{k: v for k, v in d.items() if k != "page_info_count"} for d in result]
+        
+        return self.gen.success_response(result=result, pageInfo=page_info)
+   
     

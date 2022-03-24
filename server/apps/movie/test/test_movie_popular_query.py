@@ -3,6 +3,8 @@
 
 import test_app_lib.link
 import pytest
+import json
+import random
 
 from app_lib.lib import Lib
 from app_lib.mutations import Mutations
@@ -14,21 +16,31 @@ from ariadne.contrib.federation import make_federated_schema
 lib = Lib()
 type_defs = load_schema_from_path("../../src/app_lib/schema.graphql")
 schema = make_federated_schema(type_defs, [Queries.query, Mutations.mutation])
-QUERY_NAME = "movieSearch"
+QUERY_NAME = "moviePopular"
 
 # graphql query
-begin_gql = """query{ movieSearch( filterInput: {"""
-input_vars = f"""
-    search_type: search_imdb_id
-    search_value: "1"
+begin_gql = """query{ moviePopular( pageInfo: {"""
+input_vars = """
+    first: 2
+    pageNumber: 1
+    orderBy: ASC
+    sortBy: movie_imdb_info_popular_id
 """
-end_gql = """}){ response{ success code message version 
+end_gql = """}){response{ success code message version 
     } pageInfo{ page_info_count
-    } result{ movie_imdb_info_imdb_id movie_imdb_info_title movie_imdb_info_year
+    } result{ 
+        movie_imdb_info_imdb_id 
+        movie_imdb_info_title
+        movie_imdb_info_year
+        movie_imdb_info_directors
+        movie_imdb_info_genres
+        movie_imdb_info_countries
+        movie_imdb_info_plot 
+        movie_imdb_info_cover
     }}}
 """
 graphql_info = gql(begin_gql + input_vars + end_gql)
-general = lib.gen.compose_decos([pytest.mark.movie_search_query, pytest.mark.movie])
+general = lib.gen.compose_decos([pytest.mark.movie_popular_query, pytest.mark.movie])
 
 @general
 def test_always_passes():
@@ -206,8 +218,61 @@ def test_registration_unknown_status_response():
     assert result["data"][QUERY_NAME]["response"]["message"] == "http_401_unauthorized: Unknown registration"
 
 @general
+def test_data_return_from_redis_response():
+    # clear db tables and reset
+    lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
+    
+    # create account
+    ACCOUNT, CRED = lib.gen.create_account_for_test()
+
+    # AUTH Info
+    AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
+    
+    first = random.randint(1, 3)
+    
+    movie_popular_todo = [movie.getID() for movie in lib.get_popular_movies()][:first]
+    with lib.gen.db.get_engine("psqldb_movie").connect() as db:
+        db.execute(lib.movie_add_imdb(movie_popular_todo))
+    
+    # create a redis entry for account
+    input_vars = f"""
+        first: {first}
+        pageNumber: 1
+        orderBy: ASC
+        sortBy: movie_imdb_info_popular_id
+    """
+    graphql_info = gql(begin_gql + input_vars + end_gql)    
+    pageInfo = {"first": first, "pageNumber": 1, "orderBy": "ASC", "sortBy": "movie_imdb_info_popular_id"}
+    redis_filter_info = pageInfo
+    cols = """
+        movie_imdb_info_imdb_id,
+        movie_imdb_info_title,
+        movie_imdb_info_year,
+        movie_imdb_info_directors,
+        movie_imdb_info_genres,
+        movie_imdb_info_countries,
+        movie_imdb_info_plot, 
+        movie_imdb_info_cover
+    """
+    with lib.gen.db.get_engine("psqldb_movie").connect() as db:
+        response = lib.movie_imdb_response_for_tests(db=db, cols=cols, pageInfo=pageInfo, userId=ACCOUNT["account_info_id"])
+        lib.gen.log.debug(f"response: {response}")
+        
+    redis_db.set(f"""movie_popular_query:{redis_filter_info}""", json.dumps(response), ex=86400) #ex is in secs 86400
+
+    success, result = graphql_sync(schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
+    lib.gen.log.debug(f"result: {result}")
+    
+    
+    assert result["data"][QUERY_NAME]["response"] == response["response"]
+    assert result["data"][QUERY_NAME]["pageInfo"] == response["pageInfo"]
+    assert result["data"][QUERY_NAME]["result"] == response["result"]
+    
+@general
 @pytest.mark.movie_bench
-def test_movie_search_query_response(benchmark):
+def test_movie_popular_query_response(benchmark):
     # clear db tables and reset
     lib.gen.reset_database()
     redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
@@ -219,28 +284,35 @@ def test_movie_search_query_response(benchmark):
     # AUTH Info
     AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
 
-    # create movie fav 
-    movie = lib.gen.create_movie_fav(user_id=ACCOUNT["account_info_id"])
-    lib.gen.log.debug(f"movie: {movie}")
+    first = random.randint(1, 3)
     
     input_vars = f"""
-        search_type: search_imdb_id
-        search_value: "{movie['movie_imdb_info_imdb_id']}"
+        first: {first}
+        pageNumber: 1
+        orderBy: ASC
+        sortBy: movie_imdb_info_popular_id
     """
-    graphql_info = gql(begin_gql + input_vars + end_gql)
+    graphql_info = gql(begin_gql + input_vars + end_gql) 
+    
+    # add popular ids to db
+    movie_popular_todo = [movie.getID() for movie in lib.get_popular_movies()][:first]
+    pageInfo = {"first": first, "pageNumber": 1, "orderBy": "ASC", "sortBy": "movie_imdb_info_popular_id"}
+    with lib.gen.db.get_engine("psqldb_movie").connect() as db:
+        db.execute(lib.movie_add_imdb(movie_popular_todo))
+        cols = """
+            movie_imdb_info_imdb_id,
+            movie_imdb_info_title,
+            movie_imdb_info_year,
+            movie_imdb_info_directors,
+            movie_imdb_info_genres,
+            movie_imdb_info_countries,
+            movie_imdb_info_plot, 
+            movie_imdb_info_cover
+        """
+        response = lib.movie_imdb_response_for_tests(db=db, cols=cols, pageInfo=pageInfo, userId=ACCOUNT["account_info_id"])
+    
     success, result = benchmark(graphql_sync, schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
     lib.gen.log.debug(f"result: {result}")
-    assert result["data"][QUERY_NAME]["response"] == {
-        "success": True,
-        "code": 200,
-        "message": "Success!",
-        "version": "1.0"
-    }
-    assert result["data"][QUERY_NAME]["pageInfo"] == {
-        "page_info_count": 1
-    }
-    assert result["data"][QUERY_NAME]["result"] == [{
-        "movie_imdb_info_imdb_id": movie["movie_imdb_info_imdb_id"],
-        "movie_imdb_info_title": movie["movie_imdb_info_title"],
-        "movie_imdb_info_year": movie["movie_imdb_info_year"], 
-    }]
+    assert result["data"][QUERY_NAME]["response"] == response["response"]
+    assert result["data"][QUERY_NAME]["pageInfo"] == response["pageInfo"]
+    assert result["data"][QUERY_NAME]["result"] == response["result"]

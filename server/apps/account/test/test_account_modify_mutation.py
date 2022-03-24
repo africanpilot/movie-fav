@@ -49,6 +49,8 @@ def test_unable_to_get_token_response():
 def test_get_service_from_header_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -69,6 +71,8 @@ def test_get_service_from_header_response():
 def test_validate_token_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -90,6 +94,8 @@ def test_validate_token_response():
 def test_token_service_access_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -112,6 +118,8 @@ def test_token_service_access_response():
 def test_token_user_active_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -134,6 +142,8 @@ def test_token_user_active_response():
 def test_registration_not_complete_status_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test(reg="NOTCOMPLETE")
@@ -149,6 +159,8 @@ def test_registration_not_complete_status_response():
 def test_registration_waiting_status_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test(reg="WAITING")
@@ -164,6 +176,8 @@ def test_registration_waiting_status_response():
 def test_registration_complete_status_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test(reg="COMPLETE")
@@ -179,6 +193,8 @@ def test_registration_complete_status_response():
 def test_registration_unknown_status_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test(reg=lib.gen.rand_word_gen())
@@ -194,6 +210,8 @@ def test_registration_unknown_status_response():
 def test_password_retype_not_given_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -214,6 +232,8 @@ def test_password_retype_not_given_response():
 def test_password_retype_not_match_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -236,6 +256,8 @@ def test_password_retype_not_match_response():
 def test_password_length_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -257,6 +279,8 @@ def test_password_length_response():
 def test_password_invalid_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -278,6 +302,8 @@ def test_password_invalid_response():
 def test_password_email_confirm_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -307,6 +333,8 @@ def test_password_email_confirm_response():
 def test_account_modify_mutation_response(benchmark):
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()

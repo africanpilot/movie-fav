@@ -34,6 +34,8 @@ def test_always_passes():
 def test_get_service_from_header_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -59,6 +61,8 @@ def test_get_service_from_header_response():
 def test_verify_credentials_exists_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -79,6 +83,8 @@ def test_verify_credentials_exists_response():
 def test_email_already_verified_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -99,6 +105,8 @@ def test_email_already_verified_response():
 def test_account_resend_confirm_mutation_response(benchmark):
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test(email_verify=False)

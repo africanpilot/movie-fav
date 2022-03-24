@@ -3,6 +3,8 @@
 
 import test_app_lib.link
 import pytest
+import json
+import random
 
 from app_lib.lib import Lib
 from app_lib.mutations import Mutations
@@ -14,21 +16,29 @@ from ariadne.contrib.federation import make_federated_schema
 lib = Lib()
 type_defs = load_schema_from_path("../../src/app_lib/schema.graphql")
 schema = make_federated_schema(type_defs, [Queries.query, Mutations.mutation])
-QUERY_NAME = "movieSearch"
+QUERY_NAME = "movieImdbPopulate"
 
 # graphql query
-begin_gql = """query{ movieSearch( filterInput: {"""
-input_vars = f"""
-    search_type: search_imdb_id
-    search_value: "1"
+begin_gql = """mutation{ movieImdbPopulate( pageInfo: {"""
+input_vars = """
+    first: 2
+    pageNumber: 1
 """
-end_gql = """}){ response{ success code message version 
+end_gql = """}){response{ success code message version 
     } pageInfo{ page_info_count
-    } result{ movie_imdb_info_imdb_id movie_imdb_info_title movie_imdb_info_year
+    } result{  
+        movie_imdb_info_imdb_id 
+        movie_imdb_info_title
+        movie_imdb_info_year
+        movie_imdb_info_directors
+        movie_imdb_info_genres
+        movie_imdb_info_countries
+        movie_imdb_info_plot 
+        movie_imdb_info_cover
     }}}
 """
 graphql_info = gql(begin_gql + input_vars + end_gql)
-general = lib.gen.compose_decos([pytest.mark.movie_search_query, pytest.mark.movie])
+general = lib.gen.compose_decos([pytest.mark.movie_imdb_populate_mutation, pytest.mark.movie])
 
 @general
 def test_always_passes():
@@ -206,8 +216,41 @@ def test_registration_unknown_status_response():
     assert result["data"][QUERY_NAME]["response"]["message"] == "http_401_unauthorized: Unknown registration"
 
 @general
+def test_movie_popular_up_to_date_response():
+    # clear db tables and reset
+    lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
+    
+    # create account
+    ACCOUNT, CRED = lib.gen.create_account_for_test(reg=lib.gen.rand_word_gen())
+
+    # AUTH Info
+    AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
+    first = random.randint(1, 3)
+    
+    # add popular ids to db
+    movie_popular_todo = [movie.getID() for movie in lib.get_popular_movies()][:first]
+    with lib.gen.db.get_engine("psqldb_movie").connect() as db:
+        db.execute(lib.movie_add_imdb(movie_popular_todo))
+    
+    lib.gen.log.debug(f"movie_popular_todo: {movie_popular_todo}")
+    input_vars = f"""
+        first: {first}
+        pageNumber: 1
+    """
+    graphql_info = gql(begin_gql + input_vars + end_gql) 
+    
+    success, result = graphql_sync(schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
+    
+    result_ids = [data["movie_imdb_info_imdb_id"] for data in result["data"][QUERY_NAME]["result"]]
+    lib.gen.log.debug(f"""result_ids: {result_ids}""")
+    
+    assert len(result["data"][QUERY_NAME]["result"]) == 0
+    
+@general
 @pytest.mark.movie_bench
-def test_movie_search_query_response(benchmark):
+def test_movie_imdb_populate_mutation_response(benchmark):
     # clear db tables and reset
     lib.gen.reset_database()
     redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
@@ -219,17 +262,36 @@ def test_movie_search_query_response(benchmark):
     # AUTH Info
     AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
 
-    # create movie fav 
-    movie = lib.gen.create_movie_fav(user_id=ACCOUNT["account_info_id"])
-    lib.gen.log.debug(f"movie: {movie}")
+    first = random.randint(1, 2)
     
+    # add popular ids to db
+    movie_popular_todo = [movie.getID() for movie in lib.get_popular_movies()][:first]
+    movie_payload_total = []
+    for imdbId in movie_popular_todo: 
+        movie_search_info = lib.get_movie_by_id(imdbId=imdbId)
+        movie_payload = lib.get_movie_info(imdbId, movie_search_info)
+        movie_payload_total.append(movie_payload)
+    
+    movie_payload_total = [{k: v for k, v in d.items() if k != "movie_imdb_info_cast"} for d in movie_payload_total]
+        
     input_vars = f"""
-        search_type: search_imdb_id
-        search_value: "{movie['movie_imdb_info_imdb_id']}"
+        first: {first}
+        pageNumber: 1
     """
     graphql_info = gql(begin_gql + input_vars + end_gql)
+    
+    # create a redis entry for account
+    redis_filter_info = {"first": first}
+    redis_db.set(f"""movie_popular_query:{redis_filter_info}""", json.dumps(redis_filter_info), ex=86400) #ex is in secs 86400
+
     success, result = benchmark(graphql_sync, schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
-    lib.gen.log.debug(f"result: {result}")
+    
+    redis_result = []
+    for keybatch in lib.gen.batcher(redis_db.scan_iter(f"""movie_popular_query:{ACCOUNT["account_info_id"]}:*"""), 50):
+        keybatch = filter(None, keybatch)
+        redis_result.append(keybatch)
+    
+    assert redis_result == []
     assert result["data"][QUERY_NAME]["response"] == {
         "success": True,
         "code": 200,
@@ -237,10 +299,6 @@ def test_movie_search_query_response(benchmark):
         "version": "1.0"
     }
     assert result["data"][QUERY_NAME]["pageInfo"] == {
-        "page_info_count": 1
+        "page_info_count": first
     }
-    assert result["data"][QUERY_NAME]["result"] == [{
-        "movie_imdb_info_imdb_id": movie["movie_imdb_info_imdb_id"],
-        "movie_imdb_info_title": movie["movie_imdb_info_title"],
-        "movie_imdb_info_year": movie["movie_imdb_info_year"], 
-    }]
+    assert result["data"][QUERY_NAME]["result"] == movie_payload_total

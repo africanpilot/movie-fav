@@ -337,7 +337,7 @@ class General:
     def rand_word_gen_range(self, start, end):
         return ''.join(random.choice(string.ascii_lowercase) for i in range(random.randint(start, end)))
     
-    def _batcher(self, iterable, n):
+    def batcher(self, iterable, n):
         args = [iter(iterable)] * n
         return zip_longest(*args)
     
@@ -347,12 +347,15 @@ class General:
             search = [search]
             
         for item in search:
-            for keybatch in self._batcher(db.scan_iter(item), n):
+            for keybatch in self.batcher(db.scan_iter(item), n):
                 # self.log.debug(f"""keybatch1: {keybatch}""")
                 keybatch = filter(None, keybatch)
                 pipe.delete(*keybatch)
             
         return pipe
+    
+    def filter_dict_keys(self, data, search):
+        return lambda data, y: dict([ (i,data[i]) for i in data if i in set(search) ])
     
     # general model for response and result
     def general_response_model(self):
@@ -541,3 +544,13 @@ class General:
         
         with self.db.get_engine("psqldb_movie").connect() as db:
             return self.list_sql_response(db, sql)[0]
+        
+    # def get_movie_fav_info(self):
+    #     sql = text(f"""                   
+    #         SELECT movie_fav_info_imdb_id,movie_fav_info_episode_current
+    #         FROM movie_fav_info
+    #         INNER JOIN movie_imdb_info ON movie_imdb_info_id = movie_fav_info.movie_fav_info_imdb_info_id;
+    #     """)
+        
+    #     with self.db.get_engine("psqldb_movie").connect() as db:
+    #         return self.list_sql_response(db, sql)[0]

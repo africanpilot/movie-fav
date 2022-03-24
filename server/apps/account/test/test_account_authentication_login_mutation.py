@@ -36,6 +36,8 @@ def test_always_passes():
 def test_get_service_from_header_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -63,6 +65,8 @@ def test_get_service_from_header_response():
 def test_verify_login_email_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -85,6 +89,8 @@ def test_verify_login_email_response():
 def test_email_verified_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test(email_verify=False)
@@ -106,6 +112,8 @@ def test_email_verified_response():
 def test_verify_password_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -128,6 +136,8 @@ def test_verify_password_response():
 def test_check_active_account_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
 
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test(status=lib.gen.rand_word_gen())
@@ -150,6 +160,8 @@ def test_check_active_account_response():
 def test_account_authentication_login_mutation_response(benchmark):
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
 
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()

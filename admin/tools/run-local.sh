@@ -52,6 +52,7 @@ if [ "$command" == "up" ]; then
     fi
 
     if exists_in_list "$todo" " " "db/redis"; then
+        sed -i 's/redis_genmsdbtest/redis_secmsdb/' "db/redis/docker-compose.yml"
         gnome-terminal --tab --title="Local Redis" --command="bash -c 'docker-compose -f db/redis/docker-compose.yml -p services build; docker-compose -f db/redis/docker-compose.yml -p services up; $SHELL'"
     fi
 
@@ -60,6 +61,7 @@ if [ "$command" == "up" ]; then
         sed -i '/MOVIE_FAV_ENV/c\MOVIE_FAV_ENV=test' server/.env
         sed -i '/MOVIE_FAV_ENV/c\MOVIE_FAV_ENV=test' api/apollo/.env
         sed -i 's/postgres_secmsdb/postgres_genmsdbtest/' "db/postgres/docker-compose.yml"
+        sed -i 's/redis_secmsdb/redis_genmsdbtest/' "db/redis/docker-compose.yml"
         gnome-terminal --tab --title="Local test" --command="bash -c 'source admin/tools/install.sh; $SHELL'"
     else
         # start services...need a more clever way
@@ -69,18 +71,6 @@ if [ "$command" == "up" ]; then
         sed -i '/MOVIE_FAV_ENV/c\MOVIE_FAV_ENV=local' api/nginx/.env
 
         if exists_in_list "$todo" " " "server"; then
-            # get ip address for docker postgres database
-            # db_address=$(docker inspect -f '{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -qf "name=psqldb_secmsdb"))
-            # strip_text="/psqldb_secmsdb - "
-            # db_ip_address_value="${db_address/$strip_text/""}"
-            # sed -i "/DB_LOCAL_HOST/c\DB_LOCAL_HOST=$db_ip_address_value" server/.env
-
-            # # get ip address for docker redis database
-            # db_address=$(docker inspect -f '{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -qf "name=redisdb_secmsdb"))
-            # strip_text="/redisdb_secmsdb - "
-            # db_ip_address_value="${db_address/$strip_text/""}"
-            # sed -i "/DB_REDIS_HOST/c\DB_REDIS_HOST=$db_ip_address_value" db/redis/.env
-
             gnome-terminal --tab --title="Local account" --command="bash -c 'source admin/tools/install.sh; python3 ./server/start account; $SHELL'"
             gnome-terminal --tab --title="Local movie" --command="bash -c 'source admin/tools/install.sh; python3 ./server/start movie; $SHELL'"
         fi

@@ -194,20 +194,18 @@ function do_subdirs
 
 	if [ -f "docker-compose.yml" ] || [ -f "Dockerfile" ]
 	then
+        # extra conditions for db dir
+        if [ "$d" == "db/postgres" ] || [ "$d" == "db/redis" ]; then
+            # update docker-compose file for correct volume
+            sed -i 's/postgres_genmsdbtest/postgres_secmsdb/' "docker-compose.yml"
+            sed -i 's/redis_genmsdbtest/redis_secmsdb/' "docker-compose.yml"
+        fi
         
         if [ "$command" == "up" ]
         then
             
-            # extra conditions for db dir
-            if [ "$d" == "db/postgres" ]
-            then
-                # update docker-compose file for correct volume
-                sed -i 's/postgres_genmsdbtest/postgres_secmsdb/' "docker-compose.yml"
-            fi
-
             # extra conditions for server dir
-            if [ "$d" == "server" ]
-            then
+            if [ "$d" == "server" ]; then
                 echo "Waiting for all database to start. Sleeping 15 seconds..."
                 sleep 15
 
@@ -216,18 +214,22 @@ function do_subdirs
                 strip_text="/psqldb_secmsdb - "
                 db_ip_address_value="${db_address/$strip_text/""}"
                 sed -i "/DB_LOCAL_HOST/c\DB_LOCAL_HOST=$db_ip_address_value" .env
+
+                # get ip address for docker redis database
+                db_address=$(docker inspect -f '{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -qf "name=redisdb_secmsdb"))
+                strip_text="/redisdb_secmsdb - "
+                db_ip_address_value="${db_address/$strip_text/""}"
+                sed -i "/DB_REDIS_HOST/c\DB_REDIS_HOST=$db_ip_address_value" .env
             fi
 
             # extra conditions for apollo dir
-            if [ "$d" == "api/apollo" ]
-            then
+            if [ "$d" == "api/apollo" ]; then
                 echo "Waiting for all services to start. Sleeping 15 seconds..."
                 sleep 15
             fi
 
             # extra conditions for apollo dir
-            if [ "$d" == "api/nginx" ]
-            then
+            if [ "$d" == "api/nginx" ]; then
                 echo "Waiting for apollo to start. Sleeping 15 seconds..."
                 sleep 15
             fi

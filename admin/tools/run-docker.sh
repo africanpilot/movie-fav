@@ -205,12 +205,15 @@ function do_subdirs
 	then
         
         # update docker-compose file for correct volume
-        # if [ "$1" == "test" ]
-        # then
-        #     sed -i 's/postgres_secmsdb/postgres_genmsdbtest/' "docker-compose.yml"
-        # else
-        #     sed -i 's/postgres_genmsdbtest/postgres_secmsdb/' "docker-compose.yml"
-        # fi
+        if [ "$d" == "db/postgres" ] || [ "$d" == "db/redis" ]; then
+            if [ "$environment" == "test" ]; then
+                sed -i 's/postgres_secmsdb/postgres_genmsdbtest/' "docker-compose.yml"
+                sed -i 's/redis_secmsdb/redis_genmsdbtest/' "docker-compose.yml"   
+            else
+                sed -i 's/postgres_genmsdbtest/postgres_secmsdb/' "docker-compose.yml"
+                sed -i 's/redis_genmsdbtest/redis_secmsdb/' "docker-compose.yml"
+            fi
+        fi
 
         if [ "$command" == "up" ]
         then
