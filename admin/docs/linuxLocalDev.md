@@ -40,6 +40,9 @@ pre-requirements: linux env
             2) sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
             3) sudo chmod +x /usr/local/bin/docker-compose
 
+    c) additions:
+        1)  sudo apt install jq
+
 
 Main commands: always from root project folder
 
