@@ -44,209 +44,209 @@ general = lib.gen.compose_decos([pytest.mark.movie_imdb_populate_mutation, pytes
 def test_always_passes():
     assert True
 
-@general
-def test_unable_to_get_token_response():    
-    AUTH_TOKEN = f"Bearer ".encode('utf-8')
-    SERVICE_NAME = f"".encode('utf-8')
-    DEFAULT_HEADER = { b'authorization': AUTH_TOKEN, b'service-name': SERVICE_NAME }
-    CONTEXT_VALUE_NEW = { "request": {"headers": DEFAULT_HEADER } }
-    success, result = graphql_sync(schema, {"query": graphql_info}, context_value=CONTEXT_VALUE_NEW)
-    assert result["data"][QUERY_NAME]["response"]["code"] == 499
-    assert result["data"][QUERY_NAME]["response"]["message"] == "http_499_token_required: Unable to get token"
+# @general
+# def test_unable_to_get_token_response():    
+#     AUTH_TOKEN = f"Bearer ".encode('utf-8')
+#     SERVICE_NAME = f"".encode('utf-8')
+#     DEFAULT_HEADER = { b'authorization': AUTH_TOKEN, b'service-name': SERVICE_NAME }
+#     CONTEXT_VALUE_NEW = { "request": {"headers": DEFAULT_HEADER } }
+#     success, result = graphql_sync(schema, {"query": graphql_info}, context_value=CONTEXT_VALUE_NEW)
+#     assert result["data"][QUERY_NAME]["response"]["code"] == 499
+#     assert result["data"][QUERY_NAME]["response"]["message"] == "http_499_token_required: Unable to get token"
 
-@general
-def test_get_service_from_header_response():
-    # clear db tables and reset
-    lib.gen.reset_database()
-    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
-    redis_db.flushdb()
+# @general
+# def test_get_service_from_header_response():
+#     # clear db tables and reset
+#     lib.gen.reset_database()
+#     redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+#     redis_db.flushdb()
     
-    # create account
-    ACCOUNT, CRED = lib.gen.create_account_for_test()
+#     # create account
+#     ACCOUNT, CRED = lib.gen.create_account_for_test()
 
-    # AUTH Info
-    AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
+#     # AUTH Info
+#     AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
         
-    DEFAULT_HEADER_NEW = {
-        b'authorization': AUTH["AUTH_TOKEN"],
-        b'service-name': lib.gen.rand_word_gen().encode('utf-8'),
-    }
-    CONTEXT_VALUE_NEW = { "request": {"headers": DEFAULT_HEADER_NEW} }
-    success, result = graphql_sync(schema, {"query": graphql_info}, context_value=CONTEXT_VALUE_NEW)
-    assert result["data"][QUERY_NAME]["response"]["code"] == 499
-    assert result["data"][QUERY_NAME]["response"]["message"] == "http_499_token_required: Invalid service name"
+#     DEFAULT_HEADER_NEW = {
+#         b'authorization': AUTH["AUTH_TOKEN"],
+#         b'service-name': lib.gen.rand_word_gen().encode('utf-8'),
+#     }
+#     CONTEXT_VALUE_NEW = { "request": {"headers": DEFAULT_HEADER_NEW} }
+#     success, result = graphql_sync(schema, {"query": graphql_info}, context_value=CONTEXT_VALUE_NEW)
+#     assert result["data"][QUERY_NAME]["response"]["code"] == 499
+#     assert result["data"][QUERY_NAME]["response"]["message"] == "http_499_token_required: Invalid service name"
 
-@general
-def test_validate_token_response():
-    # clear db tables and reset
-    lib.gen.reset_database()
-    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
-    redis_db.flushdb()
+# @general
+# def test_validate_token_response():
+#     # clear db tables and reset
+#     lib.gen.reset_database()
+#     redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+#     redis_db.flushdb()
     
-    # create account
-    ACCOUNT, CRED = lib.gen.create_account_for_test()
+#     # create account
+#     ACCOUNT, CRED = lib.gen.create_account_for_test()
 
-    # AUTH Info
-    AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
+#     # AUTH Info
+#     AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
     
-    token = lib.gen.rand_word_gen()
-    DEFAULT_HEADER_NEW = {
-        b'authorization': f"Bearer {token}".encode('utf-8'),
-        b'service-name': AUTH["SERVICE_NAME"],
-    }
-    CONTEXT_VALUE_NEW = { "request": {"headers": DEFAULT_HEADER_NEW} }
-    success, result = graphql_sync(schema, {"query": graphql_info}, context_value=CONTEXT_VALUE_NEW)
-    assert result["data"][QUERY_NAME]["response"]["code"] == 498
-    assert result["data"][QUERY_NAME]["response"]["message"] == "http_498_invalid_token: Invalid token"
+#     token = lib.gen.rand_word_gen()
+#     DEFAULT_HEADER_NEW = {
+#         b'authorization': f"Bearer {token}".encode('utf-8'),
+#         b'service-name': AUTH["SERVICE_NAME"],
+#     }
+#     CONTEXT_VALUE_NEW = { "request": {"headers": DEFAULT_HEADER_NEW} }
+#     success, result = graphql_sync(schema, {"query": graphql_info}, context_value=CONTEXT_VALUE_NEW)
+#     assert result["data"][QUERY_NAME]["response"]["code"] == 498
+#     assert result["data"][QUERY_NAME]["response"]["message"] == "http_498_invalid_token: Invalid token"
 
-@general
-def test_token_service_access_response():
-    # clear db tables and reset
-    lib.gen.reset_database()
-    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
-    redis_db.flushdb()
+# @general
+# def test_token_service_access_response():
+#     # clear db tables and reset
+#     lib.gen.reset_database()
+#     redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+#     redis_db.flushdb()
     
-    # create account
-    ACCOUNT, CRED = lib.gen.create_account_for_test()
+#     # create account
+#     ACCOUNT, CRED = lib.gen.create_account_for_test()
 
-    # AUTH Info
-    AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
+#     # AUTH Info
+#     AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
     
-    # create token
-    token = lib.gen.token_gen(id=1, service=lib.gen.rand_word_gen(), hr=24, status="ACTIVE")
-    DEFAULT_HEADER_NEW = {
-        b'authorization': f"Bearer {token}".encode('utf-8'),
-        b'service-name': AUTH["SERVICE_NAME"],
-    }
-    CONTEXT_VALUE_NEW = { "request": {"headers": DEFAULT_HEADER_NEW} }
-    success, result = graphql_sync(schema, {"query": graphql_info}, context_value=CONTEXT_VALUE_NEW)
-    assert result["data"][QUERY_NAME]["response"]["code"] == 499
-    assert result["data"][QUERY_NAME]["response"]["message"] == "http_499_token_required: Invalid token service name"
+#     # create token
+#     token = lib.gen.token_gen(id=1, service=lib.gen.rand_word_gen(), hr=24, status="ACTIVE")
+#     DEFAULT_HEADER_NEW = {
+#         b'authorization': f"Bearer {token}".encode('utf-8'),
+#         b'service-name': AUTH["SERVICE_NAME"],
+#     }
+#     CONTEXT_VALUE_NEW = { "request": {"headers": DEFAULT_HEADER_NEW} }
+#     success, result = graphql_sync(schema, {"query": graphql_info}, context_value=CONTEXT_VALUE_NEW)
+#     assert result["data"][QUERY_NAME]["response"]["code"] == 499
+#     assert result["data"][QUERY_NAME]["response"]["message"] == "http_499_token_required: Invalid token service name"
 
-@general
-def test_token_user_active_response():
-    # clear db tables and reset
-    lib.gen.reset_database()
-    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
-    redis_db.flushdb()
+# @general
+# def test_token_user_active_response():
+#     # clear db tables and reset
+#     lib.gen.reset_database()
+#     redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+#     redis_db.flushdb()
     
-    # create account
-    ACCOUNT, CRED = lib.gen.create_account_for_test()
+#     # create account
+#     ACCOUNT, CRED = lib.gen.create_account_for_test()
 
-    # AUTH Info
-    AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
+#     # AUTH Info
+#     AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
     
-    # create token
-    token = lib.gen.token_gen(id=1, service=AUTH["SERVICE"], hr=24, status=lib.gen.rand_word_gen())
-    DEFAULT_HEADER_NEW = {
-        b'authorization': f"Bearer {token}".encode('utf-8'),
-        b'service-name': AUTH["SERVICE_NAME"],
-    }
-    CONTEXT_VALUE_NEW = { "request": {"headers": DEFAULT_HEADER_NEW} }
-    success, result = graphql_sync(schema, {"query": graphql_info}, context_value=CONTEXT_VALUE_NEW)
-    assert result["data"][QUERY_NAME]["response"]["code"] == 401
-    assert result["data"][QUERY_NAME]["response"]["message"] == "http_401_unauthorized: Account not active"
+#     # create token
+#     token = lib.gen.token_gen(id=1, service=AUTH["SERVICE"], hr=24, status=lib.gen.rand_word_gen())
+#     DEFAULT_HEADER_NEW = {
+#         b'authorization': f"Bearer {token}".encode('utf-8'),
+#         b'service-name': AUTH["SERVICE_NAME"],
+#     }
+#     CONTEXT_VALUE_NEW = { "request": {"headers": DEFAULT_HEADER_NEW} }
+#     success, result = graphql_sync(schema, {"query": graphql_info}, context_value=CONTEXT_VALUE_NEW)
+#     assert result["data"][QUERY_NAME]["response"]["code"] == 401
+#     assert result["data"][QUERY_NAME]["response"]["message"] == "http_401_unauthorized: Account not active"
 
-@general
-def test_registration_not_complete_status_response():
-    # clear db tables and reset
-    lib.gen.reset_database()
-    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
-    redis_db.flushdb()
+# @general
+# def test_registration_not_complete_status_response():
+#     # clear db tables and reset
+#     lib.gen.reset_database()
+#     redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+#     redis_db.flushdb()
     
-    # create account
-    ACCOUNT, CRED = lib.gen.create_account_for_test(reg="NOTCOMPLETE")
+#     # create account
+#     ACCOUNT, CRED = lib.gen.create_account_for_test(reg="NOTCOMPLETE")
 
-    # AUTH Info
-    AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
+#     # AUTH Info
+#     AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
     
-    success, result = graphql_sync(schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
-    assert result["data"][QUERY_NAME]["response"]["code"] == 401
-    assert result["data"][QUERY_NAME]["response"]["message"] == "http_401_unauthorized: Please complete registration first"
+#     success, result = graphql_sync(schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
+#     assert result["data"][QUERY_NAME]["response"]["code"] == 401
+#     assert result["data"][QUERY_NAME]["response"]["message"] == "http_401_unauthorized: Please complete registration first"
 
-@general
-def test_registration_waiting_status_response():
-    # clear db tables and reset
-    lib.gen.reset_database()
-    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
-    redis_db.flushdb()
+# @general
+# def test_registration_waiting_status_response():
+#     # clear db tables and reset
+#     lib.gen.reset_database()
+#     redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+#     redis_db.flushdb()
     
-    # create account
-    ACCOUNT, CRED = lib.gen.create_account_for_test(reg="WAITING")
+#     # create account
+#     ACCOUNT, CRED = lib.gen.create_account_for_test(reg="WAITING")
 
-    # AUTH Info
-    AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
+#     # AUTH Info
+#     AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
     
-    success, result = graphql_sync(schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
-    assert result["data"][QUERY_NAME]["response"]["code"] == 401
-    assert result["data"][QUERY_NAME]["response"]["message"] == "http_401_unauthorized: Registration is pending approval"
+#     success, result = graphql_sync(schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
+#     assert result["data"][QUERY_NAME]["response"]["code"] == 401
+#     assert result["data"][QUERY_NAME]["response"]["message"] == "http_401_unauthorized: Registration is pending approval"
 
-@general
-def test_registration_complete_status_response():
-    # clear db tables and reset
-    lib.gen.reset_database()
-    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
-    redis_db.flushdb()
+# @general
+# def test_registration_complete_status_response():
+#     # clear db tables and reset
+#     lib.gen.reset_database()
+#     redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+#     redis_db.flushdb()
     
-    # create account
-    ACCOUNT, CRED = lib.gen.create_account_for_test(reg="COMPLETE")
+#     # create account
+#     ACCOUNT, CRED = lib.gen.create_account_for_test(reg="COMPLETE")
 
-    # AUTH Info
-    AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
+#     # AUTH Info
+#     AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
     
-    success, result = graphql_sync(schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
-    assert result["data"][QUERY_NAME]["response"]["code"] == 401
-    assert result["data"][QUERY_NAME]["response"]["message"] == "http_401_unauthorized: Registration is pending approval"
+#     success, result = graphql_sync(schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
+#     assert result["data"][QUERY_NAME]["response"]["code"] == 401
+#     assert result["data"][QUERY_NAME]["response"]["message"] == "http_401_unauthorized: Registration is pending approval"
 
-@general
-def test_registration_unknown_status_response():
-    # clear db tables and reset
-    lib.gen.reset_database()
-    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
-    redis_db.flushdb()
+# @general
+# def test_registration_unknown_status_response():
+#     # clear db tables and reset
+#     lib.gen.reset_database()
+#     redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+#     redis_db.flushdb()
     
-    # create account
-    ACCOUNT, CRED = lib.gen.create_account_for_test(reg=lib.gen.rand_word_gen())
+#     # create account
+#     ACCOUNT, CRED = lib.gen.create_account_for_test(reg=lib.gen.rand_word_gen())
 
-    # AUTH Info
-    AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
+#     # AUTH Info
+#     AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
     
-    success, result = graphql_sync(schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
-    assert result["data"][QUERY_NAME]["response"]["code"] == 401
-    assert result["data"][QUERY_NAME]["response"]["message"] == "http_401_unauthorized: Unknown registration"
+#     success, result = graphql_sync(schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
+#     assert result["data"][QUERY_NAME]["response"]["code"] == 401
+#     assert result["data"][QUERY_NAME]["response"]["message"] == "http_401_unauthorized: Unknown registration"
 
-@general
-def test_movie_popular_up_to_date_response():
-    # clear db tables and reset
-    lib.gen.reset_database()
-    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
-    redis_db.flushdb()
+# @general
+# def test_movie_popular_up_to_date_response():
+#     # clear db tables and reset
+#     lib.gen.reset_database()
+#     redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+#     redis_db.flushdb()
     
-    # create account
-    ACCOUNT, CRED = lib.gen.create_account_for_test(reg=lib.gen.rand_word_gen())
+#     # create account
+#     ACCOUNT, CRED = lib.gen.create_account_for_test(reg=lib.gen.rand_word_gen())
 
-    # AUTH Info
-    AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
-    first = random.randint(1, 3)
+#     # AUTH Info
+#     AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
+#     first = random.randint(1, 3)
     
-    # add popular ids to db
-    movie_popular_todo = [movie.getID() for movie in lib.get_popular_movies()][:first]
-    with lib.gen.db.get_engine("psqldb_movie").connect() as db:
-        db.execute(lib.movie_add_imdb(movie_popular_todo))
+#     # add popular ids to db
+#     movie_popular_todo = [movie.getID() for movie in lib.get_popular_movies()][:first]
+#     with lib.gen.db.get_engine("psqldb_movie").connect() as db:
+#         db.execute(lib.movie_add_imdb(movie_popular_todo))
     
-    lib.gen.log.debug(f"movie_popular_todo: {movie_popular_todo}")
-    input_vars = f"""
-        first: {first}
-        pageNumber: 1
-    """
-    graphql_info = gql(begin_gql + input_vars + end_gql) 
+#     lib.gen.log.debug(f"movie_popular_todo: {movie_popular_todo}")
+#     input_vars = f"""
+#         first: {first}
+#         pageNumber: 1
+#     """
+#     graphql_info = gql(begin_gql + input_vars + end_gql) 
     
-    success, result = graphql_sync(schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
+#     success, result = graphql_sync(schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
     
-    result_ids = [data["movie_imdb_info_imdb_id"] for data in result["data"][QUERY_NAME]["result"]]
-    lib.gen.log.debug(f"""result_ids: {result_ids}""")
+#     result_ids = [data["movie_imdb_info_imdb_id"] for data in result["data"][QUERY_NAME]["result"]]
+#     lib.gen.log.debug(f"""result_ids: {result_ids}""")
     
-    assert len(result["data"][QUERY_NAME]["result"]) == 0
+#     assert len(result["data"][QUERY_NAME]["result"]) == 0
     
 @general
 @pytest.mark.movie_bench
@@ -262,7 +262,7 @@ def test_movie_imdb_populate_mutation_response(benchmark):
     # AUTH Info
     AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
 
-    first = random.randint(1, 2)
+    first = random.randint(1, 1)
     
     # add popular ids to db
     movie_popular_todo = [movie.getID() for movie in lib.get_popular_movies()][:first]
@@ -282,14 +282,17 @@ def test_movie_imdb_populate_mutation_response(benchmark):
     
     # create a redis entry for account
     redis_filter_info = {"first": first}
-    redis_db.set(f"""movie_popular_query:{redis_filter_info}""", json.dumps(redis_filter_info), ex=86400) #ex is in secs 86400
+    redis_db.set(f"""movie_popular_query:{ACCOUNT["account_info_id"]}:{redis_filter_info}""", json.dumps(redis_filter_info), ex=86400) #ex is in secs 86400
 
     success, result = benchmark(graphql_sync, schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
     
     redis_result = []
-    for keybatch in lib.gen.batcher(redis_db.scan_iter(f"""movie_popular_query:{ACCOUNT["account_info_id"]}:*"""), 50):
+    for keybatch in lib.gen.batcher(redis_db.scan_iter(f"""movie_popular_query:*"""), 50):
         keybatch = filter(None, keybatch)
         redis_result.append(keybatch)
+    
+    lib.gen.log.debug(f"movie_payload_total: {movie_payload_total}")
+    lib.gen.log.debug(f"result: {result}")
     
     assert redis_result == []
     assert result["data"][QUERY_NAME]["response"] == {

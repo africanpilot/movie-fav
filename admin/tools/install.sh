@@ -7,6 +7,13 @@
 # cd ../../
 # set -e
 
+if set|grep '^SERVICES_TODO=' >/dev/null; then
+  todo="$SERVICES_TODO"
+else
+  echo "Please set the SERVICES_TODO env"
+  return 1
+fi
+
 if [  ! -d "server" ]; then
     echo "You should only run this script from your application root directory"
     return 1
@@ -22,16 +29,21 @@ echo "STEP 1/5: Setting enviornment varables"
 echo "******************************"
 echo " "
 
-for d in $(find . -maxdepth 3 -name "*.env"); do
-    echo "Adding: $d"
-    # update .env file for match dev setting
-    # sed -i '/MOVIE_FAV_ENV/c\MOVIE_FAV_ENV=local' $d
-    sed -i '/DB_LOCAL_HOST/c\DB_LOCAL_HOST=localhost' $d
-    # Show env vars
-    # grep -v '^#' $d
+# for d in $(find . -maxdepth 3 -name "*.env"); do
+#     echo "Adding: $d"
+#     # update .env file for match dev setting
+#     # sed -i '/MOVIE_FAV_ENV/c\MOVIE_FAV_ENV=local' $d
+#     sed -i '/DB_LOCAL_HOST/c\DB_LOCAL_HOST=localhost' $d
+#     # Show env vars
+#     # grep -v '^#' $d
 
-    # Export env vars
-    export $(grep -v '^#' $d | xargs)
+#     # Export env vars
+#     export $(grep -v '^#' $d | xargs)
+# done
+
+for d in $todo; do
+    echo "Adding: $d/.env"
+    export $(grep -v '^#' $d/.env | xargs)
 done
 
 # By default overide db to be local

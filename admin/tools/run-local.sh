@@ -58,17 +58,17 @@ if [ "$command" == "up" ]; then
 
     # update docker-compose file for correct volume
     if [ "$environment" == "test" ]; then
-        sed -i '/MOVIE_FAV_ENV/c\MOVIE_FAV_ENV=test' server/.env
-        sed -i '/MOVIE_FAV_ENV/c\MOVIE_FAV_ENV=test' api/apollo/.env
+        for d in $todo; do
+            sed -i '/MOVIE_FAV_ENV/c\MOVIE_FAV_ENV=test' $d/.env
+        done
         sed -i 's/postgres_secmsdb/postgres_genmsdbtest/' "db/postgres/docker-compose.yml"
         sed -i 's/redis_secmsdb/redis_genmsdbtest/' "db/redis/docker-compose.yml"
         gnome-terminal --tab --title="Local test" --command="bash -c 'source admin/tools/install.sh; $SHELL'"
     else
         # start services...need a more clever way
-        sed -i '/MOVIE_FAV_ENV/c\MOVIE_FAV_ENV=local' server/.env
-        sed -i '/MOVIE_FAV_ENV/c\MOVIE_FAV_ENV=local' api/apollo/.env
-        sed -i '/MOVIE_FAV_ENV/c\MOVIE_FAV_ENV=local' client/.env
-        sed -i '/MOVIE_FAV_ENV/c\MOVIE_FAV_ENV=local' api/nginx/.env
+        for d in $todo; do
+            sed -i '/MOVIE_FAV_ENV/c\MOVIE_FAV_ENV=local' $d/.env
+        done
 
         if exists_in_list "$todo" " " "server"; then
             gnome-terminal --tab --title="Local account" --command="bash -c 'source admin/tools/install.sh; python3 ./server/start account; $SHELL'"
@@ -110,15 +110,23 @@ elif [ "$command" == "down" ]; then
     fi
 
     if [ "$environment" != "test" ]; then
-        pkill gunicorn
-        echo "Gunicorn shutdown complete"
-        kill -9 $(lsof -t -i:4001)
-        kill -9 $(lsof -t -i:4002)
-        echo "Uvicorn shutdown complete"
-        kill -9 $(lsof -t -i:4000)
-        echo "Apollo server shutdown complete"
-        kill -9 $(lsof -t -i:3000)
-        echo "Client server shutdown complete"
+        if exists_in_list "$todo" " " "server"; then
+            pkill gunicorn
+            echo "Gunicorn shutdown complete"
+            kill -9 $(lsof -t -i:4001)
+            kill -9 $(lsof -t -i:4002)
+            echo "Uvicorn shutdown complete"
+        fi
+
+        if exists_in_list "$todo" " " "api/apollo"; then
+            kill -9 $(lsof -t -i:4000)
+            echo "Apollo server shutdown complete"
+        fi
+        
+        if exists_in_list "$todo" " " "client"; then
+            kill -9 $(lsof -t -i:3000)
+            echo "Client server shutdown complete"
+        fi
     fi
 else
     echo "Known exception"

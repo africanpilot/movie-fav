@@ -7,7 +7,8 @@ todo="\
     db/postgres \
     db/redis \
     server \
-    api/apollo
+    api/apollo \
+    client
 "
 
 # db/postgres \
@@ -61,6 +62,7 @@ echo "command: $command"
 
 # check for secrets file
 if [ -f ".env" ]; then
+    sed -i "/MOVIE_FAV_ENV/c\MOVIE_FAV_ENV=$environment" .env
     for d in $todo; do
         cp .env "$d"
     done

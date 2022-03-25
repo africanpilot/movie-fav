@@ -266,7 +266,12 @@ def test_movie_fav_query_response(benchmark):
     movie = lib.gen.create_movie_fav(user_id=ACCOUNT["account_info_id"])
     
     success, result = benchmark(graphql_sync, schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
-    lib.gen.log.debug(f"result: {result}")
+    redis_result = []
+    for keybatch in lib.gen.batcher(redis_db.scan_iter(f"""movie_fav_query:{ACCOUNT["account_info_id"]}:*"""), 50):
+        keybatch = filter(None, keybatch)
+        redis_result.append(keybatch)
+    
+    assert len(redis_result) == 1
     assert result["data"][QUERY_NAME]["response"] == {
         "success": True,
         "code": 200,

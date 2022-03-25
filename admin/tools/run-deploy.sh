@@ -47,16 +47,10 @@ function set_environment
     MOVIE_FAV_ENV=$1
 
     # export all env
-    for d in $(find . -maxdepth 3 -name "*.env"); do
-        echo "Adding: $d"
-
-        # update .env file for match dev setting
-        sed -i '/MOVIE_FAV_ENV/c\MOVIE_FAV_ENV=prod' $d
-
-        # Export env vars
-        export $(grep -v '^#' $d | xargs)
+    for d in $todo; do
+        sed -i "/MOVIE_FAV_ENV/c\MOVIE_FAV_ENV=$MOVIE_FAV_ENV" $d/.env
     done
-
+    
     echo "Setting environment to $MOVIE_FAV_ENV"
 
     if [ "test" == "$MOVIE_FAV_ENV" ] || [ "dev" == "$MOVIE_FAV_ENV" ]

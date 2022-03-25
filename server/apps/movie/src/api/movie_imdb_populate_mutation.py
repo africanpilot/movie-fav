@@ -70,6 +70,11 @@ class MovieImdbPopulateMutation:
             
             # find pattern match for user then delete
             redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
-            lib.gen.redis_delete_keys_pipe(redis_db, f"""movie_popular_query:*""").execute()      
+            search = [
+                f"""movie_fav_query:*""",
+                f"""movie_search_query:*""",
+                f"""movie_popular_query:*"""
+            ]
+            lib.gen.redis_delete_keys_pipe(redis_db, search).execute()     
             
             return response

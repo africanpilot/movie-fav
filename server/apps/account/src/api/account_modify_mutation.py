@@ -59,6 +59,6 @@ class AccountModifyMutation:
             
             # find pattern match for user then delete
             redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
-            lib.gen.redis_delete_keys_pipe(redis_db, f"""account_me_query:{token_decode["user_id"]}:*""").execute()      
+            lib.gen.redis_delete_keys_pipe(redis_db, f"""account_me_query:{token_decode["user_id"]}""").execute()      
             
             return response

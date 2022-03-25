@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useCallback, useState } from 'react';
+import { useParams } from 'react-router';
 import { useSpring, animated } from 'react-spring';
 import styled from 'styled-components';
 import { MdClose } from 'react-icons/md';
@@ -17,7 +18,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 import { useMutation } from "@apollo/client";
-import { MOVIE_MODIFY_MUTATION } from "../graphql/Queries";
+import { MOVIE_CREATE_MUTATION } from "../graphql/Queries";
 
 import { 
 	StyledFormArea,
@@ -191,8 +192,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Modal = ({ movieFav, showModal, setShowModal, setCollection }) => {
-  
+export const ModalAdd = ({ movieFav, showModal, setShowModal, setCollection }) => {
   const classes = useStyles();
   const location = useLocation();
   const navigate = useNavigate();
@@ -203,8 +203,9 @@ export const Modal = ({ movieFav, showModal, setShowModal, setCollection }) => {
   const [seconds] = useState(3);
   const [errorState, setErrorState] = useState({});
   const modalRef = useRef();
+  const { id } = useParams();
 
-  const [movieModify, { loading }] = useMutation(MOVIE_MODIFY_MUTATION);
+  const [movieCreate, { loading }] = useMutation(MOVIE_CREATE_MUTATION);
 
   const animation = useSpring({
     config: {
@@ -246,18 +247,18 @@ export const Modal = ({ movieFav, showModal, setShowModal, setCollection }) => {
     e.preventDefault();
     setErrorState({});
 
-    movieModify({
+    movieCreate({
       variables: {
-        infoId: movieFav.movie_fav_info_id,
-        episode: episode ? episode : movieFav.movie_fav_info_episode_current,
-        movieStatus: movieStatus ? movieStatus : movieFav.movie_fav_info_status,
-        rating: parseFloat(rating),
+        movie_fav_info_imdb_id: id,
+        movie_fav_info_episode_current: episode ? episode.toString() : "1",
+        movie_fav_info_status: movieStatus ? movieStatus : "unmarked",
+        movie_fav_info_rating_user: parseFloat(rating),
       },
     })
-    .then(({ data: {movieModify: { response, result },},}) => {
+    .then(({ data: {movieCreate: { response, result },},}) => {
       if (response.success === true) {
         setButtonDisabled(true);
-        setShowModal(false)
+        setShowModal(false);
         // update local data for item
         setCollection(result ? result[0]: movieFav);
 

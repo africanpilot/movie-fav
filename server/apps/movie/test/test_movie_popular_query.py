@@ -260,11 +260,10 @@ def test_data_return_from_redis_response():
         response = lib.movie_imdb_response_for_tests(db=db, cols=cols, pageInfo=pageInfo, userId=ACCOUNT["account_info_id"])
         lib.gen.log.debug(f"response: {response}")
         
-    redis_db.set(f"""movie_popular_query:{redis_filter_info}""", json.dumps(response), ex=86400) #ex is in secs 86400
+    redis_db.set(f"""movie_popular_query:{ACCOUNT["account_info_id"]}:{redis_filter_info}""", json.dumps(response), ex=86400) #ex is in secs 86400
 
     success, result = graphql_sync(schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
     lib.gen.log.debug(f"result: {result}")
-    
     
     assert result["data"][QUERY_NAME]["response"] == response["response"]
     assert result["data"][QUERY_NAME]["pageInfo"] == response["pageInfo"]
@@ -313,6 +312,13 @@ def test_movie_popular_query_response(benchmark):
     
     success, result = benchmark(graphql_sync, schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
     lib.gen.log.debug(f"result: {result}")
+    
+    redis_result = []
+    for keybatch in lib.gen.batcher(redis_db.scan_iter(f"""movie_popular_query:{ACCOUNT["account_info_id"]}:*"""), 50):
+        keybatch = filter(None, keybatch)
+        redis_result.append(keybatch)
+    
+    assert len(redis_result) == 1
     assert result["data"][QUERY_NAME]["response"] == response["response"]
     assert result["data"][QUERY_NAME]["pageInfo"] == response["pageInfo"]
     assert result["data"][QUERY_NAME]["result"] == response["result"]

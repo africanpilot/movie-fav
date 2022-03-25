@@ -47,6 +47,9 @@ function set_environment
     MOVIE_FAV_ENV=$1
     export MOVIE_FAV_ENV
     echo "Setting environment to $MOVIE_FAV_ENV"
+    for d in $todo; do
+        sed -i "/MOVIE_FAV_ENV/c\MOVIE_FAV_ENV=$MOVIE_FAV_ENV" $d/.env
+    done
 
     if [ "test" == "$MOVIE_FAV_ENV" ] || [ "dev" == "$MOVIE_FAV_ENV" ]
     then

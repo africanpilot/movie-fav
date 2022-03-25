@@ -48,7 +48,7 @@ class AccountAuthenticationLoginMutation:
             # find pattern match for user then delete
             redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
             search = [
-                f"""account_me_query:{valid_user_cred["account_info_id"]}:*""",
+                f"""account_me_query:{valid_user_cred["account_info_id"]}""",
                 f"""movie_fav_query:{valid_user_cred["account_info_id"]}:*"""
             ]
             lib.gen.redis_delete_keys_pipe(redis_db, search).execute()      

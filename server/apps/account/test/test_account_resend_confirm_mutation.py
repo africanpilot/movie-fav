@@ -3,6 +3,8 @@
 
 import test_app_lib.link
 import pytest
+import json
+import random
 
 from app_lib.lib import Lib
 from app_lib.mutations import Mutations
@@ -120,6 +122,13 @@ def test_account_resend_confirm_mutation_response(benchmark):
     graphql_info = gql(begin_gql + input_vars + end_gql)
     
     success, result = benchmark(graphql_sync, schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
+    
+    redis_result_account = []
+    for keybatch in lib.gen.batcher(redis_db.scan_iter(f"""account_me_query:{ACCOUNT["account_info_id"]}"""), 50):
+        keybatch = filter(None, keybatch)
+        redis_result_account.append(keybatch)
+    
+    assert redis_result_account == []
     assert result["data"][QUERY_NAME]["response"] == {
         "success": True,
         "code": 200,

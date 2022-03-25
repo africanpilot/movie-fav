@@ -267,3 +267,16 @@ class Lib:
         result, page_info = self._filter_sql(info=info, db=db, pageInfo=pageInfo, filterInput=filterInput, oneQuery=oneQuery, cols=list_cols)
         
         return self.gen.success_response(result=result, pageInfo=page_info)
+
+
+#################### For Tests ###################
+
+    def account_response_for_test(self, db, cols, pageInfo={}, filterInput={}, oneQuery=""):
+
+        # exe filter sql
+        result, page_info = self._filter_sql(info=None, db=db, pageInfo=pageInfo, filterInput=filterInput, oneQuery=oneQuery, cols=cols)
+        
+        # remove page_info_count
+        result = [{k: v for k, v in d.items() if k != "page_info_count"} for d in result]
+        
+        return self.gen.success_response(result=result, pageInfo=page_info)
