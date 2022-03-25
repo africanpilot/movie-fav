@@ -76,7 +76,7 @@ Feel free to reach out if you have any improvements, questions, or comments :) m
      ```
 # TODO
 
-- [ ] add redis
+- [x] add redis
 - [ ] add devops ci/cd pipelines
 - [ ] clean up frontend for reusability
 - [ ] create test enviornment for frontend
