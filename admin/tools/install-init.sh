@@ -10,8 +10,9 @@ echo "******************************"
 echo "STEP 1/5: Installing updates, upgrades and firewall rules"
 echo "******************************"
 echo " "
-sudo apt-get update
-sudo apt-get upgrade -y
+# sudo apt-get update
+# sudo apt-get upgrade -y
+sudo apt install unzip
 
 sudo ufw status
 sudo ufw allow ssh
@@ -57,6 +58,17 @@ echo " "
 git clone "https://username:password@github.com/username/repository.git" # make sure to configure this line
 sudo chmod +rwx .env
 sudo cp .env movie-fav/.env
+
+# install aws-cli
+echo " "
+echo "******************************"
+echo "STEP 5/5: Setting up aws-cli"
+echo "******************************"
+echo " "
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+rm awscliv2.zip
 
 cd movie-fav
 

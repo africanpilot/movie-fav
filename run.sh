@@ -80,6 +80,8 @@ if [ "$script" == "local" ]; then
 elif [ "$script" == "docker" ]; then
     source $location/run-docker.sh $environment $command
 elif [ "$script" == "deploy" ]; then
+    export $(grep -v '^#' .env | xargs)
+    aws ecr get-login-password --region ${AWS_REGION} --profile default | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
     source $location/run-deploy.sh $environment $command
 else
     echo "Unknown Exception met"
