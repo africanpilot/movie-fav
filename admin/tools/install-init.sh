@@ -55,7 +55,7 @@ echo "******************************"
 echo "STEP 5/5: Setting up repo"
 echo "******************************"
 echo " "
-git clone "https://username:password@github.com/username/repository.git" # make sure to configure this line
+git clone https://github.com/africanpilot/movie-fav.git # make sure to configure this line
 sudo chmod +rwx .env
 sudo cp .env movie-fav/.env
 
