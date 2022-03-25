@@ -55,6 +55,16 @@ type AccountInfo @key(fields: "account_info_id") @extends {
     account_info_to_movie_fav_info: MovieFavResponse
 }
 
+type MovieFavForImdbInfo {
+    movie_fav_info_id: ID
+    movie_fav_info_imdb_info_id: ID
+    movie_fav_info_user_id: ID
+    movie_fav_info_imdb_id: String
+    movie_fav_info_status: MovieStatusEnum
+    movie_fav_info_episode_current: String
+    movie_fav_info_rating_user: Float
+}
+
 type MovieImdbInfo @key(fields: "movie_imdb_info_id") {
     movie_imdb_info_id: ID
     movie_imdb_info_imdb_id: String
@@ -71,6 +81,7 @@ type MovieImdbInfo @key(fields: "movie_imdb_info_id") {
     movie_imdb_info_rating_imdb: Float
     movie_imdb_info_type: MovieEnumType
     movie_imdb_info_user_added: Boolean
+    movie_fav_info: MovieFavForImdbInfo
 }
 
 type MovieCastInfo {
@@ -124,6 +135,7 @@ enum MovieSortByEnum {
     movie_fav_info_status
     movie_fav_info_rating_user
     movie_imdb_info_title
+    movie_imdb_info_popular_id
 }
 
 enum MovieEnumType {

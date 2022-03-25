@@ -191,7 +191,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Modal = ({ movieFav, showModal, setShowModal }) => {
+export const Modal = ({ movieFav, showModal, setShowModal, setCollection }) => {
+  
   const classes = useStyles();
   const location = useLocation();
   const navigate = useNavigate();
@@ -258,7 +259,7 @@ export const Modal = ({ movieFav, showModal, setShowModal }) => {
         setButtonDisabled(true);
         setShowModal(false)
         // update local data for item
-
+        setCollection(result ? result[0]: movieFav);
 
         // setTimeout(() => {
         // }, seconds * 1000);
@@ -309,8 +310,8 @@ export const Modal = ({ movieFav, showModal, setShowModal }) => {
                   <OutlinedInput
                     id="outlined-adornment-password"
                     type={"number"}
-                    defaultValue={movieFav.movie_fav_info_episode_current || 1}
-                    value={episode || movieFav.movie_fav_info_episode_current}
+                    inputProps={{ min: "1", max: "100000", step: "1" }}
+                    value={episode || movieFav.movie_fav_info_episode_current || 1}
                     onChange={handleEpisodeChange}
                     error={!!errorState.episode}
                     labelWidth={70}
@@ -338,12 +339,12 @@ export const Modal = ({ movieFav, showModal, setShowModal }) => {
                       required
                       id="outlined-adornment-password"
                       name="printerType"
-                      defaultValue={movieFav.movie_fav_info_status || "unmarked"}
-                      value={movieStatus || movieFav.movie_fav_info_status}
+                      value={movieStatus || movieFav.movie_fav_info_status || "unmarked"}
                       onChange={handleMovieStatusChange}
                       error={!!errorState.movieStatus}
                       labelWidth={70}
                       label="unmarked"
+                      style={{textAlign: "left"}}
                     >
                       <MenuItem value={"unmarked"}>unmarked</MenuItem>
                       <MenuItem value={"completed"}>completed</MenuItem>
@@ -368,16 +369,13 @@ export const Modal = ({ movieFav, showModal, setShowModal }) => {
                     htmlFor="outlined-adornment-password"
                     error={!!errorState.rating}
                   >
-                    rating
+                  rating
                   </InputLabel>
                   <OutlinedInput
                     id="outlined-adornment-password"
                     type={"number"}
-                    min={"1"} 
-                    max={"10"}
-                    step={"0.01"}
-                    defaultValue={movieFav.movie_fav_info_rating_user || 1}
-                    value={rating || movieFav.movie_fav_info_rating_user}
+                    inputProps={{ min: "0", max: "10", step: "0.1" }}
+                    value={rating || movieFav.movie_fav_info_rating_user || 10}
                     onChange={handleRatingChange}
                     error={!!errorState.rating}
                     labelWidth={70}

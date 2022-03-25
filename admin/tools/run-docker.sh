@@ -3,14 +3,14 @@
 # Copyright © 2022 by Richard Maku.
 # All Rights Reserved. Proprietary and confidential.
 
-not_in_prod_todo="\
-	db \
-"
-todo="\
-	server \
-    api/apollo \
-    client \
-"
+# check SERVICES_TODO env set
+if set|grep '^SERVICES_TODO=' >/dev/null; then
+  todo="$SERVICES_TODO"
+else
+  echo "Please set the SERVICES_TODO env"
+  return 1
+fi
+
 ##########
 
 # START_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -47,6 +47,9 @@ function set_environment
     MOVIE_FAV_ENV=$1
     export MOVIE_FAV_ENV
     echo "Setting environment to $MOVIE_FAV_ENV"
+    for d in $todo; do
+        sed -i "/MOVIE_FAV_ENV/c\MOVIE_FAV_ENV=$MOVIE_FAV_ENV" $d/.env
+    done
 
     if [ "test" == "$MOVIE_FAV_ENV" ] || [ "dev" == "$MOVIE_FAV_ENV" ]
     then
@@ -192,6 +195,12 @@ function do_subdirs
         strip_text="/psqldb_secmsdb - "
         db_ip_address_value="${db_address/$strip_text/""}"
         sed -i "/DB_LOCAL_HOST/c\DB_LOCAL_HOST=$db_ip_address_value" .env
+
+        # get ip address for docker redis database
+        db_address=$(docker inspect -f '{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -qf "name=redisdb_secmsdb"))
+        strip_text="/redisdb_secmsdb - "
+        db_ip_address_value="${db_address/$strip_text/""}"
+        sed -i "/DB_REDIS_HOST/c\DB_REDIS_HOST=$db_ip_address_value" .env
     fi
     
 
@@ -199,12 +208,15 @@ function do_subdirs
 	then
         
         # update docker-compose file for correct volume
-        # if [ "$1" == "test" ]
-        # then
-        #     sed -i 's/postgres_secmsdb/postgres_genmsdbtest/' "docker-compose.yml"
-        # else
-        #     sed -i 's/postgres_genmsdbtest/postgres_secmsdb/' "docker-compose.yml"
-        # fi
+        if [ "$d" == "db/postgres" ] || [ "$d" == "db/redis" ]; then
+            if [ "$environment" == "test" ]; then
+                sed -i 's/postgres_secmsdb/postgres_genmsdbtest/' "docker-compose.yml"
+                sed -i 's/redis_secmsdb/redis_genmsdbtest/' "docker-compose.yml"   
+            else
+                sed -i 's/postgres_genmsdbtest/postgres_secmsdb/' "docker-compose.yml"
+                sed -i 's/redis_genmsdbtest/redis_secmsdb/' "docker-compose.yml"
+            fi
+        fi
 
         if [ "$command" == "up" ]
         then

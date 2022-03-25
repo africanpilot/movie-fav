@@ -4,6 +4,7 @@
 from app_lib.lib import Lib
 from sqlalchemy.sql import text
 from colorama import Fore
+import json
 
 class MovieCreateMutation:
     
@@ -60,7 +61,16 @@ class MovieCreateMutation:
             else:
                 lib.gen.log.info(f"Movie already in db: {imdbId}")
             
-            
-            lib.gen.log.info(f"total_sql: {total_sql}")   
             # response
-            return lib.movie_fav_response(info=info, db=db, pageInfo={}, filterInput={"movie_fav_info_imdb_id":imdbId}, oneQuery=total_sql)
+            response = lib.movie_fav_response(info=info, db=db, pageInfo={}, filterInput={"movie_fav_info_imdb_id":imdbId}, oneQuery=total_sql)
+        
+            # find pattern match for user then delete
+            redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+            search = [
+                f"""movie_fav_query:{token_decode["user_id"]}:*""",
+                f"""movie_search_query:{token_decode["user_id"]}:*""",
+                f"""movie_popular_query:{token_decode["user_id"]}:*"""
+            ]
+            lib.gen.redis_delete_keys_pipe(redis_db, search).execute()  
+            
+            return response

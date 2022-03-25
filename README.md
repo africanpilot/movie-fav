@@ -81,4 +81,6 @@ Feel free to reach out if you have any improvements, questions, or comments :) m
 - [ ] clean up frontend for reusability
 - [ ] create test enviornment for frontend
 - [ ] possibly add protable kubernetes for orchestration
-
+- [ ] add search
+- [ ] add Cython or C extensions
+- [ ] add multithreading

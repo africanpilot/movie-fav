@@ -43,4 +43,14 @@ class AccountAuthenticationLoginMutation:
             # generate token
             token = lib.gen.token_gen(id=valid_user_cred["account_info_id"], service=service_name, reg=valid_user_cred["account_info_registration_status"], status=valid_user_cred["account_info_status"])
             
-            return lib.account_authentication_response(info=info, db=db, token=token, filterInput= {"account_info_id": valid_user_cred["account_info_id"]}, status=valid_user_cred["account_info_registration_status"])
+            response = lib.account_authentication_response(info=info, db=db, token=token, filterInput= {"account_info_id": valid_user_cred["account_info_id"]}, status=valid_user_cred["account_info_registration_status"])
+            
+            # find pattern match for user then delete
+            redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+            search = [
+                f"""account_me_query:{valid_user_cred["account_info_id"]}""",
+                f"""movie_fav_query:{valid_user_cred["account_info_id"]}:*"""
+            ]
+            lib.gen.redis_delete_keys_pipe(redis_db, search).execute()      
+            
+            return response

@@ -248,6 +248,41 @@ export const  MOVIE_CREATE_QUICK_ADD_MUTATION = gql`
     }
 `;
 
+export const  MOVIE_CREATE_MUTATION = gql`
+    mutation movieCreate(
+        $movie_fav_info_imdb_id: String!
+        $movie_fav_info_episode_current: String
+        $movie_fav_info_status: MovieStatusEnum
+        $movie_fav_info_rating_user: Float
+    ){
+        movieCreate(
+            movieInput: { 
+                movie_fav_info_imdb_id: $movie_fav_info_imdb_id,
+                movie_fav_info_episode_current: $movie_fav_info_episode_current,
+                movie_fav_info_status: $movie_fav_info_status,
+                movie_fav_info_rating_user: $movie_fav_info_rating_user,
+            }
+        ){
+            response{
+                success
+                code
+                message
+                version
+            }
+            pageInfo{
+                page_info_count
+            }
+            result{
+                movie_fav_info_id
+                movie_fav_info_imdb_id
+                movie_fav_info_status
+                movie_fav_info_episode_current
+                movie_fav_info_rating_user
+            }
+        }
+    }
+`;
+
 export const  MOVIE_FAV_QUERY = gql`
     query movieFav(
         $first: Int
@@ -318,6 +353,49 @@ export const  MOVIE_MODIFY_MUTATION = gql`
                 movie_fav_info_status
                 movie_fav_info_episode_current
                 movie_fav_info_rating_user
+            }
+        }
+    }
+`;
+
+export const  MOVIE_SEARCH_DETAIL_QUERY = gql`
+    query movieSearch(
+        $search_type: MovieSearchTypeEnum!
+        $search_value: String!
+    ){
+        movieSearch(
+            filterInput: { 
+                search_type: $search_type,
+                search_value: $search_value,
+            }
+        ){
+            response{
+                success
+                code
+                message
+                version
+            }
+            pageInfo{
+                page_info_count
+            }
+            result{
+                movie_imdb_info_imdb_id
+                movie_imdb_info_title
+                movie_imdb_info_cast{
+                    name
+                    image
+                }
+                movie_imdb_info_genres
+                movie_imdb_info_plot
+                movie_imdb_info_cover
+                movie_imdb_info_user_added
+                movie_fav_info {
+                    movie_fav_info_id
+                    movie_fav_info_imdb_id
+                    movie_fav_info_status
+                    movie_fav_info_episode_current
+                    movie_fav_info_rating_user
+                }
             }
         }
     }

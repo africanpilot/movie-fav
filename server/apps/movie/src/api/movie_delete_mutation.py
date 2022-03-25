@@ -22,4 +22,12 @@ class MovieDeleteMutation:
             # execute sql query
             db.execute(lib.movie_delete(db=db, ids=movie_fav_info_id))
             
+            # find pattern match for user then delete
+            redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+            search = [
+                f"""movie_fav_query:{token_decode["user_id"]}:*""",
+                f"""movie_search_query:{token_decode["user_id"]}:*"""
+            ]
+            lib.gen.redis_delete_keys_pipe(redis_db, search).execute()  
+            
             return lib.gen.success_response(nullPass=True)

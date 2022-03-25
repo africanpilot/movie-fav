@@ -3,6 +3,8 @@
 
 import test_app_lib.link
 import pytest
+import json
+import random
 
 from app_lib.lib import Lib
 from app_lib.mutations import Mutations
@@ -46,6 +48,8 @@ def test_unable_to_get_token_response():
 def test_get_service_from_header_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -66,6 +70,8 @@ def test_get_service_from_header_response():
 def test_validate_token_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -87,6 +93,8 @@ def test_validate_token_response():
 def test_token_service_access_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -109,6 +117,8 @@ def test_token_service_access_response():
 def test_token_user_active_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -131,6 +141,8 @@ def test_token_user_active_response():
 def test_registration_not_complete_status_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test(reg="NOTCOMPLETE")
@@ -146,6 +158,8 @@ def test_registration_not_complete_status_response():
 def test_registration_waiting_status_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test(reg="WAITING")
@@ -161,6 +175,8 @@ def test_registration_waiting_status_response():
 def test_registration_complete_status_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test(reg="COMPLETE")
@@ -176,6 +192,8 @@ def test_registration_complete_status_response():
 def test_registration_unknown_status_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test(reg=lib.gen.rand_word_gen())
@@ -192,6 +210,8 @@ def test_registration_unknown_status_response():
 def test_account_delete_mutation_response(benchmark):
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -199,7 +219,27 @@ def test_account_delete_mutation_response(benchmark):
     # AUTH Info
     AUTH = lib.gen.auth_info(data={"id": ACCOUNT["account_info_id"], "email": False, "reg": ACCOUNT["account_info_registration_status"]})
 
+    # create a redis entry for account
+    redis_filter_info = {"first": random.randint(50, 60)}
+    pipe = redis_db.pipeline()
+    pipe.set(f"""account_me_query:{ACCOUNT["account_info_id"]}:{redis_filter_info}""", json.dumps(redis_filter_info), ex=86400)
+    pipe.set(f"""movie_fav_query:{ACCOUNT["account_info_id"]}:{redis_filter_info}""", json.dumps(redis_filter_info), ex=86400)
+    pipe.execute()
+    
     success, result = benchmark(graphql_sync, schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
+    
+    redis_result_movie = []
+    for keybatch in lib.gen.batcher(redis_db.scan_iter(f"""movie_fav_query:{ACCOUNT["account_info_id"]}:*"""), 50):
+        keybatch = filter(None, keybatch)
+        redis_result_movie.append(keybatch)
+        
+    redis_result_account = []
+    for keybatch in lib.gen.batcher(redis_db.scan_iter(f"""account_me_query:{ACCOUNT["account_info_id"]}"""), 50):
+        keybatch = filter(None, keybatch)
+        redis_result_account.append(keybatch)
+    
+    assert redis_result_account == []
+    assert redis_result_movie == []
     assert result["data"][QUERY_NAME]["response"] == {
         "success": True,
         "code": 200,

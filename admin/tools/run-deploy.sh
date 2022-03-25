@@ -3,19 +3,15 @@
 # Copyright © 2022 by Richard Maku.
 # All Rights Reserved. Proprietary and confidential.
 
-# go up to root dir
-# cd ../../
 
+# check SERVICES_TODO env set
+if set|grep '^SERVICES_TODO=' >/dev/null; then
+  todo="$SERVICES_TODO"
+else
+  echo "Please set the SERVICES_TODO env"
+  return 1
+fi
 
-not_in_prod_todo=""
-todo="\
-    db \
-	server \
-    api/apollo \
-    client \
-    api/nginx-apollo \
-        
-"
 ##########
 
 # START_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -24,7 +20,7 @@ todo="\
 
 PROJECT_OPTION=" -p services "
 not_in_prod=0
-
+not_in_prod_todo=""
 ORPHANS="--remove-orphans"
 db_host="localhost"
 
@@ -51,16 +47,10 @@ function set_environment
     MOVIE_FAV_ENV=$1
 
     # export all env
-    for d in $(find . -maxdepth 3 -name "*.env"); do
-        echo "Adding: $d"
-
-        # update .env file for match dev setting
-        sed -i '/MOVIE_FAV_ENV/c\MOVIE_FAV_ENV=prod' $d
-
-        # Export env vars
-        export $(grep -v '^#' $d | xargs)
+    for d in $todo; do
+        sed -i "/MOVIE_FAV_ENV/c\MOVIE_FAV_ENV=$MOVIE_FAV_ENV" $d/.env
     done
-
+    
     echo "Setting environment to $MOVIE_FAV_ENV"
 
     if [ "test" == "$MOVIE_FAV_ENV" ] || [ "dev" == "$MOVIE_FAV_ENV" ]
@@ -198,20 +188,18 @@ function do_subdirs
 
 	if [ -f "docker-compose.yml" ] || [ -f "Dockerfile" ]
 	then
+        # extra conditions for db dir
+        if [ "$d" == "db/postgres" ] || [ "$d" == "db/redis" ]; then
+            # update docker-compose file for correct volume
+            sed -i 's/postgres_genmsdbtest/postgres_secmsdb/' "docker-compose.yml"
+            sed -i 's/redis_genmsdbtest/redis_secmsdb/' "docker-compose.yml"
+        fi
         
         if [ "$command" == "up" ]
         then
             
-            # extra conditions for db dir
-            if [ "$d" == "db" ]
-            then
-                # update docker-compose file for correct volume
-                sed -i 's/postgres_genmsdbtest/postgres_secmsdb/' "docker-compose.yml"
-            fi
-
             # extra conditions for server dir
-            if [ "$d" == "server" ]
-            then
+            if [ "$d" == "server" ]; then
                 echo "Waiting for all database to start. Sleeping 15 seconds..."
                 sleep 15
 
@@ -220,18 +208,22 @@ function do_subdirs
                 strip_text="/psqldb_secmsdb - "
                 db_ip_address_value="${db_address/$strip_text/""}"
                 sed -i "/DB_LOCAL_HOST/c\DB_LOCAL_HOST=$db_ip_address_value" .env
+
+                # get ip address for docker redis database
+                db_address=$(docker inspect -f '{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -qf "name=redisdb_secmsdb"))
+                strip_text="/redisdb_secmsdb - "
+                db_ip_address_value="${db_address/$strip_text/""}"
+                sed -i "/DB_REDIS_HOST/c\DB_REDIS_HOST=$db_ip_address_value" .env
             fi
 
             # extra conditions for apollo dir
-            if [ "$d" == "api/apollo" ]
-            then
+            if [ "$d" == "api/apollo" ]; then
                 echo "Waiting for all services to start. Sleeping 15 seconds..."
                 sleep 15
             fi
 
             # extra conditions for apollo dir
-            if [ "$d" == "api/nginx" ]
-            then
+            if [ "$d" == "api/nginx" ]; then
                 echo "Waiting for apollo to start. Sleeping 15 seconds..."
                 sleep 15
             fi

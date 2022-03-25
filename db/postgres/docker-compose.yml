@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_DATABASE_INIT}
     volumes:
-      - "./tmp/data/postgres_secmsdb/data:/var/lib/postgresql/data:delegated"
+      - "./tmp/data/postgres_genmsdbtest/data:/var/lib/postgresql/data:delegated"
       - ./postgres.conf:/etc/postgresql/postgresql.conf
       - ./dev/account.sql:/docker-entrypoint-initdb.d/001-account.sql
       - ./dev/movie.sql:/docker-entrypoint-initdb.d/002-movie.sql
@@ -35,4 +35,4 @@ services:
 networks:
   secmsdbs:
 volumes:
-  postgres_secmsdb:
+  postgres_genmsdbtest:

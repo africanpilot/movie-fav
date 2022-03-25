@@ -3,6 +3,7 @@ psycopg2-binary
 tenacity
 sqlalchemy
 sqlalchemy-utils
+redis
 
 # API Support
 ariadne

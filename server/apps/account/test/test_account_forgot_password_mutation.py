@@ -3,6 +3,8 @@
 
 import test_app_lib.link
 import pytest
+import json
+import random
 
 from app_lib.lib import Lib
 from app_lib.mutations import Mutations
@@ -37,6 +39,8 @@ def test_get_service_from_header_response():
     
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -63,6 +67,8 @@ def test_verify_credentials_exists_response():
     
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -85,6 +91,8 @@ def test_account_forgot_password_mutation_response(benchmark):
     
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # create account
     ACCOUNT, CRED = lib.gen.create_account_for_test()
@@ -97,7 +105,18 @@ def test_account_forgot_password_mutation_response(benchmark):
     """
     graphql_info = gql(begin_gql + input_vars + end_gql)
     
+    # create a redis entry for account
+    redis_filter_info = {"first": random.randint(50, 60)}
+    redis_db.set(f"""account_me_query:{ACCOUNT["account_info_id"]}:{redis_filter_info}""", json.dumps(redis_filter_info), ex=86400)
+    
     success, result = benchmark(graphql_sync, schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
+     
+    redis_result_account = []
+    for keybatch in lib.gen.batcher(redis_db.scan_iter(f"""account_me_query:{ACCOUNT["account_info_id"]}"""), 50):
+        keybatch = filter(None, keybatch)
+        redis_result_account.append(keybatch)
+    
+    assert redis_result_account == []
     assert result["data"][QUERY_NAME]["response"] == {
         "success": True,
         "code": 200,

@@ -80,6 +80,18 @@ class Lib:
         response = self.gen.list_sql_response(db=db, sql=sql)
         return response
     
+    def check_fav_by_user(self, ids, db, userId):
+        list_ids = self.gen.check_input_list(ids)
+        list_user = self.gen.check_input_list(userId)
+        sql = text(f"""
+            SELECT movie_fav_info_imdb_id
+            FROM movie_fav_info
+            WHERE movie_fav_info_imdb_id IN({list_ids})
+            AND movie_fav_info_user_id IN ({list_user});
+        """)
+        response = self.gen.list_sql_response(db=db, sql=sql)
+        return response
+    
     def movie_modify(self, ids, data):
         
         total_sql = ""
@@ -129,6 +141,26 @@ class Lib:
         
         return delete_sql
     
+    def movie_add_imdb(self, imdb_ids):
+        total_sql = ""
+        for imdbId in imdb_ids:
+                    
+            # get imdb info
+            self.gen.log.info(f"""Adding imdbId: {imdbId}""")
+            movie_search_info = self.get_movie_by_id(imdbId=imdbId)
+            movie_payload = self.get_movie_info(imdbId, movie_search_info)
+
+            # request values 
+            request_key_imdb,request_val_imdb = self.gen.request_fields(data=movie_payload)
+            
+            sql = text(f"""
+                INSERT INTO movie_imdb_info(movie_imdb_info_id,{request_key_imdb})
+                VALUES(nextval('movie_imdb_info_sequence'),{request_val_imdb});
+            """)
+            total_sql+=str(sql)
+            
+        return total_sql
+    
     def _sql_db_join_types(self, sqlType=None):
         if sqlType == "MovieFavResponse":
             sql = """ 
@@ -139,7 +171,11 @@ class Lib:
             sql = """
                 FROM movie_imdb_info
             """
-            # INNER JOIN movie_fav_info ON movie_fav_info_imdb_info_id = movie_imdb_info.movie_imdb_info_id
+        elif sqlType == "MovieImdbFavResponse":
+            sql = """
+                FROM movie_imdb_info
+                LEFT JOIN movie_fav_info ON movie_fav_info_imdb_info_id = movie_imdb_info.movie_imdb_info_id
+            """
         else:
             sql = """ 
                 FROM movie_fav_info
@@ -239,8 +275,12 @@ class Lib:
         return self.gen.success_response(result=result, pageInfo=page_info)
     
     def movie_imdb_response(self, info, db, pageInfo={}, filterInput={}, oneQuery="", userId=None):
-        list_cols = self.gen.convert_to_db_cols(info=info, first=["result"], exclude=["movie_fav_info"])
-
+        list_im_cols = self.gen.convert_to_db_cols(info=info, first=["result"], exclude=["movie_fav_info"])
+        list_fav_cols = self.gen.convert_to_db_cols(info=info, first=["movie_fav_info"], exclude=[])
+        list_fav_sql = f""",row_to_json((SELECT d FROM (SELECT {list_fav_cols}) d)) AS movie_fav_info""" if list_fav_cols else ""
+        list_cols = list_im_cols + "," + list_fav_cols + list_fav_sql if list_fav_cols else list_im_cols
+        dbJoinTpye = "MovieImdbResponse"
+        
         # add the custom movie_imdb_info_user_added column when needed
         if "movie_imdb_info_user_added" in list_cols and userId:
             list_data = list_cols.split(",")
@@ -258,8 +298,40 @@ class Lib:
             """
             list_cols = list_imdb_cols + list_search_sql
             
+        if list_fav_cols:
+            
+            # check if user has fav
+            check_user_fav = self.check_fav_by_user(ids=filterInput["movie_imdb_info_imdb_id"], db=db, userId=userId)
+            if check_user_fav:
+                filterInput.update({"movie_fav_info_user_id": userId})
+            
+            dbJoinTpye = "MovieImdbFavResponse"
+            
         # exe filter sql
-        result,page_info = self._filter_sql(info=info, db=db, pageInfo=pageInfo, filterInput=filterInput, oneQuery=oneQuery, dbJoinTpye="MovieImdbResponse", cols=list_cols)
+        result,page_info = self._filter_sql(info=info, db=db, pageInfo=pageInfo, filterInput=filterInput, oneQuery=oneQuery, dbJoinTpye=dbJoinTpye, cols=list_cols)
         return self.gen.success_response(result=result, pageInfo=page_info)
+
+
+#################### For Tests ###################
+ 
+    def movie_fav_response_for_tests(self, db, cols, filterInput, oneQuery="", pageInfo={}):
         
+        # exe filter sql
+        result,page_info = self._filter_sql(info=None, db=db, pageInfo=pageInfo, filterInput=filterInput, oneQuery=oneQuery, dbJoinTpye="MovieFavResponse", cols=cols)
+                
+        # remove page_info_count
+        result = [{k: v for k, v in d.items() if k != "page_info_count"} for d in result]
+        
+        return self.gen.success_response(result=result, pageInfo=page_info)
+    
+    def movie_imdb_response_for_tests(self, db, cols, pageInfo={}, filterInput={}, oneQuery="", userId=None):
+      
+        # exe filter sql
+        result,page_info = self._filter_sql(info=None, db=db, pageInfo=pageInfo, filterInput=filterInput, oneQuery=oneQuery, dbJoinTpye="MovieImdbResponse", cols=cols)
+        
+        # remove page_info_count
+        result = [{k: v for k, v in d.items() if k != "page_info_count"} for d in result]
+        
+        return self.gen.success_response(result=result, pageInfo=page_info)
+   
     

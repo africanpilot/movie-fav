@@ -3,6 +3,23 @@
 # Copyright © 2022 by Richard Maku.
 # All Rights Reserved. Proprietary and confidential.
 
+todo="\
+    db/postgres \
+    db/redis \
+    server \
+    api/apollo \
+    client
+"
+
+# db/postgres \
+# db/redis \
+# server \
+# api/apollo \
+# client \
+# api/nginx \
+# api/nginx-apollo \
+
+export SERVICES_TODO="$todo"
 location=admin/tools
 script="$1"
 environment="$2"
@@ -45,15 +62,7 @@ echo "command: $command"
 
 # check for secrets file
 if [ -f ".env" ]; then
-    todo="\
-        db \
-        server \
-        api/apollo \
-        client \
-        api/nginx \
-        api/nginx-apollo \
-        
-    "
+    sed -i "/MOVIE_FAV_ENV/c\MOVIE_FAV_ENV=$environment" .env
     for d in $todo; do
         cp .env "$d"
     done
@@ -62,7 +71,7 @@ else
     return 1
 fi
 
-sudo chmod -R 777 .
+# sudo chmod -R 777 .  # might just direct to certbot
 
 # redirect to script
 if [ "$script" == "local" ]; then

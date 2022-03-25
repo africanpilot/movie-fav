@@ -35,6 +35,8 @@ def test_always_passes():
 def test_get_service_from_header_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
 
     # AUTH Info
     AUTH = lib.gen.auth_info()
@@ -56,6 +58,8 @@ def test_get_service_from_header_response():
 def test_email_reg_check_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # AUTH Info
     AUTH = lib.gen.auth_info()
@@ -77,6 +81,8 @@ def test_email_reg_check_response():
 def test_password_length_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # AUTH Info
     AUTH = lib.gen.auth_info()
@@ -98,6 +104,8 @@ def test_password_length_response():
 def test_password_criteria_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # AUTH Info
     AUTH = lib.gen.auth_info()
@@ -119,6 +127,8 @@ def test_password_criteria_response():
 def test_password_retype_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # AUTH Info
     AUTH = lib.gen.auth_info()
@@ -140,6 +150,8 @@ def test_password_retype_response():
 def test_login_exists_response():
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # AUTH Info
     AUTH = lib.gen.auth_info()
@@ -167,6 +179,8 @@ def test_login_exists_response():
 def test_account_create_mutation_response(benchmark):
     # clear db tables and reset
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     
     # AUTH Info
     AUTH = lib.gen.auth_info()
@@ -181,6 +195,8 @@ def test_account_create_mutation_response(benchmark):
     success, result = benchmark(graphql_sync, schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
     lib.gen.log.debug(f"result: {result}")
     lib.gen.reset_database()
+    redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
+    redis_db.flushdb()
     success, result = graphql_sync(schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
     assert result["data"][QUERY_NAME]["response"] == {
         "success": True,
