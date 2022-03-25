@@ -4,11 +4,11 @@ services:
 # Microservices dealing with sensitive information
 #
   apollo:
-    image: apollo:${MOVIE_FAV_ENV}
+    image: ${AWS_APOLLO_IMAGE}
     hostname: apollo
     ports:
       - "4000:4000"
-    build: .
+    # build: .
     entrypoint: [/usr/local/bin/node, /home/moviefav/apollo/src/gateway.js]
     # entrypoint: [/usr/local/bin/nodemon, /home/moviefav/apollo/src/gateway.js]
     labels:
