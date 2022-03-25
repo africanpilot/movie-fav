@@ -5,9 +5,6 @@
 
 
 todo="\
-    server \
-    api/apollo \
-    client \
     api/nginx-apollo
 "
 
@@ -46,7 +43,7 @@ for d in $todo; do
     elif [ "$d" == "client" ]; then
         AWS_REPO_NAME="client"
     elif [ "$d" == "api/nginx-apollo" ]; then
-        AWS_REPO_NAME="nginx-apollo"
+        AWS_REPO_NAME="nginx-apollo" #nginx-certbot-init
     elif [ "$d" == "api/nginx" ]; then
         AWS_REPO_NAME="nginx"
     else
