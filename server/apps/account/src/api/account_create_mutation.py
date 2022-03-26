@@ -69,7 +69,7 @@ class AccountCreateMutation:
                     'token': token,
                 }
                 
-                msg = lib.gen.send_to_sendgrid(msg=body, templete="VerifyEmail")
+                msg = lib.gen.send_to_sendgrid(msg=body, template="VerifyEmail")
                 lib.gen.log.debug(f"msg: {msg}")
                 if not msg:
                     # reverse new account

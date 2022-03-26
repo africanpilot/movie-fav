@@ -1,13 +1,9 @@
-from pydantic import BaseModel
+# Copyright © 2022 by Richard Maku, Inc.
+# All Rights Reserved. Proprietary and confidential.
+
 from general import General
-import datetime
-import requests
-from bs4 import BeautifulSoup
 from sqlalchemy.sql import text
 from colorama import Fore, Back, Style
-import time
-import json
-import string
 from imdb import IMDb
 import os
 

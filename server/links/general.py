@@ -1,15 +1,10 @@
-import datetime
-import bcrypt
-import logging
-import jwt
-import json
-import random
-import string
-import os
-import re
+# Copyright © 2022 by Richard Maku, Inc.
+# All Rights Reserved. Proprietary and confidential.
 
 from logging.config import dictConfig
 from config import LogConfig
+from logging import getLogger
+
 from database import DbConn
 from sqlalchemy.sql import text
 
@@ -17,19 +12,27 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
 from itertools import zip_longest
+from json import dumps
+from random import randint, choice
+from string import ascii_lowercase
+from re import match
+from os import environ
+from jwt import encode, decode, DecodeError, ExpiredSignatureError
+from bcrypt import checkpw, hashpw, gensalt
+from datetime import datetime, timedelta
 
 class General:
     
     def __init__(self, **kwargs):
         dictConfig(LogConfig().dict())
-        self.log = logging.getLogger("applog")
+        self.log = getLogger("applog")
         self.db = DbConn()
         super().__init__(**kwargs)
 
-    def convert_items(self, data, list_keys):
+    def convert_items(self, data: dict, list_keys: list) -> str:
         new_data = []
         for x in list_keys:
-            if type(data[x]) in [str,datetime.datetime]:
+            if type(data[x]) in [str,datetime]:
                 val = str(data[x])
                 if val.find("currval('") != -1:
                     new_data.append(val)
@@ -51,7 +54,7 @@ class General:
                             if item[key]:
                                 item[key] = item[key].replace("'","!?!?!")
                         
-                        list_types.append(json.dumps(item))
+                        list_types.append(dumps(item))
                     else:
                         list_types.append(item)
                 
@@ -65,16 +68,16 @@ class General:
         
         return self.convert_input_items(new_data)
 
-    def convert_input_items(self, list_key):
+    def convert_input_items(self, list_key: list) -> str:
         list_key = ",".join(map(str,list_key))
         return list_key
     
-    def convert_input(self, list_key):
+    def convert_input(self, list_key: list) -> str:
         list_val = ["'"+ x + "'" if type(x) is str else str(x) for x in list_key]
         list_val = ", ".join(list_val) 
         return list_val
     
-    def check_input_list(self, ids):
+    def check_input_list(self, ids) -> str:
         if type(ids) is list:
             list_ids = self.convert_input(ids)
         else:
@@ -82,20 +85,14 @@ class General:
             
         return list_ids
 
-    def list_sql_response(self, db, sql):
+    def list_sql_response(self, db: object, sql: str) -> list[dict]:
         response = [dict(result) for result in db.execute(sql).fetchall()]
         return response
     
-    def fil_json_keys(self, x, y):
+    def fil_json_keys(self, x: dict, y) -> dict:
         return dict([ (i,x[i]) for i in x if i in set(y) ])
-
-    def convert_schema_db(self, data, name_list):
-        for x in list(data.keys()):
-            if x in list(name_list.keys()):
-                data[name_list[x]] = data.pop(x)
-        return data
     
-    def request_fields(self, data):
+    def request_fields(self, data: dict) -> tuple[str,str]:
         data = {k: v for k, v in data.items() if v is not None}
         data = self.remove_duplicate_keys(data=data)
         request_list_keys = list(data.keys())
@@ -103,11 +100,9 @@ class General:
         request_val = self.convert_items(data, request_list_keys)
         return request_key,request_val
 
-    def get_query_request(self, selections, finalData=None, lastNest=None):
-
-        if finalData == None:
-            lastNest = 0
-            finalData = []
+    def get_query_request(self, selections: object) -> list[dict]:
+        lastNest = 0
+        finalData = []
         for i in range(len(selections)):
             data = selections[i].name.value
             finalData.append({data:lastNest})
@@ -115,14 +110,14 @@ class General:
             selectionsCheck = selections[i].selection_set
             if not selectionsCheck:
                 # self.log.debug(f"{i} -- selectionsCheck: {selectionsCheck}")
-                continue;
+                continue
             selectionsData = selections[i].selection_set.selections
             # self.log.debug(f"{i} -- selectionsData: {selectionsData}")
             self.get_query_request(selections=selectionsData, finalData=finalData, lastNest=lastNest+1)
 
         return finalData
         
-    def convert_to_db_cols(self, info, first, exclude=[]):
+    def convert_to_db_cols(self, info: object, first: list, exclude: list=[]) -> str:
         exclude.append("__typename")
         response = self.get_query_request(selections=info.field_nodes)
         result = []
@@ -145,101 +140,72 @@ class General:
             result = self.convert_input_items(data)
         return result
 
-    def remove_duplicate_keys(self, data):
+    def remove_duplicate_keys(self, data: dict) -> dict:
         result = {}
         for key,value in data.items():
             if value not in result.values():
                 result[key] = value
         return result
 
-    def change_case_camel_to_snake(self, data):
-        return reduce(lambda x, y: x + ('_' if y.isupper() else '') + y, data).lower()
-    
-    def change_case_snake_to_camel(self, data):
-        components = data.split('_')
-        return components[0] + ''.join(x.title() for x in components[1:])
-    
-    def convert_json(self, d, convert):
-        new_d = {}
-        for k, v in d.items():
-            new_d[convert(k)] = self.convert_json(v, convert) if isinstance(v,dict) else v
-        return new_d
-    
-    def convert_to_graphql_schema(self, data):
-        for item in data:
-            self.convert_json(item, self.change_case_snake_to_camel)
-        return data
+    def hash_password(self, password: str) -> str:
+        return hashpw(password.encode('utf8'), gensalt(int(environ['MOVIE_FAV_GEN_SALT_VALUE'])))
 
-    def hash_password(self, password):
-        return bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt(int(os.environ['MOVIE_FAV_GEN_SALT_VALUE'])))
-
-    def verify_hash_password(self, password, hashed):
-        if bcrypt.checkpw(password, hashed):
-            return True
-        return False
+    def verify_hash_password(self, password: str, hashed: str) -> bool:
+         return True if checkpw(password, hashed) else False
     
-    def token_gen(self, id, service, hr=336, email=False, reg="NOTCOMPLETE", status="ACTIVE"):
-        issue_date = datetime.datetime.utcnow()
+    def token_gen(self, id, service: str, hr: int=336, email: bool=False, reg: str="NOTCOMPLETE", status: str="ACTIVE") -> str:
+        issue_date = datetime.utcnow()
         header = {'alg': "HS256",'typ': "JWT"}
-        secret = os.environ['MOVIE_FAV_EMAIL_KEY'] if email else os.environ['MOVIE_FAV_ACCESS_KEY']
+        secret = environ['MOVIE_FAV_EMAIL_KEY'] if email else environ['MOVIE_FAV_ACCESS_KEY']
         payload = {
             'user_id': id,
             'service-name': service,
             'registration':reg,
             'user_status': status,
             'iat': issue_date,
-            'exp': issue_date + datetime.timedelta(hours=hr)
+            'exp': issue_date + timedelta(hours=hr)
         }
-        jwt_token = jwt.encode(headers=header,payload=payload, key=secret,algorithm="HS256") #.decode('utf8')
-    
-        return jwt_token
+        
+        return encode(headers=header,payload=payload, key=secret,algorithm="HS256")
 
-    def get_service_from_header(self, info):
+    def get_service_from_header(self, info: object) -> str:
         return dict(info.context["request"]["headers"])[b'service-name'].decode("utf-8")
 
-    def email_check(self, email):
+    def email_check(self, email: str) -> bool:
         regex = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
-        return True if(re.match(regex, email)) else False
+        return True if(match(regex, email)) else False
         
-    def password_check(self, password):
+    def password_check(self, password: str) -> bool:
         regex = r"(^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?^&])[A-Za-z\d@$!%*^#?&]{8,}$)"
-        return True if(re.match(regex, password)) else False
+        return True if(match(regex, password)) else False
     
-    def get_token(self, header):
+    def get_token(self, header: str) -> str:
         bearer, _, token = header.partition(' ')
-        # self.log.debug(f"bearer: {bearer}")
-        # self.log.debug(f"_: {_}")
-        # self.log.debug(f"token: {token}")
-        if bearer != 'Bearer':
-            return ""
-        return token
-    
-    def get_token_from_header(self, info):
-        # data = dict(info.context["request"]["headers"])[b'authorization']
-        # self.log.debug(f"""info: {data}""")
+        return "" if bearer != 'Bearer' else token
+                
+    def get_token_from_header(self, info: object) -> str:
         # user_agent = info.context["request"].get("HTTP_AUTHORIZATION", "Authorization")
         # user_agent = info.context["request"].headers["authorization"]
+        # TODO: issues with syncing this up with testing env to use code above
         user_agent = dict(info.context["request"]["headers"])[b'authorization'].decode("utf-8")
-        # self.log.debug(f"user_agent: {user_agent}")
+        
         return self.get_token(user_agent)
     
-    def token_validation(self, token, email):
-        secret = os.environ['MOVIE_FAV_EMAIL_KEY'] if email else os.environ['MOVIE_FAV_ACCESS_KEY']
+    def token_validation(self, token: str, email: str) -> bool:
+        secret = environ['MOVIE_FAV_EMAIL_KEY'] if email else environ['MOVIE_FAV_ACCESS_KEY']
         try:
-            jwt.decode(jwt=token, key=secret, algorithms=["HS256"])
+            decode(jwt=token, key=secret, algorithms=["HS256"])
             return True
-        except (jwt.DecodeError, jwt.ExpiredSignatureError) as e:
+        except (DecodeError, ExpiredSignatureError) as e:
             self.log.critical(f"token_validation: {e}")
             return False
     
-    def decode_token(self, info, email=False):
-        token = self.get_token_from_header(info)
-        secret = os.environ['MOVIE_FAV_EMAIL_KEY'] if email else os.environ['MOVIE_FAV_ACCESS_KEY']
-        decoded_token = jwt.decode(jwt=token, key=secret,algorithms=["HS256"])
-        return decoded_token 
+    def decode_token(self, info: object, email: bool=False) -> dict:
+        secret = environ['MOVIE_FAV_EMAIL_KEY'] if email else environ['MOVIE_FAV_ACCESS_KEY']
+        return decode(jwt=self.get_token_from_header(info), key=secret,algorithms=["HS256"]) 
     
     # Token and service Validation Process
-    def general_validation_process(self, info, email=False, reg=False, service_list=["moviefav-service"]):
+    def general_validation_process(self, info: object, email: bool=False, reg: bool=False, service_list: list=["moviefav-service"]) -> tuple[dict, dict]:
              
         # validate token exists
         token = self.get_token_from_header(info)
@@ -280,25 +246,25 @@ class General:
             if token_decode["registration"] not in ["NOTCOMPLETE", "WAITING", "COMPLETE", "APPROVED"]:
                 return self.http_401_unauthorized_response(msg="Unknown registration"), {}
                 
-        return "success", token_decode
+        return self.success_response(nullPass=True), token_decode
     
-    def send_to_sendgrid(self, msg, templete, resp={}):
-        if os.environ['MOVIE_FAV_ENV'] in ["dev", "local", "prod"]:
+    def send_to_sendgrid(self, msg: dict, template: str) -> bool:
+        if environ['MOVIE_FAV_ENV'] in ["dev", "local", "prod"]:
             # send to sendgrid
-            SENDGRID_API_KEY = os.environ['SENDGRID_API_KEY']
-            APP_ADDRESS = os.environ['APP_ADDRESS']
-            send_to_email = msg["email"] if os.environ['MOVIE_FAV_EMAIL'] == 'prod' else str(os.environ['MOVIE_FAV_EMAIL'])
+            SENDGRID_API_KEY = environ['SENDGRID_API_KEY']
+            APP_ADDRESS = environ['APP_ADDRESS']
+            send_to_email = msg["email"] if environ['MOVIE_FAV_EMAIL'] == 'prod' else str(environ['MOVIE_FAV_EMAIL'])
             message = Mail(
                 from_email='makurichard14@gmail.com',
                 to_emails=send_to_email,
             )
             
-            # Templete for Email verification
-            if templete == "VerifyEmail":
+            # Template for Email verification
+            if template == "VerifyEmail":
                 SENDGRID_TEMPLATE_VERIFY_EMAIL_ID = 'd-6be05110f3cd4023b3b7a4bd95a42b6a'
                 token = msg["token"] 
                 
-                if os.environ['MOVIE_FAV_ENV'] == 'prod':
+                if environ['MOVIE_FAV_ENV'] == 'prod':
                     link = f"https://{APP_ADDRESS}/email-confirmation?ur_token={token}"  
                 else:
                     link = f"http://localhost:3000/email-confirmation?ur_token={token}"  
@@ -309,12 +275,12 @@ class General:
                 }
                 message.template_id = SENDGRID_TEMPLATE_VERIFY_EMAIL_ID
 
-            # Templete for Forgot Password
-            if templete == "ForgotPassword":
+            # Template for Forgot Password
+            if template == "ForgotPassword":
                 SENDGRID_TEMPLATE_FORGOT_PASSWORD_EMAIL_ID = 'd-37ac03c4ec204abc83e84296da060677'
                 token = msg["token"]
             
-                if os.environ['MOVIE_FAV_ENV'] == 'prod':
+                if environ['MOVIE_FAV_ENV'] == 'prod':
                     link = f"https://{APP_ADDRESS}/change-password?ur_token={token}" 
                 else:
                     link = f"http://localhost:3000/change-password?ur_token={token}"  
@@ -331,34 +297,27 @@ class General:
                 return False
         return True
     
-    def rand_word_gen(self):
-        return ''.join(random.choice(string.ascii_lowercase) for i in range(random.randint(1, 30)))
+    def rand_word_gen(self) -> str:
+        return ''.join(choice(ascii_lowercase) for i in range(randint(1, 30)))
 
-    def rand_word_gen_range(self, start, end):
-        return ''.join(random.choice(string.ascii_lowercase) for i in range(random.randint(start, end)))
+    def rand_word_gen_range(self, start: int, end: int) -> str:
+        return ''.join(choice(ascii_lowercase) for i in range(randint(start, end)))
     
     def batcher(self, iterable, n):
-        args = [iter(iterable)] * n
-        return zip_longest(*args)
+        return zip_longest(*[iter(iterable)] * n)
     
-    def redis_delete_keys_pipe(self, db, search, n=50):
+    def redis_delete_keys_pipe(self, db, search, n: int=50):
         pipe = db.pipeline()
         if type(search) == str:
             search = [search]
             
         for item in search:
             for keybatch in self.batcher(db.scan_iter(item), n):
-                # self.log.debug(f"""keybatch1: {keybatch}""")
-                keybatch = filter(None, keybatch)
-                pipe.delete(*keybatch)
+                pipe.delete(*filter(None, keybatch))
             
         return pipe
-    
-    def filter_dict_keys(self, data, search):
-        return lambda data, y: dict([ (i,data[i]) for i in data if i in set(search) ])
-    
-    # general model for response and result
-    def general_response_model(self):
+        
+    def general_response_model(self) -> dict:
         payload = {
             "response": {
                 "code": 200,
@@ -377,64 +336,70 @@ class General:
                 func = deco(func)
             return func
         return composition
-
-    def success_response(self, result=[], pageInfo={}, nullPass=False):
+    
+    def update_general_response(self, data: dict) -> dict:
+        payload = self.general_response_model()
+        payload["response"].update(data)
+        return payload
+        
+    def success_response(self, result=[], pageInfo: dict={}, nullPass: bool=False) -> dict:
         if not result and not nullPass:
             return self.http_404_not_found_response()
         
-        payload = self.general_response_model()
-        payload["response"].update({"success":True})
-        payload["response"].update({"message":"Success!"})
+        payload = self.update_general_response({
+            "success":True,
+            "message":"Success!"
+        })
         payload.update({"result":result})
         payload.update({"pageInfo":pageInfo})
         return payload
     
-    def http_400_bad_request_response(self, msg=""):
-        payload = self.general_response_model()
-        payload["response"].update({"code":400})
-        payload["response"].update({"message": f"http_400_bad_request: {msg}"})
-        return payload
+    def http_400_bad_request_response(self, msg: str="") -> dict:
+        return self.update_general_response({
+            "code":400,
+            "message": f"http_400_bad_request_response: {msg}"
+        })
     
-    def http_401_unauthorized_response(self, msg=""):
-        payload = self.general_response_model()
-        payload["response"].update({"code":401})
-        payload["response"].update({"message": f"http_401_unauthorized: {msg}"})
-        return payload
+    def http_401_unauthorized_response(self, msg: str="") -> dict:
+        return self.update_general_response({
+            "code":401,
+            "message": f"http_401_unauthorized_response: {msg}"
+        })
+        
+    def http_403_forbidden_response(self, msg: str="") -> dict:
+        return self.update_general_response({
+            "code":403,
+            "message": f"http_403_forbidden_response: {msg}"
+        })
     
-    def http_403_forbidden_response(self, msg=""):
-        payload = self.general_response_model()
-        payload["response"].update({"code":403})
-        payload["response"].update({"message": f"http_403_forbidden: {msg}"})
-        return payload
+    def http_404_not_found_response(self, msg: str="") -> dict:
+        return self.update_general_response({
+            "code":404,
+            "message": f"http_404_not_found_response: {msg}"
+        })
     
-    def http_404_not_found_response(self, msg=""):
-        payload = self.general_response_model()
-        payload["response"].update({"code":404})
-        payload["response"].update({"message": f"http_404_not_found: {msg}"})
-        return payload
+    def http_498_invalid_token_response(self, msg: str="") -> dict:
+        return self.update_general_response({
+            "code":498,
+            "message": f"http_498_invalid_token_response: {msg}"
+        })
+        
+    def http_499_token_required_response(self, msg: str="") -> dict:
+        return self.update_general_response({
+            "code":499,
+            "message": f"http_499_token_required_response: {msg}"
+        })
     
-    def http_498_invalid_token_response(self, msg=""):
-        payload = self.general_response_model()
-        payload["response"].update({"code":498})
-        payload["response"].update({"message": f"http_498_invalid_token: {msg}"})
-        return payload
-    
-    def http_499_token_required_response(self, msg=""):
-        payload = self.general_response_model()
-        payload["response"].update({"code":499})
-        payload["response"].update({"message": f"http_499_token_required: {msg}"})
-        return payload
-    
-    def http_500_internal_server_error(self, msg=""):
-        payload = self.general_response_model()
-        payload["response"].update({"code":500})
-        payload["response"].update({"message": f"http_500_internal_server_error: {msg}"})
-        return payload
+    def http_500_internal_server_error(self, msg: str="") -> dict:
+        return self.update_general_response({
+            "code":499,
+            "message": f"http_500_internal_server_error: {msg}"
+        })
     
 
 #################### For Tests ###################
 
-    def auth_info(self, data={"id": 1, "email": False, "reg": "NOTCOMPLETE"}):
+    def auth_info(self, data: dict={"id": 1, "email": False, "reg": "NOTCOMPLETE"}) -> dict:
         SERVICE = "moviefav-service"
         TOKEN = self.token_gen(id=data["id"], service=SERVICE, hr=24, reg=data["reg"], email=data["email"], status="ACTIVE")
         AUTH_TOKEN = f"Bearer {TOKEN}".encode('utf-8')
@@ -455,14 +420,14 @@ class General:
             "RAND_PASSWORD": RAND_PASSWORD,
         }
 
-    def create_account_for_test(self, email_verify=True, status="ACTIVE", reg="APPROVED"):
+    def create_account_for_test(self, email_verify: bool=True, status: str="ACTIVE", reg: str="APPROVED") -> tuple[dict,dict]:
         
         RAND_LOGIN = self.rand_word_gen() + "@gmail.com"
         RAND_PASSWORD = self.rand_word_gen_range(start=10, end=30) + "A3!"
         data = { "login": RAND_LOGIN, "password": RAND_PASSWORD }
         
         password_hash = self.hash_password(data["password"]).decode("utf-8")
-        dateModified = str(datetime.datetime.utcnow())
+        dateModified = str(datetime.utcnow())
         
         sql = text(f""" 
             INSERT INTO account_info(account_info_id,account_info_email,account_info_password,account_info_registered_on,account_info_verified_email,account_info_registration_status,account_info_status) 
@@ -479,7 +444,7 @@ class General:
         with self.db.get_engine("psqldb_movie").connect() as db:
             return self.list_sql_response(db, sql)[0], data
         
-    def reset_database(self):
+    def reset_database(self) -> None:
         sql = text(f"""
             DELETE FROM account_info;
             ALTER SEQUENCE account_info_sequence RESTART WITH 1;
@@ -497,7 +462,7 @@ class General:
         with self.db.get_engine("psqldb_movie").connect() as db:
             db.execute(sql)
         
-    def delete_extra_account(self):
+    def delete_extra_account(self) -> None:
         with self.db.get_engine("psqldb_movie").connect() as db:
             sql = text(f"""
                 DELETE 
@@ -506,7 +471,7 @@ class General:
             """)
             db.execute(sql)
         
-    def create_movie_fav(self, user_id):
+    def create_movie_fav(self, user_id: int) -> dict:
         movie_payload = {
             "movie_imdb_info_imdb_id": "0133093",
             "movie_imdb_info_title": "The Matrix",
@@ -544,13 +509,3 @@ class General:
         
         with self.db.get_engine("psqldb_movie").connect() as db:
             return self.list_sql_response(db, sql)[0]
-        
-    # def get_movie_fav_info(self):
-    #     sql = text(f"""                   
-    #         SELECT movie_fav_info_imdb_id,movie_fav_info_episode_current
-    #         FROM movie_fav_info
-    #         INNER JOIN movie_imdb_info ON movie_imdb_info_id = movie_fav_info.movie_fav_info_imdb_info_id;
-    #     """)
-        
-    #     with self.db.get_engine("psqldb_movie").connect() as db:
-    #         return self.list_sql_response(db, sql)[0]

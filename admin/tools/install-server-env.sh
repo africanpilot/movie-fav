@@ -23,7 +23,7 @@ then
     source server/pyenv/bin/activate
 else
     echo "Directory server/pyenv does not exists. Installing Enviornment"
-    python3 -m venv server/pyenv
+    python3.10 -m venv server/pyenv
     source server/pyenv/bin/activate
     pip install -r server/requirements.txt
 fi

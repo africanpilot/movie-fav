@@ -7,9 +7,7 @@ todo="\
     db/postgres \
     db/redis \
     server \
-    api/apollo \
-    client \
-    api/nginx-apollo
+    api/apollo
 "
 
 # db/postgres \

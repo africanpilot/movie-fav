@@ -32,7 +32,7 @@ class Lib:
             """)
             return True if db.execute(sql).fetchall() else False
         except Exception as e:
-            self.log.info(f"verify_login_exists: No response = {e}")
+            self.gen.log.info(f"verify_login_exists: No response = {e}")
             return "DB"
         
     def account_create(self, data):

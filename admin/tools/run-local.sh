@@ -133,6 +133,7 @@ else
     return 1
 fi
 
+deactivate
 echo "Done"
 echo "******************************"
 echo " "

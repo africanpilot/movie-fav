@@ -17,7 +17,7 @@ class AccountModifyMutation:
         
         # Token and service Validation Process
         general_validation_payload, token_decode = lib.gen.general_validation_process(info,email=email)
-        if general_validation_payload != "success":
+        if not general_validation_payload["response"]["success"]:
             return general_validation_payload
         
         # verify password regex

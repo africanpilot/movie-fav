@@ -35,7 +35,7 @@ class AccountForgotPasswordMutation:
                 'token': token,
                 'user_id': valid_user_cred["account_info_id"],
             }
-            msg = lib.gen.send_to_sendgrid(msg=body, templete="ForgotPassword")
+            msg = lib.gen.send_to_sendgrid(msg=body, template="ForgotPassword")
             if not msg:
                 return lib.gen.http_500_internal_server_error(msg="Unable to send email")
 
