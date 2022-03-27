@@ -1,16 +1,15 @@
 # Copyright © 2022 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
-import os
-
 from app_lib.lib import Lib
+from os import environ
 
 class AccountCreateMutation:
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def account_create(self, info, accountCreateInput):
+    def account_create(self, info: object, accountCreateInput: dict) -> dict:
 
         lib = Lib()
 
@@ -44,7 +43,7 @@ class AccountCreateMutation:
         with lib.gen.db.get_engine("psqldb_movie").connect() as db:
             
             # verify login does not exists
-            if os.environ["MOVIE_FAV_ENV"] != "test":
+            if environ["MOVIE_FAV_ENV"] != "test":
                 login_exists = lib.verify_login_exists(db=db, login=accountCreateInput["login"])
                 if login_exists == True:
                     return lib.gen.http_401_unauthorized_response(msg="Account already exists")
@@ -73,13 +72,13 @@ class AccountCreateMutation:
                 lib.gen.log.debug(f"msg: {msg}")
                 if not msg:
                     # reverse new account
-                    db.execute(lib.delete_user(db=db, email=accountCreateInput["login"]))
+                    db.execute(lib.delete_user(email=accountCreateInput["login"]))
                     return lib.gen.http_500_internal_server_error(msg="Unable to send email")
                 
                 return response
             except Exception as e:
                 lib.gen.log.debug(f"e: {e}")
                 # reverse new account
-                db.execute(lib.delete_user(db=db, email=accountCreateInput["login"]))
+                db.execute(lib.delete_user(email=accountCreateInput["login"]))
                 
                 return lib.gen.http_500_internal_server_error(msg="Unknown internal server issue: {e}")           

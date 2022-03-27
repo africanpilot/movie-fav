@@ -17,37 +17,37 @@ class Mutations:
     mutation = MutationType()
     
     @mutation.field("accountAuthenticationLogin")
-    def resolve_account_authentication_login(_, info, accountLoginInput):
+    def resolve_account_authentication_login(_, info: object, accountLoginInput: dict) -> dict:
         return AccountAuthenticationLoginMutation.account_authentication_login(_, info, accountLoginInput)
     
     @mutation.field("accountCreate")
-    def resolve_account_create(_, info, accountCreateInput):
+    def resolve_account_create(_, info: object, accountCreateInput: dict) -> dict:
         return AccountCreateMutation.account_create(_, info, accountCreateInput)
     
     @mutation.field("accountAuthenticationLogout")
-    def resolve_user_authentication_logout(_, info):
+    def resolve_user_authentication_logout(_, info: object) -> dict:
         return AccountAuthenticationLogoutMutation.account_authentication_logout(_, info)
     
     @mutation.field("accountForgotPassword")
-    def resolve_account_forgot_password(_, info, accountLogin):
+    def resolve_account_forgot_password(_, info: object, accountLogin: str) -> dict:
         return AccountForgotPasswordMutation.account_forgot_password(_, info, accountLogin)
     
     @mutation.field("accountConfirmEmail")
-    def resolve_account_confirm_email(_, info):
+    def resolve_account_confirm_email(_, info: object) -> dict:
         return AccountConfirmEmailMutation.account_confirm_email(_, info)
     
     @mutation.field("accountForgotPasswordConfirmEmail")
-    def resolve_account_forgot_password_confirm_email(_, info):
+    def resolve_account_forgot_password_confirm_email(_, info: object) -> dict:
         return AccountForgotPasswordConfirmEmailMutation.account_forgot_password_confirm_email(_, info)
     
     @mutation.field("accountResendConfirm")
-    def resolve_account_resend_confirm(_, info, accountLogin):
+    def resolve_account_resend_confirm(_, info: object, accountLogin: str) -> dict:
         return AccountResendConfirmMutation.account_resend_confirm(_, info, accountLogin)
     
     @mutation.field("accountModify")
-    def resolve_account_modify(_, info, accountModifyInput):
+    def resolve_account_modify(_, info: object, accountModifyInput: dict) -> dict:
         return AccountModifyMutation.account_modify(_, info, accountModifyInput)
     
     @mutation.field("accountDelete")
-    def resolve_account_delete(_, info):
+    def resolve_account_delete(_, info: object) -> dict:
         return AccountDeleteMutation.account_delete(_, info)

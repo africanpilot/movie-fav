@@ -73,7 +73,7 @@ for dotest in $todo_tests; do
     echo " "
 
     > "server/.pytest_cache/v/cache/lastfailed"
-    pytest -x -v -m movie_create_mutation server/apps/$dotest
+    pytest -x -v -m $dotest server/apps/$dotest
 
     # read results for any failures and exit if any
     test_result=$(jq . server/.pytest_cache/v/cache/lastfailed)

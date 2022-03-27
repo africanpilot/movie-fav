@@ -2,14 +2,14 @@
 # All Rights Reserved. Proprietary and confidential.
 
 from app_lib.lib import Lib
-import json
+from json import loads, dumps
 
 class MovieSearchQuery:
 
     def __init__(self,**kwargs):
         super().__init__(**kwargs)
 
-    def movie_search_query(self, info, pageInfo, filterInput):
+    def movie_search_query(self, info: object, pageInfo: dict, filterInput: dict) -> dict:
         
         lib = Lib()
         
@@ -45,7 +45,7 @@ class MovieSearchQuery:
             
             redis_db = lib.gen.db.get_engine("redisdb_movie", "redis")
             redis_result = redis_db.get(f"""movie_search_query:{token_decode["user_id"]}:{redis_filter_info}""")
-            response = json.loads(redis_result) if redis_result else None             
+            response = loads(redis_result) if redis_result else None             
 
             if response and response["response"]["code"] == 200 and response["result"]:
                 lib.gen.log.info(f"redis will get data")
@@ -58,7 +58,7 @@ class MovieSearchQuery:
                     response = lib.movie_imdb_response(info=info, db=db, pageInfo=pageInfo, filterInput=filterData, userId=token_decode["user_id"])
                     # lib.gen.log.debug(f"response: {response}")
                     # can create pipeline if needed
-                    redis_db.set(f"""movie_search_query:{token_decode["user_id"]}:{redis_filter_info}""", json.dumps(response), ex=86400) #ex is in secs 86400
+                    redis_db.set(f"""movie_search_query:{token_decode["user_id"]}:{redis_filter_info}""", dumps(response), ex=86400) #ex is in secs 86400
                     
                     return response
             

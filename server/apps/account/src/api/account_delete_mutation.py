@@ -1,8 +1,6 @@
 # Copyright © 2022 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
-import os
-
 from app_lib.lib import Lib
 
 class AccountDeleteMutation:
@@ -10,7 +8,7 @@ class AccountDeleteMutation:
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def account_delete(self, info):
+    def account_delete(self, info: object) -> dict:
 
         lib = Lib()
 

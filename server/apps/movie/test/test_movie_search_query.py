@@ -249,7 +249,7 @@ def test_data_return_from_redis_response():
         movie_imdb_info_cover
     """
     with lib.gen.db.get_engine("psqldb_movie").connect() as db:
-        response = lib.movie_imdb_response_for_tests(db=db, cols=cols, userId=ACCOUNT["account_info_id"])
+        response = lib.movie_imdb_response_for_tests(db=db, cols=cols)
         lib.gen.log.debug(f"test 1 response: {response}")
         
     redis_db.set(f"""movie_search_query:token_decode["user_id"]:{redis_filter_info}""", json.dumps(response), ex=86400) #ex is in secs 86400

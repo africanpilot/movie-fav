@@ -2,15 +2,13 @@
 # All Rights Reserved. Proprietary and confidential.
 
 from app_lib.lib import Lib
-from sqlalchemy.sql import text
-from colorama import Fore
 
 class AccountConfirmEmailMutation:
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def account_confirm_email(self, info):
+    def account_confirm_email(self, info: object) -> dict:
         
         lib = Lib()
         

@@ -9,7 +9,7 @@ class MovieCreateMutation:
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def movie_create_mutation(self, info, movieInput):
+    def movie_create_mutation(self, info: object, movieInput: dict) -> dict:
         
         lib = Lib()
         

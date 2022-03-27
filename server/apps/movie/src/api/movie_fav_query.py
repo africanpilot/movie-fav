@@ -9,7 +9,7 @@ class MovieFavQuery:
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
     
-    def movie_fav_query(self, info, pageInfo: dict, filterInput: dict) -> dict:
+    def movie_fav_query(self, info: object, pageInfo: dict, filterInput: dict) -> dict:
         
         lib = Lib()
         

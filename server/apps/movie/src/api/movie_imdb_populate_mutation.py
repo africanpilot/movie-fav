@@ -3,14 +3,13 @@
 
 from app_lib.lib import Lib
 from sqlalchemy.sql import text
-from colorama import Fore
 
 class MovieImdbPopulateMutation:
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def movie_imdb_populate_mutation(self, info, pageInfo):
+    def movie_imdb_populate_mutation(self, info: object, pageInfo: dict) -> dict:
         
         lib = Lib()
         

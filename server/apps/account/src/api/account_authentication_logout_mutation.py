@@ -8,7 +8,7 @@ class AccountAuthenticationLogoutMutation:
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def account_authentication_logout(self, info):
+    def account_authentication_logout(self, info: object) -> dict:
         
         lib = Lib()
         

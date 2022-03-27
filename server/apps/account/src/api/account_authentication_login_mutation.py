@@ -2,15 +2,13 @@
 # All Rights Reserved. Proprietary and confidential.
 
 from app_lib.lib import Lib
-from sqlalchemy.sql import text
-from colorama import Fore
 
 class AccountAuthenticationLoginMutation:
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def account_authentication_login(self, info, accountLoginInput):
+    def account_authentication_login(self, info: object, accountLoginInput: dict) -> dict:
 
         lib = Lib()
         

@@ -1,8 +1,6 @@
 # Copyright © 2022 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
-import os 
-
 from app_lib.lib import Lib
 
 class AccountForgotPasswordMutation:
@@ -10,7 +8,7 @@ class AccountForgotPasswordMutation:
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def account_forgot_password(self, info, accountLogin):
+    def account_forgot_password(self, info: object, accountLogin: str) -> dict:
         
         lib = Lib()
         

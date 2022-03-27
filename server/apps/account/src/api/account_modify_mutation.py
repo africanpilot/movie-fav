@@ -9,7 +9,7 @@ class AccountModifyMutation:
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def account_modify(_, info, accountModifyInput):
+    def account_modify(_, info: object, accountModifyInput: dict) -> dict:
         
         lib = Lib()
         
@@ -43,7 +43,7 @@ class AccountModifyMutation:
                 
         # convert dates
         if "account_contact_birthday" in accountModifyInput and accountModifyInput["account_contact_birthday"]:
-            date_convert = {"account_contact_birthday":str(datetime.strptime(account_contact_birthday,'%Y-%m-%d %H:%M:%S.%f'))}
+            date_convert = {"account_contact_birthday":str(datetime.strptime(accountModifyInput["account_contact_birthday"],'%Y-%m-%d %H:%M:%S.%f'))}
             accountModifyInput.update(date_convert)
 
         with lib.gen.db.get_engine("psqldb_movie").connect() as db:

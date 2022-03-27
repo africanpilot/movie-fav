@@ -11,13 +11,13 @@ class Queries:
     query = QueryType()
     
     @query.field("movieFav")
-    def resolve_movie_fav(_, info, pageInfo={}, filterInput={}):
+    def resolve_movie_fav(_, info: object, pageInfo: object={}, filterInput: object={}) -> dict:
         return MovieFavQuery.movie_fav_query(_, info, pageInfo, filterInput)
     
     @query.field("movieSearch")
-    def resolve_movie_search(_, info, pageInfo={}, filterInput={}):
+    def resolve_movie_search(_, info: object, pageInfo: object={}, filterInput: object={}) -> dict:
         return MovieSearchQuery.movie_search_query(_, info, pageInfo, filterInput)
     
     @query.field("moviePopular")
-    def resolve_movie_popular(_, info, pageInfo={}):
+    def resolve_movie_popular(_, info: object, pageInfo: object={}) -> dict:
         return MoviePopularQuery.movie_popular_query(_, info, pageInfo)

@@ -20,6 +20,7 @@ from os import environ
 from jwt import encode, decode, DecodeError, ExpiredSignatureError
 from bcrypt import checkpw, hashpw, gensalt
 from datetime import datetime, timedelta
+from typing import Union
 
 class General:
     
@@ -77,7 +78,7 @@ class General:
         list_val = ", ".join(list_val) 
         return list_val
     
-    def check_input_list(self, ids) -> str:
+    def check_input_list(self, ids: Union[str,int,list]) -> str:
         if type(ids) is list:
             list_ids = self.convert_input(ids)
         else:
@@ -92,6 +93,9 @@ class General:
     def fil_json_keys(self, x: dict, y) -> dict:
         return dict([ (i,x[i]) for i in x if i in set(y) ])
     
+    def remove_keys(self, data: list[dict], exclude: list[str]) -> list[dict]:
+        return [{k: v for k, v in d.items() if k not in exclude} for d in data]
+    
     def request_fields(self, data: dict) -> tuple[str,str]:
         data = {k: v for k, v in data.items() if v is not None}
         data = self.remove_duplicate_keys(data=data)
@@ -100,9 +104,10 @@ class General:
         request_val = self.convert_items(data, request_list_keys)
         return request_key,request_val
 
-    def get_query_request(self, selections: object) -> list[dict]:
-        lastNest = 0
-        finalData = []
+    def get_query_request(self, selections: object, finalData: list=None, lastNest: int=None) -> list[dict]:
+        if finalData == None:
+            lastNest = 0
+            finalData = []
         for i in range(len(selections)):
             data = selections[i].name.value
             finalData.append({data:lastNest})
@@ -303,10 +308,10 @@ class General:
     def rand_word_gen_range(self, start: int, end: int) -> str:
         return ''.join(choice(ascii_lowercase) for i in range(randint(start, end)))
     
-    def batcher(self, iterable, n):
+    def batcher(self, iterable: object, n: int) -> object:
         return zip_longest(*[iter(iterable)] * n)
     
-    def redis_delete_keys_pipe(self, db, search, n: int=50):
+    def redis_delete_keys_pipe(self, db, search: Union[str,list], n: int=50) -> object:
         pipe = db.pipeline()
         if type(search) == str:
             search = [search]
@@ -318,7 +323,7 @@ class General:
         return pipe
         
     def general_response_model(self) -> dict:
-        payload = {
+        return {
             "response": {
                 "code": 200,
                 "success": False,
@@ -328,7 +333,6 @@ class General:
             "result": [],
             "pageInfo": {}
         }
-        return payload
     
     def compose_decos(self, decos):
         def composition(func):
@@ -357,37 +361,37 @@ class General:
     def http_400_bad_request_response(self, msg: str="") -> dict:
         return self.update_general_response({
             "code":400,
-            "message": f"http_400_bad_request_response: {msg}"
+            "message": f"http_400_bad_request: {msg}"
         })
     
     def http_401_unauthorized_response(self, msg: str="") -> dict:
         return self.update_general_response({
             "code":401,
-            "message": f"http_401_unauthorized_response: {msg}"
+            "message": f"http_401_unauthorized: {msg}"
         })
         
     def http_403_forbidden_response(self, msg: str="") -> dict:
         return self.update_general_response({
             "code":403,
-            "message": f"http_403_forbidden_response: {msg}"
+            "message": f"http_403_forbidden: {msg}"
         })
     
     def http_404_not_found_response(self, msg: str="") -> dict:
         return self.update_general_response({
             "code":404,
-            "message": f"http_404_not_found_response: {msg}"
+            "message": f"http_404_not_found: {msg}"
         })
     
     def http_498_invalid_token_response(self, msg: str="") -> dict:
         return self.update_general_response({
             "code":498,
-            "message": f"http_498_invalid_token_response: {msg}"
+            "message": f"http_498_invalid_token: {msg}"
         })
         
     def http_499_token_required_response(self, msg: str="") -> dict:
         return self.update_general_response({
             "code":499,
-            "message": f"http_499_token_required_response: {msg}"
+            "message": f"http_499_token_required: {msg}"
         })
     
     def http_500_internal_server_error(self, msg: str="") -> dict:

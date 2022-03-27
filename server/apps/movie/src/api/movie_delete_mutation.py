@@ -2,13 +2,14 @@
 # All Rights Reserved. Proprietary and confidential.
 
 from app_lib.lib import Lib
+from typing import Union
 
 class MovieDeleteMutation:
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
     
-    def movie_delete_mutation(self, info, movie_fav_info_id):
+    def movie_delete_mutation(self, info: object, movie_fav_info_id: Union[str,int]) -> dict:
         
         lib = Lib()
         

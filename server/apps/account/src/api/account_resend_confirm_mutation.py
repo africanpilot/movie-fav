@@ -8,7 +8,7 @@ class AccountResendConfirmMutation:
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def account_resend_confirm(self, info, accountLogin):
+    def account_resend_confirm(self, info: object, accountLogin: str) -> dict:
         
         lib = Lib()
         
