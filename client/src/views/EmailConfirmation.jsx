@@ -1,6 +1,6 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { AuthContext } from "../util/authContext";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
 import MailOutlineIcon from "@material-ui/icons/MailOutline";
 import SmsFailedIcon from "@material-ui/icons/SmsFailed";
@@ -47,6 +47,8 @@ const useStyles = makeStyles((theme) =>
 
 const EmailConfirmation = () => {
   const location = useLocation();
+  const [seconds] = useState(5);
+  const navigate = useNavigate();
 
   const urlParams = new URLSearchParams(location.search);
   const token = urlParams.get("ur_token");
@@ -62,7 +64,12 @@ const EmailConfirmation = () => {
     localStorage.clear();
     verifyEmailToken(token);
     verifyEmailMutation()
-      .then((res) => console.log("Email verification Success"))
+      .then((res) => {
+        console.log("Email verification Success")
+        setTimeout(() => {
+          navigate("/login");
+        }, seconds * 1000);
+      })
       .catch((error) => console.log(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
@@ -115,7 +122,7 @@ const EmailConfirmation = () => {
         </div>
         <div className={classes.emailTitle}>Thank you</div>
         <div className={classes.emailDescription}>
-          Your email has been verified.
+          Your email has been verified. Redirecting to login 5 sec...
         </div>
       </>
     </div>

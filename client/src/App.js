@@ -23,7 +23,7 @@ import TokenExpire from "./util/tokenExpire";
 // "https://48p1r2roz4.sse.codesandbox.io",
 
 //this will remove all the console when its production.
-if (process.env.NODE_ENV !== "development") console.log = () => {};
+if (process.env.APP_DEFAULT_ENV === "prod") console.log = () => {};
 
 // when there is error, we can handle this with graphql, many of them has console inside of the request, but you can always use this, or in chrome developer tool
 const errorLink = onError(({ graphqlErrors, networkError }) => {
@@ -40,10 +40,15 @@ const errorLink = onError(({ graphqlErrors, networkError }) => {
   }
 });
 
+// const gateway =
+//   process.env.NODE_ENV !== "production"
+//     ? process.env.REACT_APP_GATEWAY_DEVELOPMENT
+//     : process.env.REACT_APP_GATEWAY_PRODUCTION;
+
 const gateway =
-  process.env.NODE_ENV !== "production"
-    ? process.env.REACT_APP_GATEWAY_DEVELOPMENT
-    : process.env.REACT_APP_GATEWAY_PRODUCTION;
+    process.env.APP_DEFAULT_ENV !== "prod"
+      ? process.env.REACT_APP_GATEWAY_DEVELOPMENT
+      : process.env.REACT_APP_GATEWAY_PRODUCTION;
 
 const link = from([errorLink, new HttpLink({ uri: gateway })]);
 

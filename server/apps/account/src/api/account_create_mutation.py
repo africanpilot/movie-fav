@@ -43,7 +43,7 @@ class AccountCreateMutation:
         with lib.gen.db.get_engine("psqldb_movie").connect() as db:
             
             # verify login does not exists
-            if environ["APP_DEFULT_ENV"] != "test":
+            if environ["APP_DEFAULT_ENV"] != "test":
                 login_exists = lib.verify_login_exists(db=db, login=accountCreateInput["login"])
                 if login_exists == True:
                     return lib.gen.http_401_unauthorized_response(msg="Account already exists")

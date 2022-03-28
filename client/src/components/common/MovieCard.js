@@ -37,9 +37,8 @@ const MovieCard = ({ movie }) => {
     })
     .then(({ data: {movieCreate: { response },},}) => {
       if (response.success === true) {
-        navigate("/home");
         setTimeout(() => {
-          navigate("/home");
+          // navigate("/home");
         }, seconds * 1000);
       }
     })

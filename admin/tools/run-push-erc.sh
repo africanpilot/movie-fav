@@ -3,6 +3,9 @@
 # Copyright © 2022 by Richard Maku.
 # All Rights Reserved. Proprietary and confidential.
 
+# imports
+tools_location=admin/tools
+source $tools_location/general-func.sh
 
 todo="\
     server \
@@ -91,8 +94,8 @@ for d in $todo; do
         return 1
     fi
     echo "AWS_REPO_NAME: $AWS_REPO_NAME" 
-    aws ecr create-repository --repository-name $AWS_REPO_NAME --profile default --region ${AWS_REGION}
-    aws ecr get-login-password --region ${AWS_REGION} --profile default | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+    aws ecr describe-repositories --repository-names $AWS_REPO_NAME || aws ecr create-repository --repository-name $AWS_REPO_NAME --profile default --region ${AWS_REGION}
+    aws_erc_login ${AWS_ACCOUNT_ID} ${AWS_REGION}
     docker buildx build -t ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$AWS_REPO_NAME:latest --push $location
 done
 

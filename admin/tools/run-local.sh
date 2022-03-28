@@ -35,12 +35,12 @@ if [ "$command" == "up" ]; then
     else
         # start services...need a more clever way
         for d in $todo; do
-            sed -i '/APP_DEFULT_ENV/c\APP_DEFULT_ENV=local' $d/.env
+            sed -i '/APP_DEFAULT_ENV/c\APP_DEFAULT_ENV=local' $d/.env
         done
 
         if exists_in_list "$todo" " " "server"; then
-            gnome-terminal --tab --title="Local account" --command="bash -c 'export $(grep -v '^#' .env | xargs); python3 ./server/start account; $SHELL'"
-            gnome-terminal --tab --title="Local movie" --command="bash -c 'export $(grep -v '^#' .env | xargs); python3 ./server/start movie; $SHELL'"
+            gnome-terminal --tab --title="Local account" --command="bash -c 'export $(grep -v '^#' .env | xargs); python3 server/start account; $SHELL'"
+            gnome-terminal --tab --title="Local movie" --command="bash -c 'export $(grep -v '^#' .env | xargs); python3 server/start movie; $SHELL'"
         fi
 
         # sleep then start apollo
@@ -56,6 +56,18 @@ if [ "$command" == "up" ]; then
 
     fi
 elif [ "$command" == "build" ]; then
+
+    if exists_in_list "$todo" " " "server"; then
+        install_server_env
+    fi
+
+    if exists_in_list "$todo" " " "api/apollo"; then
+        install_api_env
+    fi
+
+    if exists_in_list "$todo" " " "client"; then
+        install_client_env
+    fi
 
     if exists_in_list "$todo" " " "db/postgres"; then
         docker-compose -f db/postgres/docker-compose.yml -p services build
@@ -99,8 +111,10 @@ else
     return 1
 fi
 
-deactivate
+# deactivate
 
 echo "Done"
 echo "******************************"
 echo " "
+
+$SHELL

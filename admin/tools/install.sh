@@ -9,22 +9,33 @@ if [  ! -d "server" ]; then
 fi
 
 ########## For local dev only without docker ####################
+# imports
 tools_location=admin/tools
+source $tools_location/general-func.sh
+
+# 2) Setup pyenv
+install_server_env
+
+# 3) Setup apollo
+install_api_env
+
+# 3) Setup client
+install_client_env
 
 # 1) Setup env
 
-# By default overide db to be local
-sed -i "/DB_LOCAL_HOST/c\DB_LOCAL_HOST=localhost" .env
-export $(grep -v '^#' .env | xargs)
+# validate_service_todo_env
+# todo=${SERVICES_TODO}
 
-# 2) Setup pyenv
-source $tools_location/install-server-env.sh
+# for d in $todo; do
+#     echo "Adding: $d/.env"
+#     export $(grep -v '^#' $d/.env | xargs)
+# done
+# sed -i "/DB_LOCAL_HOST/c\DB_LOCAL_HOST=localhost" .env
+# pass_down_env_copies
+# export $(grep -v '^#' .env | xargs)
 
-# 3) Setup apollo
-source $tools_location/install-api-env.sh
 
-# 3) Setup client
-source $tools_location/install-client-env.sh
 
 echo " "
 echo "******************************"

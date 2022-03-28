@@ -9,7 +9,9 @@ if [  ! -d "client" ]; then
     return 1
 fi
 
+# imports
 tools_location=admin/tools
+source $tools_location/general-func.sh
 
 echo " "
 echo "******************************"

@@ -9,21 +9,25 @@ if [  ! -d "server" ]; then
     return 1
 fi
 
-echo " "
-echo "******************************"
-echo "STEP 1/3: Running server tests"
-echo "******************************"
-echo " "
-
-source admin/tools/run-test-server.sh
+# imports
+tools_location=admin/tools
+source $tools_location/general-func.sh
 
 echo " "
 echo "******************************"
-echo "STEP 2/3: Running client tests"
+echo "STEP 1/4: Running server tests"
 echo "******************************"
 echo " "
 
-source admin/tools/run-test-client.sh
+# source $tools_location/run-test-server.sh
+
+echo " "
+echo "******************************"
+echo "STEP 2/4: Running client tests"
+echo "******************************"
+echo " "
+
+source $tools_location/run-test-client.sh
 
 
 # TODO: anyother tests to run for db and api directories
@@ -32,12 +36,26 @@ source admin/tools/run-test-client.sh
 # build docker files and push to aws repo
 echo " "
 echo "******************************"
-echo "STEP 3/3: Pushing to aws erc"
+echo "STEP 3/4: Pushing to aws erc"
 echo "******************************"
 echo " "
 
-source admin/tools/run-push-erc.sh
+source $tools_location/run-push-erc.sh
 
+# deploy to EC2 instance
+echo " "
+echo "******************************"
+echo "STEP 4/4: Deploy to EC2 instance"
+echo "******************************"
+echo " "
+
+# cd ..
+# sudo scp -i moviefav.pem  movie-fav/.env ubuntu@${APP_PUBLIC_IP_ADDRESS}:/home/ubuntu/movie-fav
+# sudo ssh -i moviefav.pem ubuntu@${APP_PUBLIC_IP_ADDRESS}
+# cd movie-fav
+# git pull https://github.com/africanpilot/movie-fav.git
+# source run.sh deploy prod down
+# source run.sh deploy prod up
 
 echo " "
 echo "******************************"

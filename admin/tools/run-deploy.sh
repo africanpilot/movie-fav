@@ -104,3 +104,5 @@ function main
  
 }
 main $*
+
+$SHELL

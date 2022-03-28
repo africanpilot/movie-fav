@@ -3,6 +3,8 @@
 # Copyright © 2022 by Richard Maku.
 # All Rights Reserved. Proprietary and confidential.
 
+set -e
+
 # imports
 location=admin/tools
 source $location/general-func.sh
@@ -11,7 +13,8 @@ todo="\
     db/postgres \
     db/redis \
     server \
-    api/apollo
+    api/apollo \
+    client
 "
 
 # db/postgres \
@@ -19,7 +22,6 @@ todo="\
 # server \
 # api/apollo \
 # client \
-# api/nginx \
 # api/nginx-apollo \
 
 export SERVICES_TODO="$todo"
@@ -38,20 +40,44 @@ validate_enviornment_agr $environment
 validate_command_agr $command
 
 # set environment variables
-sed -i "/APP_DEFULT_ENV/c\APP_DEFULT_ENV=$environment" .env
+sed -i "/APP_DEFAULT_ENV/c\APP_DEFAULT_ENV=$environment" .env
+if [ "$script" == "local" ]; then
+    sed -i "/APP_DEFAULT_ENV/c\APP_DEFAULT_ENV=local" .env
+    if [ "$command" == "down" ]; then
+        set +e
+    fi
+fi
 export $(grep -v '^#' .env | xargs)
 pass_down_env_copies
 
 # redirect to script
 if [ "$script" == "local" ]; then
+    prep_for_dev
     validate_local_setup $todo $location
     source $location/run-local.sh $environment $command
 elif [ "$script" == "docker" ]; then
+    prep_for_dev
     source $location/run-docker.sh $environment $command
 elif [ "$script" == "deploy" ]; then
-    aws_erc_login ${AWS_ACCOUNT_ID} ${AWS_REGION}
-    source $location/run-deploy.sh $environment $command
+    if [ "$command" == "up" ] || [ "$command" == "down" ]; then 
+        prep_for_deploy
+        aws_erc_login ${AWS_ACCOUNT_ID} ${AWS_REGION}
+        source $location/run-deploy.sh $environment $command
+    else
+        echo "WARNING ERROR: Only up or down commands allowed for deployment script"
+        return 1 
+    fi
+elif [ "$script" == "pipeline" ]; then
+    if [ "$command" == "up" ] && [ "$environment" == "prod" ]; then 
+        prep_for_deploy
+        source $location/run-pipeline.sh
+    else
+        echo "WARNING ERROR: Only pipeline prod up command allowed for pipeline script"
+        return 1 
+    fi
 else
     echo "Unknown Exception met"
     return 1
 fi
+
+$SHELL

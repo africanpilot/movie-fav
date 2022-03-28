@@ -33,10 +33,10 @@ Feel free to reach out if you have any improvements, questions, or comments :) m
   
   
 # Development
- ### First Time Setup docker dev
+ ### First Time Setup all dev
  - Install docker and docker-compose
  - rename the sample-env file to .env
- - in .env file change APP_DEFULT_EMAIL to your email
+ - in .env file change APP_DEFAULT_EMAIL to your email
  - in .env file change SENDGRID_API_KEY to your API ( get api from https://app.sendgrid.com/)
  - run 
   ```bash 
@@ -62,7 +62,7 @@ Feel free to reach out if you have any improvements, questions, or comments :) m
         ```
 
  ### Running pytest
- - must be in local envirnment
+ - must be in local environment
 
      ```bash 
          source run.sh local test up
@@ -78,9 +78,9 @@ Feel free to reach out if you have any improvements, questions, or comments :) m
 
 - [x] add redis
 - [ ] add devops ci/cd pipelines
+- [ ] add search
 - [ ] clean up frontend for reusability
 - [ ] create test enviornment for frontend
 - [ ] possibly add protable kubernetes for orchestration
-- [ ] add search
 - [ ] add Cython or C extensions
 - [ ] add multithreading

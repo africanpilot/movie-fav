@@ -3,7 +3,7 @@ services:
   account:
     image: ${AWS_SERVER_IMAGE}
     hostname: account
-    build: .
+    # build: .
     entrypoint: [/home/moviefav/server/start, account]
     labels:
         - 'com.moviefav.description=account'
@@ -14,6 +14,9 @@ services:
         - .env
     ports:
         - '4001:4001'
+    # depends_on:
+    #   - psqldb_secmsdb
+    #   - redisdb_secmsdb
     networks:
         - secmsapp
         - secmsdbs
@@ -22,7 +25,7 @@ services:
   movie:
     image: ${AWS_SERVER_IMAGE}
     hostname: movie
-    build: .
+    # build: .
     entrypoint: [/home/moviefav/server/start, movie]
     labels:
       - "com.moviefav.description=movie"
@@ -33,6 +36,9 @@ services:
       - .env
     ports:
       - "4002:4002"
+    # depends_on:
+    #   - psqldb_secmsdb
+    #   - redisdb_secmsdb
     networks:
       - secmsapp
       - secmsdbs

@@ -69,7 +69,7 @@ function do_subdirs
                 echo "Waiting for all services to start. Sleepiong 15 seconds..."
                 sleep 15
             fi
-            gnome-terminal --tab --title="Local dev $d" --command="bash -c 'export $(grep -v '^#' .env | xargs); docker-compose -p services "$command" $*; $SHELL'"
+            gnome-terminal --tab --title="Docker dev $d" --command="bash -c 'export $(grep -v '^#' .env | xargs); docker-compose -p services "$command" $*; $SHELL'"
         else
             do_dir "$d" "$command" $*
         fi     
@@ -97,5 +97,8 @@ function main
     set_environment $environment
     
     do_subdirs `pwd` $command $*
+
 }
 main $*
+
+$SHELL

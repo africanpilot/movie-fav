@@ -9,14 +9,16 @@ if [  ! -d "server" ]; then
     return 1
 fi
 
+# imports
+tools_location=admin/tools
+source $tools_location/general-func.sh
+
 todo_tests="\
     account \
     movie
 "
 # account \
 # movie
-
-tools_location=admin/tools
 
 echo " "
 echo "******************************"
@@ -28,14 +30,12 @@ echo " "
 export $(grep -v '^#' .env | xargs)
 
 # install server requirments
-source $tools_location/install-server-env.sh 
+install_server_env
 
 # install postgres requirements
-source $tools_location/install-postgres-env.sh
 sed -i 's/postgres_secmsdb/postgres_genmsdbtest/' "db/postgres/docker-compose.yml"
 
 # install redis requirements
-source $tools_location/install-redis-env.sh
 sed -i 's/redis_secmsdb/redis_genmsdbtest/' "db/redis/docker-compose.yml"
 
 # bring up postgres and redis dbs

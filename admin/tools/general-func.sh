@@ -5,7 +5,7 @@
 
 validate_script_agr () {
     case $1 in
-    docker|local|deploy)
+    docker|local|deploy|pipeline)
         a=1
         ;;
     *)
@@ -66,6 +66,11 @@ validate_app_setup () {
         echo "CRITICAL ERROR: Please add and configure the .env file"
         return 1
     fi
+
+    if ! [ -x "$(command -v docker-compose)" ]; then
+        echo 'CRITICAL ERROR: docker-compose is not installed.' >&2
+        return 1
+    fi
 }
 
 exists_in_list () {
@@ -108,7 +113,7 @@ validate_service_todo_env () {
 
 set_environment () {
 
-    APP_DEFULT_ENV=$1
+    APP_DEFAULT_ENV=$1
     if [ "test" == "$1" ] || [ "dev" == "$1" ]; then
         not_in_prod=1
         PROJECT_OPTION=" -p services "
@@ -119,7 +124,7 @@ set_environment () {
 announce (){
 
     echo "******************************"
-    echo "** ${APP_DEFULT_ENV} / " $*
+    echo "** ${APP_DEFAULT_ENV} / " $*
     echo "******************************"
 }
 
@@ -275,17 +280,32 @@ validate_local_setup () {
     fi
 }
 
+prep_for_deploy () {
+
+    build_todo="\
+        server \
+        api/apollo \
+        client \
+        api/nginx-apollo
+    "
+    for d in $build_todo; do
+        sed -i 's/# build: ./build: ./' "$d/docker-compose.yml"
+        sed -i 's/build: ./# build: ./' "$d/docker-compose.yml"
+    done
+}
+
+prep_for_dev () {
+
+    build_todo="\
+        server \
+        api/apollo \
+        client \
+        api/nginx-apollo
+    "
+    for d in $build_todo; do
+        sed -i 's/# build: ./build: ./' "$d/docker-compose.yml"
+    done
+}
 
 
-# # change to use local build with build
-# if [ "$command" == "build" ]; then
-#     build_todo="\
-#         server \
-#         api/apollo \
-#         client \
-#         api/nginx-apollo
-#     "
-#     for d in $build_todo; do
-#         sed -i 's/# build: ./build: ./' "$d/docker-compose.yml"
-#     done
-# fi
+# validate_orign_run_command
