@@ -1,9 +1,9 @@
 version: '3.9'
 services:
   account:
-    image: ${AWS_SERVER_IMAGE} #account:${MOVIE_FAV_ENV}
+    image: ${AWS_SERVER_IMAGE}
     hostname: account
-    # build: .
+    build: .
     entrypoint: [/home/moviefav/server/start, account]
     labels:
         - 'com.moviefav.description=account'
@@ -22,7 +22,7 @@ services:
   movie:
     image: ${AWS_SERVER_IMAGE}
     hostname: movie
-    # build: .
+    build: .
     entrypoint: [/home/moviefav/server/start, movie]
     labels:
       - "com.moviefav.description=movie"

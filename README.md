@@ -36,7 +36,7 @@ Feel free to reach out if you have any improvements, questions, or comments :) m
  ### First Time Setup docker dev
  - Install docker and docker-compose
  - rename the sample-env file to .env
- - in .env file change MOVIE_FAV_EMAIL to your email
+ - in .env file change APP_DEFULT_EMAIL to your email
  - in .env file change SENDGRID_API_KEY to your API ( get api from https://app.sendgrid.com/)
  - run 
   ```bash 

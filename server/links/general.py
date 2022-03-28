@@ -153,7 +153,7 @@ class General:
         return result
 
     def hash_password(self, password: str) -> str:
-        return hashpw(password.encode('utf8'), gensalt(int(environ['MOVIE_FAV_GEN_SALT_VALUE'])))
+        return hashpw(password.encode('utf8'), gensalt(int(environ['APP_DEFULT_GEN_SALT_VALUE'])))
 
     def verify_hash_password(self, password: str, hashed: str) -> bool:
          return True if checkpw(password, hashed) else False
@@ -161,7 +161,7 @@ class General:
     def token_gen(self, id, service: str, hr: int=336, email: bool=False, reg: str="NOTCOMPLETE", status: str="ACTIVE") -> str:
         issue_date = datetime.utcnow()
         header = {'alg': "HS256",'typ': "JWT"}
-        secret = environ['MOVIE_FAV_EMAIL_KEY'] if email else environ['MOVIE_FAV_ACCESS_KEY']
+        secret = environ['APP_DEFULT_EMAIL_KEY'] if email else environ['APP_DEFULT_ACCESS_KEY']
         payload = {
             'user_id': id,
             'service-name': service,
@@ -197,7 +197,7 @@ class General:
         return self.get_token(user_agent)
     
     def token_validation(self, token: str, email: str) -> bool:
-        secret = environ['MOVIE_FAV_EMAIL_KEY'] if email else environ['MOVIE_FAV_ACCESS_KEY']
+        secret = environ['APP_DEFULT_EMAIL_KEY'] if email else environ['APP_DEFULT_ACCESS_KEY']
         try:
             decode(jwt=token, key=secret, algorithms=["HS256"])
             return True
@@ -206,7 +206,7 @@ class General:
             return False
     
     def decode_token(self, info: object, email: bool=False) -> dict:
-        secret = environ['MOVIE_FAV_EMAIL_KEY'] if email else environ['MOVIE_FAV_ACCESS_KEY']
+        secret = environ['APP_DEFULT_EMAIL_KEY'] if email else environ['APP_DEFULT_ACCESS_KEY']
         return decode(jwt=self.get_token_from_header(info), key=secret,algorithms=["HS256"]) 
     
     # Token and service Validation Process
@@ -254,11 +254,11 @@ class General:
         return self.success_response(nullPass=True), token_decode
     
     def send_to_sendgrid(self, msg: dict, template: str) -> bool:
-        if environ['MOVIE_FAV_ENV'] in ["dev", "local", "prod"]:
+        if environ['APP_DEFULT_ENV'] in ["dev", "local", "prod"]:
             # send to sendgrid
             SENDGRID_API_KEY = environ['SENDGRID_API_KEY']
             APP_ADDRESS = environ['APP_ADDRESS']
-            send_to_email = msg["email"] if environ['MOVIE_FAV_EMAIL'] == 'prod' else str(environ['MOVIE_FAV_EMAIL'])
+            send_to_email = msg["email"] if environ['APP_DEFULT_EMAIL'] == 'prod' else str(environ['APP_DEFULT_EMAIL'])
             message = Mail(
                 from_email='makurichard14@gmail.com',
                 to_emails=send_to_email,
@@ -269,7 +269,7 @@ class General:
                 SENDGRID_TEMPLATE_VERIFY_EMAIL_ID = 'd-6be05110f3cd4023b3b7a4bd95a42b6a'
                 token = msg["token"] 
                 
-                if environ['MOVIE_FAV_ENV'] == 'prod':
+                if environ['APP_DEFULT_ENV'] == 'prod':
                     link = f"https://{APP_ADDRESS}/email-confirmation?ur_token={token}"  
                 else:
                     link = f"http://localhost:3000/email-confirmation?ur_token={token}"  
@@ -285,7 +285,7 @@ class General:
                 SENDGRID_TEMPLATE_FORGOT_PASSWORD_EMAIL_ID = 'd-37ac03c4ec204abc83e84296da060677'
                 token = msg["token"]
             
-                if environ['MOVIE_FAV_ENV'] == 'prod':
+                if environ['APP_DEFULT_ENV'] == 'prod':
                     link = f"https://{APP_ADDRESS}/change-password?ur_token={token}" 
                 else:
                     link = f"http://localhost:3000/change-password?ur_token={token}"  

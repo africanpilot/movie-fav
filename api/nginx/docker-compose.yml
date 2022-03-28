@@ -1,7 +1,7 @@
 version: '3.9'
 services:
   nginxtoapi:
-    image: nginxtoapi:${MOVIE_FAV_ENV}
+    image: nginxtoapi:${APP_DEFULT_ENV}
     hostname: nginxtoapi
     build: .
     restart: always
@@ -20,7 +20,7 @@ services:
       - mstoapi
       - secmsapp
   nginxtoclient:
-    image: nginxtoclient:${MOVIE_FAV_ENV}
+    image: nginxtoclient:${APP_DEFULT_ENV}
     hostname: nginxtoclient
     build: .
     restart: always
@@ -38,7 +38,7 @@ services:
       - api
       - client
   nginxfortress:
-    image: nginxfortress:${MOVIE_FAV_ENV}
+    image: nginxfortress:${APP_DEFULT_ENV}
     hostname: nginxfortress
     build: .
     restart: always

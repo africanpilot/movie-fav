@@ -3,6 +3,10 @@
 # Copyright © 2022 by Richard Maku.
 # All Rights Reserved. Proprietary and confidential.
 
+# imports
+location=admin/tools
+source $location/general-func.sh
+
 todo="\
     db/postgres \
     db/redis \
@@ -19,67 +23,33 @@ todo="\
 # api/nginx-apollo \
 
 export SERVICES_TODO="$todo"
-location=admin/tools
 script="$1"
 environment="$2"
 command="$3"
 shift 2
 
-case $script in
-docker|local|deploy)
-    a=1
-    ;;
-*)
-    echo "Invalid script: $script"
-    return 1
-    ;;
-esac
+# validation process
+validate_app_setup
 
-case $environment in
-test|prod|dev)
-    a=1
-    ;;
-*)
-    echo "Invalid environment: $environment"
-    return 1
-    ;;
-esac
+validate_script_agr $script
 
-case $command in
-build|up|down)
-    a=1
-    ;;
-*)
-    echo "Invalid command: $command"
-    return 1
-    ;;
-esac
+validate_enviornment_agr $environment
 
-echo "script: $script"
-echo "environment: $environment"
-echo "command: $command"
+validate_command_agr $command
 
-# check for secrets file
-if [ -f ".env" ]; then
-    sed -i "/MOVIE_FAV_ENV/c\MOVIE_FAV_ENV=$environment" .env
-    for d in $todo; do
-        cp .env "$d"
-    done
-else
-    echo "Please add and configure the .env file"
-    return 1
-fi
-
-# sudo chmod -R 777 .  # might just direct to certbot
+# set environment variables
+sed -i "/APP_DEFULT_ENV/c\APP_DEFULT_ENV=$environment" .env
+export $(grep -v '^#' .env | xargs)
+pass_down_env_copies
 
 # redirect to script
 if [ "$script" == "local" ]; then
+    validate_local_setup $todo $location
     source $location/run-local.sh $environment $command
 elif [ "$script" == "docker" ]; then
     source $location/run-docker.sh $environment $command
 elif [ "$script" == "deploy" ]; then
-    export $(grep -v '^#' .env | xargs)
-    aws ecr get-login-password --region ${AWS_REGION} --profile default | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+    aws_erc_login ${AWS_ACCOUNT_ID} ${AWS_REGION}
     source $location/run-deploy.sh $environment $command
 else
     echo "Unknown Exception met"

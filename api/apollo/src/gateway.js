@@ -19,7 +19,7 @@ Object.keys(env_var_list).forEach(function(key) {
   if (key.match("APP_PORT_")){
     var key_name = key.replace("APP_PORT_","").toLowerCase()
     var value = env_var_list[key]
-    var service_name = process.env.MOVIE_FAV_ENV === 'local' ? "localhost" : key_name;
+    var service_name = process.env.APP_DEFULT_ENV === 'local' ? "localhost" : key_name;
     url = 'http://' + service_name + ':' + value;
     console.log("Adding: " + key_name + ' -> ' + url);
     subgraphsENV.push({name: key_name, url: url});

@@ -1,8 +1,8 @@
 FROM python:3.10-slim-buster
 
 # Default environment
-# ARG MOVIE_FAV_ENV='dev'
-# ENV MOVIE_FAV_ENV=$MOVIE_FAV_ENV
+# ARG APP_DEFULT_ENV='dev'
+# ENV APP_DEFULT_ENV=$APP_DEFULT_ENV
 
 ENV PATH "$PATH:/home/moviefav/.local/bin"
 USER root

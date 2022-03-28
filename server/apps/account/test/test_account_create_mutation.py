@@ -164,12 +164,12 @@ def test_login_exists_response():
     """
     graphql_info_new = gql(begin_gql + input_vars_new + end_gql)
     
-    os.environ["MOVIE_FAV_ENV"] = "bench"
-    lib.gen.log.debug(f"""MOVIE_FAV_ENV: {os.environ["MOVIE_FAV_ENV"]}""")
+    os.environ["APP_DEFULT_ENV"] = "bench"
+    lib.gen.log.debug(f"""APP_DEFULT_ENV: {os.environ["APP_DEFULT_ENV"]}""")
     # query result
     success, result = graphql_sync(schema, {"query": graphql_info_new}, context_value=AUTH["CONTEXT_VALUE"])
     success, result = graphql_sync(schema, {"query": graphql_info_new}, context_value=AUTH["CONTEXT_VALUE"])
-    os.environ["MOVIE_FAV_ENV"] = "test"
+    os.environ["APP_DEFULT_ENV"] = "test"
     lib.gen.log.debug(f"result: {result}")
     assert result["data"][QUERY_NAME]["response"]["code"] == 401
     assert result["data"][QUERY_NAME]["response"]["message"] == "http_401_unauthorized: Account already exists"
