@@ -50,8 +50,8 @@ echo "******************************"
 echo " "
 
 # cd ..
-# sudo scp -i moviefav.pem  movie-fav/.env ubuntu@${APP_PUBLIC_IP_ADDRESS}:/home/ubuntu/movie-fav
-# sudo ssh -i moviefav.pem ubuntu@${APP_PUBLIC_IP_ADDRESS}
+# sudo scp -i ${AWS_PEM_FILE_LOCATION} movie-fav/.env ubuntu@${APP_PUBLIC_IP_ADDRESS}:/home/ubuntu/movie-fav
+# sudo ssh -i ${AWS_PEM_FILE_LOCATION} ubuntu@${APP_PUBLIC_IP_ADDRESS}
 # cd movie-fav
 # git pull https://github.com/africanpilot/movie-fav.git
 # source run.sh deploy prod down
