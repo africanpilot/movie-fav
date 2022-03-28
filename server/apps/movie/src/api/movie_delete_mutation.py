@@ -2,19 +2,20 @@
 # All Rights Reserved. Proprietary and confidential.
 
 from app_lib.lib import Lib
+from typing import Union
 
 class MovieDeleteMutation:
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
     
-    def movie_delete_mutation(self, info, movie_fav_info_id):
+    def movie_delete_mutation(self, info: object, movie_fav_info_id: Union[str,int]) -> dict:
         
         lib = Lib()
         
         # Token and service Validation Process
         general_validation_payload, token_decode = lib.gen.general_validation_process(info)
-        if general_validation_payload != "success":
+        if not general_validation_payload["response"]["success"]:
             return general_validation_payload
         
         with lib.gen.db.get_engine("psqldb_movie").connect() as db:

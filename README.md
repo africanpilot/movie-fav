@@ -13,31 +13,15 @@ The end result has been published on a simple AWS EC2 instance mainly using dock
 Feel free to reach out if you have any improvements, questions, or comments :) makurichard14@gmail.com
 
 # Deployment
-- Using ubuntu EC2 on aws.
-  - get key pair
-  - Create instance
-  - configure your .env and install-init.sh files locally
-    - you will have to use personal auth token as password (https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
-
-  - cd to directory of the .pem file (mine was one folder above my local repo)
-  
+- for continuos deployment after initial set-up
   ```bash
-    sudo scp -i moviefav.pem  movie-fav/.env ubuntu@0.0.0.0:/home/ubuntu/
-    sudo scp -i moviefav.pem  movie-fav/admin/tools/install-init.sh ubuntu@0.0.0.0:/home/ubuntu/
-    sudo ssh -i moviefav.pem ubuntu@0.0.0.0
-    source install-init.sh
-    source run.sh deploy prod build
-    source run.sh deploy prod up
+      source run.sh pipeline prod up
   ```
-  - NOTE: ***update the "0.0.0.0" to the public address of your instance
-  
   
 # Development
- ### First Time Setup docker dev
- - Install docker and docker-compose
- - rename the sample-env file to .env
- - in .env file change MOVIE_FAV_EMAIL to your email
- - in .env file change SENDGRID_API_KEY to your API ( get api from https://app.sendgrid.com/)
+ ### First Time Setup all dev
+ - Install prerequisites in from admin/docs/linuxLocalDev.md
+ - rename the sample-env file to .env and configure
  - run 
   ```bash 
      source run.sh docker dev build
@@ -51,7 +35,7 @@ Feel free to reach out if you have any improvements, questions, or comments :) m
      ```bash 
         source run.sh [script] [enviornment] [command]
      ```
-       - script = local, docker, delpoy
+       - script = local, docker, delpoy, pipeline
        - enviornment = dev, prod, test
        - command = build, up, down
 
@@ -62,7 +46,7 @@ Feel free to reach out if you have any improvements, questions, or comments :) m
         ```
 
  ### Running pytest
- - must be in local envirnment
+ - must be in local environment
 
      ```bash 
          source run.sh local test up
@@ -78,9 +62,9 @@ Feel free to reach out if you have any improvements, questions, or comments :) m
 
 - [x] add redis
 - [ ] add devops ci/cd pipelines
+- [ ] add search
 - [ ] clean up frontend for reusability
 - [ ] create test enviornment for frontend
 - [ ] possibly add protable kubernetes for orchestration
-- [ ] add search
 - [ ] add Cython or C extensions
 - [ ] add multithreading

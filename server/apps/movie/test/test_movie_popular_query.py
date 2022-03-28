@@ -257,7 +257,7 @@ def test_data_return_from_redis_response():
         movie_imdb_info_cover
     """
     with lib.gen.db.get_engine("psqldb_movie").connect() as db:
-        response = lib.movie_imdb_response_for_tests(db=db, cols=cols, pageInfo=pageInfo, userId=ACCOUNT["account_info_id"])
+        response = lib.movie_imdb_response_for_tests(db=db, cols=cols, pageInfo=pageInfo)
         lib.gen.log.debug(f"response: {response}")
         
     redis_db.set(f"""movie_popular_query:{ACCOUNT["account_info_id"]}:{redis_filter_info}""", json.dumps(response), ex=86400) #ex is in secs 86400
@@ -308,7 +308,7 @@ def test_movie_popular_query_response(benchmark):
             movie_imdb_info_plot, 
             movie_imdb_info_cover
         """
-        response = lib.movie_imdb_response_for_tests(db=db, cols=cols, pageInfo=pageInfo, userId=ACCOUNT["account_info_id"])
+        response = lib.movie_imdb_response_for_tests(db=db, cols=cols, pageInfo=pageInfo)
     
     success, result = benchmark(graphql_sync, schema, {"query": graphql_info}, context_value=AUTH["CONTEXT_VALUE"])
     lib.gen.log.debug(f"result: {result}")

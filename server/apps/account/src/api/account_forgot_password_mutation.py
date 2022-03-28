@@ -1,8 +1,6 @@
 # Copyright © 2022 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
-import os 
-
 from app_lib.lib import Lib
 
 class AccountForgotPasswordMutation:
@@ -10,7 +8,7 @@ class AccountForgotPasswordMutation:
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def account_forgot_password(self, info, accountLogin):
+    def account_forgot_password(self, info: object, accountLogin: str) -> dict:
         
         lib = Lib()
         
@@ -35,7 +33,7 @@ class AccountForgotPasswordMutation:
                 'token': token,
                 'user_id': valid_user_cred["account_info_id"],
             }
-            msg = lib.gen.send_to_sendgrid(msg=body, templete="ForgotPassword")
+            msg = lib.gen.send_to_sendgrid(msg=body, template="ForgotPassword")
             if not msg:
                 return lib.gen.http_500_internal_server_error(msg="Unable to send email")
 

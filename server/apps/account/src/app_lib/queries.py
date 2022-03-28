@@ -10,5 +10,5 @@ class Queries:
     query = QueryType()
     
     @query.field("accountMe")
-    def resolve_account_me(_, info):
+    def resolve_account_me(_, info: object) -> dict:
         return AccountMeQuery.account_me(_, info)

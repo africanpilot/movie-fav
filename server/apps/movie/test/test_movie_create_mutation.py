@@ -38,7 +38,7 @@ general = lib.gen.compose_decos([pytest.mark.movie_create_mutation, pytest.mark.
 @general
 def test_always_passes():
     assert True
-
+    
 @general
 def test_unable_to_get_token_response():    
     AUTH_TOKEN = f"Bearer ".encode('utf-8')

@@ -110,7 +110,7 @@ const EmailVerification = (props) => {
     console.log("location1", location);
     resendEmail({
       variables: {
-        login: user ? user.login.login : emailMarkup,
+        login: user ? user[0].account_info_email : emailMarkup,
       },
     });
   };
@@ -129,7 +129,7 @@ const EmailVerification = (props) => {
           <div className={classes.secondParagraph}>
             your account. We sent a verification email to{" "}
             <span className={classes.emailAddress}>
-              {user ? user.login.login : emailMarkup}
+              {user ? user[0].account_info_email : emailMarkup}
             </span>
           </div>
 

@@ -8,7 +8,7 @@ class AccountResendConfirmMutation:
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def account_resend_confirm(self, info, accountLogin):
+    def account_resend_confirm(self, info: object, accountLogin: str) -> dict:
         
         lib = Lib()
         
@@ -36,7 +36,7 @@ class AccountResendConfirmMutation:
                 'email': accountLogin,
                 'token': token,
             }
-            msg = lib.gen.send_to_sendgrid(msg=body, templete="VerifyEmail")
+            msg = lib.gen.send_to_sendgrid(msg=body, template="VerifyEmail")
             if not msg:
                 return lib.gen.http_500_internal_server_error(msg="Unable to send email")
             

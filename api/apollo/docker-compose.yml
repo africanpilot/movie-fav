@@ -18,6 +18,9 @@ services:
     restart: "on-failure"
     env_file:
       - .env
+    # depends_on:
+    #   - account
+    #   - movie
     networks:
       - api
       - mstoapi

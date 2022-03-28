@@ -1,4 +1,5 @@
 - all database will always be docker to keep setup simple
+- vscode venv help https://code.visualstudio.com/docs/python/environments
 
 pre-requirements: linux env
     A) local dev:
@@ -15,7 +16,8 @@ pre-requirements: linux env
             1) sudo apt update
             2) sudo apt install python3-pip
             3) sudo apt-get install python3-venv
-
+                **Note: (you can specify version example: sudo apt-get install python3.10-venv)
+                
         2) node: **must upgrade to version 17 or greater
 
             Install node: https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-20-04
@@ -39,6 +41,9 @@ pre-requirements: linux env
             1) sudo apt-get update
             2) sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
             3) sudo chmod +x /usr/local/bin/docker-compose
+
+    c) additions:
+        1)  sudo apt install jq
 
 
 Main commands: always from root project folder

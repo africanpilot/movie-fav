@@ -1,8 +1,12 @@
-import datetime
+# Copyright © 2022 by Richard Maku, Inc.
+# All Rights Reserved. Proprietary and confidential.
 
 from general import General
 from sqlalchemy.sql import text
-from colorama import Fore, Back, Style
+from typing import Union
+from datetime import datetime
+
+# from colorama import Fore, Back, Style
 
 class Lib:
     
@@ -10,20 +14,17 @@ class Lib:
         self.gen = General()
         super().__init__(**kwargs)
         
-    def get_user_credentials(self, db, login):
-        try:
-            sql = text(f"""
-                SELECT account_info_id,account_info_email,account_info_password,account_info_status
-                ,account_info_verified_email,account_info_registration_status
-                FROM account_info
-                WHERE account_info.account_info_email = '{login}'
-            """)
-            
-            return self.gen.list_sql_response(db=db, sql=sql)[0]
-        except:
-            return {}
+    def get_user_credentials(self, db: object, login: str) -> dict:
+        sql = text(f"""
+            SELECT account_info_id,account_info_email,account_info_password,account_info_status
+            ,account_info_verified_email,account_info_registration_status
+            FROM account_info
+            WHERE account_info.account_info_email = '{login}'
+        """)
+        result = self.gen.list_sql_response(db=db, sql=sql)
+        return result[0] if result else {}
         
-    def verify_login_exists(self, db, login):
+    def verify_login_exists(self, db: object, login: str):
         try:
             sql = text(f"""
                 SELECT account_info_id,account_info_status,account_info_verified_email
@@ -32,14 +33,14 @@ class Lib:
             """)
             return True if db.execute(sql).fetchall() else False
         except Exception as e:
-            self.log.info(f"verify_login_exists: No response = {e}")
+            self.gen.log.critical(f"verify_login_exists: No response = {e}")
             return "DB"
         
-    def account_create(self, data):
+    def account_create(self, data: object) -> str:
         
         # account_info
         password_hash = self.gen.hash_password(data["password"]).decode("utf-8")
-        dateModified = str(datetime.datetime.utcnow())
+        dateModified = str(datetime.utcnow())
 
         sql = text(f"""
             INSERT INTO account_info(account_info_id,account_info_email,account_info_password,account_info_registered_on) 
@@ -51,7 +52,7 @@ class Lib:
         
         return sql
     
-    def account_modify(self, id, data):
+    def account_modify(self, id: Union[int,str], data: dict) -> str:
         
         total_sql = ""
         
@@ -72,10 +73,10 @@ class Lib:
                     WHERE account_contact.account_contact_info_id = {id};
                 """)
                 total_sql+=str(sql)
-        self.gen.log.debug(f"total_sql: {total_sql}")                                             
+        # self.gen.log.debug(f"total_sql: {total_sql}")                                             
         return total_sql
     
-    def account_delete(self, ids, db):
+    def account_delete(self, ids: Union[str,list,int], db: object) -> str:
         total_sql = ""
 
         list_ids = self.gen.check_input_list(ids)
@@ -112,8 +113,8 @@ class Lib:
         
         return user_delete_sql
     
-    def update_user_logout_info(self, ids):
-        logout_date = str(datetime.datetime.utcnow())
+    def update_user_logout_info(self, ids: Union[str,int]) -> str:
+        logout_date = str(datetime.utcnow())
         sql = text(f"""
             UPDATE account_info SET account_info_last_logout_date = '{logout_date}'
             WHERE account_info.account_info_id = {ids};
@@ -121,7 +122,7 @@ class Lib:
         
         return sql
     
-    def delete_user(self, db, email):
+    def delete_user(self, email: str) -> str:
         sql = text(f"""
             DELETE 
             FROM account_info
@@ -130,24 +131,24 @@ class Lib:
         
         return sql
     
-    def update_email_confirmed(self, ids):
+    def update_email_confirmed(self, ids: Union[str,int]) -> str:
         sql = text(f"""
             UPDATE account_info SET (account_info_verified_email,account_info_registration_status,account_info_status) = (True,'APPROVED','ACTIVE')
             WHERE account_info.account_info_id = {ids};
         """)
         return sql
     
-    def get_password_expire_date(self, db, ids):
+    def get_password_expire_date(self, db: object, ids: Union[str,int]) -> list:
         list_ids = self.gen.check_input_list(ids)
         sql = text(f"""
             SELECT account_info_forgot_password_expire_date
             FROM account_info
             WHERE account_info.account_info_id IN({list_ids});
         """)
-            
-        return self.gen.list_sql_response(db=db, sql=sql)[0]
+        result = self.gen.list_sql_response(db=db, sql=sql)
+        return result[0] if result else []
     
-    def _sql_db_join_types(self, sqlType=None):
+    def _sql_db_join_types(self, sqlType: str=None) -> str:
         if sqlType == "AccountAuthenticationResponse":
             sql = """
                 FROM account_info
@@ -160,7 +161,7 @@ class Lib:
             """
         return sql
             
-    def _filter_sql(self, info, db, cols, dbJoinTpye="", pageInfo={}, filterInput={}, oneQuery=""):
+    def _filter_sql(self, db: object, cols: str, dbJoinTpye: str="", pageInfo: dict={}, filterInput: dict={}, oneQuery: str="") -> tuple[list, dict]:
         
         # set None to empty
         pageInfo = {} if pageInfo is None else pageInfo
@@ -242,13 +243,14 @@ class Lib:
     
     ### Response ----------------------------------------------------------------------------------------------------------------
     
-    def account_authentication_response(self, info, db, token, status, filterInput={}, oneQuery="", extraCols=[]):
+    def account_authentication_response(self, info: object, db: object, token: str, status: str, filterInput: dict={}, oneQuery: str="", extraCols: list=[]) -> dict:
+        
         # get columns to return
         list_cols_client = self.gen.convert_to_db_cols(info=info, first=["accountInfo"], exclude=[])
         list_cols = ",".join(list(set(list_cols_client.split(",") + extraCols)))
         
         # exe filter sql
-        result, page_info = self._filter_sql(info=info, db=db, cols=list_cols, filterInput=filterInput, oneQuery=oneQuery)
+        result, page_info = self._filter_sql(db=db, cols=list_cols, filterInput=filterInput, oneQuery=oneQuery)
         auth_result = {
             "authenticationToken": token,
             "authenticationTokenType": "ACCESSTOKEN",
@@ -258,25 +260,26 @@ class Lib:
         
         return self.gen.success_response(result=auth_result, pageInfo=page_info)
     
-    def account_response(self, info, db, pageInfo={}, filterInput={}, oneQuery="", extraCols=[]):
+    def account_response(self, info: object, db: object, pageInfo: dict={}, filterInput: dict={}, oneQuery: str="", extraCols: list=[]) -> dict:
+        
         # get columns to return
         list_cols_client = self.gen.convert_to_db_cols(info=info, first=["result"], exclude=[])
         list_cols = ",".join(list(set(list_cols_client.split(",") + extraCols)))
 
         # exe filter sql
-        result, page_info = self._filter_sql(info=info, db=db, pageInfo=pageInfo, filterInput=filterInput, oneQuery=oneQuery, cols=list_cols)
+        result, page_info = self._filter_sql(db=db, pageInfo=pageInfo, filterInput=filterInput, oneQuery=oneQuery, cols=list_cols)
         
         return self.gen.success_response(result=result, pageInfo=page_info)
 
 
 #################### For Tests ###################
 
-    def account_response_for_test(self, db, cols, pageInfo={}, filterInput={}, oneQuery=""):
+    def account_response_for_test(self, db: object, cols: str, pageInfo: dict={}, filterInput: dict={}, oneQuery: str="") -> dict:
 
         # exe filter sql
-        result, page_info = self._filter_sql(info=None, db=db, pageInfo=pageInfo, filterInput=filterInput, oneQuery=oneQuery, cols=cols)
+        result, page_info = self._filter_sql(db=db, pageInfo=pageInfo, filterInput=filterInput, oneQuery=oneQuery, cols=cols)
         
         # remove page_info_count
-        result = [{k: v for k, v in d.items() if k != "page_info_count"} for d in result]
+        result = self.gen.remove_keys(data=result, exclude=["page_info_count"])
         
         return self.gen.success_response(result=result, pageInfo=page_info)

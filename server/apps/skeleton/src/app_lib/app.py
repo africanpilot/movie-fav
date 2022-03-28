@@ -50,7 +50,7 @@ class StandaloneApplication(gunicorn.app.base.BaseApplication):
 
 if __name__ == '__main__':
     
-    if os.environ['MOVIE_FAV_ENV'] in ["local","test"]:
+    if os.environ['APP_DEFAULT_ENV'] in ["local","test"]:
         import uvicorn
         uvicorn.run("app:application", 
                     host="0.0.0.0", port=int(os.environ[APP_PORT_NAME]), 

@@ -8,13 +8,13 @@ class MovieModifyMutation:
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
     
-    def movie_modify_mutation(self, info, movieInput):
+    def movie_modify_mutation(self, info: object, movieInput: dict) -> dict:
         
         lib = Lib()
         
         # Token and service Validation Process
         general_validation_payload, token_decode = lib.gen.general_validation_process(info)
-        if general_validation_payload != "success":
+        if not general_validation_payload["response"]["success"]:
             return general_validation_payload
         
         with lib.gen.db.get_engine("psqldb_movie").connect() as db:

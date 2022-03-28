@@ -3,13 +3,18 @@
 # Copyright © 2022 by Richard Maku.
 # All Rights Reserved. Proprietary and confidential.
 
+set -e
+
+# imports
+location=admin/tools
+source $location/general-func.sh
+
 todo="\
     db/postgres \
     db/redis \
     server \
     api/apollo \
-    client \
-    api/nginx-apollo
+    client
 "
 
 # db/postgres \
@@ -17,73 +22,62 @@ todo="\
 # server \
 # api/apollo \
 # client \
-# api/nginx \
 # api/nginx-apollo \
 
 export SERVICES_TODO="$todo"
-location=admin/tools
 script="$1"
 environment="$2"
 command="$3"
 shift 2
 
-case $script in
-docker|local|deploy)
-    a=1
-    ;;
-*)
-    echo "Invalid script: $script"
-    return 1
-    ;;
-esac
+# validation process
+validate_app_setup
 
-case $environment in
-test|prod|dev)
-    a=1
-    ;;
-*)
-    echo "Invalid environment: $environment"
-    return 1
-    ;;
-esac
+validate_script_agr $script
 
-case $command in
-build|up|down)
-    a=1
-    ;;
-*)
-    echo "Invalid command: $command"
-    return 1
-    ;;
-esac
+validate_enviornment_agr $environment
 
-echo "script: $script"
-echo "environment: $environment"
-echo "command: $command"
+validate_command_agr $command
 
-# check for secrets file
-if [ -f ".env" ]; then
-    sed -i "/MOVIE_FAV_ENV/c\MOVIE_FAV_ENV=$environment" .env
-    for d in $todo; do
-        cp .env "$d"
-    done
-else
-    echo "Please add and configure the .env file"
-    return 1
+# set environment variables
+sed -i "/APP_DEFAULT_ENV/c\APP_DEFAULT_ENV=$environment" .env
+if [ "$script" == "local" ]; then
+    sed -i "/APP_DEFAULT_ENV/c\APP_DEFAULT_ENV=local" .env
+    if [ "$command" == "down" ]; then
+        set +e
+    fi
 fi
-
-# sudo chmod -R 777 .  # might just direct to certbot
+export $(grep -v '^#' .env | xargs)
+pass_down_env_copies
 
 # redirect to script
 if [ "$script" == "local" ]; then
+    prep_for_dev
+    validate_local_setup $todo $location
     source $location/run-local.sh $environment $command
 elif [ "$script" == "docker" ]; then
+    prep_for_dev
     source $location/run-docker.sh $environment $command
 elif [ "$script" == "deploy" ]; then
-    export $(grep -v '^#' .env | xargs)
-    aws ecr get-login-password --region ${AWS_REGION} --profile default | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
-    source $location/run-deploy.sh $environment $command
+    if [ "$command" == "up" ] || [ "$command" == "down" ]; then 
+        prep_for_deploy
+        aws_erc_login ${AWS_ACCOUNT_ID} ${AWS_REGION}
+        source $location/run-deploy.sh $environment $command
+    else
+        echo "WARNING ERROR: Only up or down commands allowed for deployment script"
+        return 1 
+    fi
+elif [ "$script" == "pipeline" ]; then
+    if [ "$command" == "up" ] && [ "$environment" == "prod" ]; then 
+        prep_for_deploy
+        source $location/run-pipeline.sh
+    else
+        echo "WARNING ERROR: Only pipeline prod up command allowed for pipeline script"
+        return 1 
+    fi
 else
     echo "Unknown Exception met"
     return 1
 fi
+
+$SHELL

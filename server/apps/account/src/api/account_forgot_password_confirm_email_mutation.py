@@ -2,8 +2,6 @@
 # All Rights Reserved. Proprietary and confidential.
 
 from app_lib.lib import Lib
-from sqlalchemy.sql import text
-from colorama import Fore
 from datetime import datetime
 
 class AccountForgotPasswordConfirmEmailMutation:
@@ -11,13 +9,13 @@ class AccountForgotPasswordConfirmEmailMutation:
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def account_forgot_password_confirm_email(self, info):
+    def account_forgot_password_confirm_email(self, info: object) -> dict:
         
         lib = Lib()
         
         # Token and service Validation Process
         general_validation_payload, token_decode = lib.gen.general_validation_process(info, email=True)
-        if general_validation_payload != "success":
+        if not general_validation_payload["response"]["success"]:
             return general_validation_payload
         
         with lib.gen.db.get_engine("psqldb_movie").connect() as db:

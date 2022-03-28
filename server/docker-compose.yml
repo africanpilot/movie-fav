@@ -1,7 +1,7 @@
 version: '3.9'
 services:
   account:
-    image: ${AWS_SERVER_IMAGE} #account:${MOVIE_FAV_ENV}
+    image: ${AWS_SERVER_IMAGE}
     hostname: account
     # build: .
     entrypoint: [/home/moviefav/server/start, account]
@@ -14,6 +14,9 @@ services:
         - .env
     ports:
         - '4001:4001'
+    # depends_on:
+    #   - psqldb_secmsdb
+    #   - redisdb_secmsdb
     networks:
         - secmsapp
         - secmsdbs
@@ -33,6 +36,9 @@ services:
       - .env
     ports:
       - "4002:4002"
+    # depends_on:
+    #   - psqldb_secmsdb
+    #   - redisdb_secmsdb
     networks:
       - secmsapp
       - secmsdbs
