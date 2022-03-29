@@ -83,5 +83,3 @@ echo
 # docker-compose -f $nginx_location/docker-compose.yml exec nginxfortress nginx -s reload
 
 docker-compose -f $nginx_location/docker-compose.yml down -v --remove-orphans
-
-$SHELL

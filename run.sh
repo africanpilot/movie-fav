@@ -14,7 +14,8 @@ todo="\
     db/redis \
     server \
     api/apollo \
-    client
+    client \
+    api/nginx-apollo
 "
 
 # db/postgres \
@@ -59,14 +60,9 @@ elif [ "$script" == "docker" ]; then
     prep_for_dev
     source $location/run-docker.sh $environment $command
 elif [ "$script" == "deploy" ]; then
-    if [ "$command" == "up" ] || [ "$command" == "down" ]; then 
-        prep_for_deploy
-        aws_erc_login ${AWS_ACCOUNT_ID} ${AWS_REGION}
-        source $location/run-deploy.sh $environment $command
-    else
-        echo "WARNING ERROR: Only up or down commands allowed for deployment script"
-        return 1 
-    fi
+    prep_for_deploy
+    aws_erc_login ${AWS_ACCOUNT_ID} ${AWS_REGION}
+    source $location/run-deploy.sh $environment $command
 elif [ "$script" == "pipeline" ]; then
     if [ "$command" == "up" ] && [ "$environment" == "prod" ]; then 
         prep_for_deploy

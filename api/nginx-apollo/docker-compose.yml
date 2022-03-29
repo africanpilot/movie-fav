@@ -3,7 +3,7 @@ services:
   nginxfortress:
     image: ${AWS_NGINX_APOLLO_IMAGE}
     hostname: nginxfortress
-    # build: .
+    build: .
     restart: always
     volumes:
       - ./templates:/etc/nginxfortress/templates

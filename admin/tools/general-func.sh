@@ -29,7 +29,7 @@ validate_enviornment_agr () {
 
 validate_command_agr () {
     case $1 in
-    build|up|down)
+    build|up|down|pull)
         a=1
         ;;
     *)

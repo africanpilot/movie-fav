@@ -5,7 +5,7 @@ services:
     hostname: client
     ports:
       - "3000:3000"
-    # build: .
+    build: .
     env_file:
       - .env
     volumes:

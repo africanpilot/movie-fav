@@ -10,7 +10,7 @@ services:
     volumes: 
       - "./redis.conf:/usr/local/etc/redis/redis.conf"
       # - cache:/data
-      - "./tmp/data/redis_genmsdbtest/data:/usr/local/etc/redis/data:delegated"
+      - "./tmp/data/redis_secmsdb/data:/usr/local/etc/redis/data:delegated"
     env_file:
       - .env
     networks:
@@ -18,6 +18,6 @@ services:
 networks:
   secmsdbs:
 volumes:
-  redis_genmsdbtest:
+  redis_secmsdb:
   # cache:
   #   driver: local
