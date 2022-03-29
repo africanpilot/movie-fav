@@ -1,6 +1,6 @@
 # Introduction
 
-This project aims to create a ready to use tech stack with a focus on a development friendly environment. A single script entry point will allow one to transition between local, dev, test, and prod enviornments. The tech stack is meant to be for a monolithic application but some higher level microservices concepts are included in order to improve development time. General tech stack includes Apollo Graphql, Python, Reactjs, Docker/Docker compose, Postgresql.
+This project aims to create a ready to use tech stack with a focus on a development friendly environment. A single script entry point will allow one to transition between local, dev, test, and prod enviornments. The tech stack is meant to be for a monolithic application but some higher level microservices concepts are included in order to improve development time. General tech stack includes Apollo Graphql, Python, Reactjs, Docker/Docker compose, Postgresql, and Redis.
 
 A working copy of the "Movie Fav" application can be found here https://www.moviefav.xyz 
 
