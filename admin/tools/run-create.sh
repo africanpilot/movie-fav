@@ -52,5 +52,3 @@ else
     echo "Did not find $compose_file"
     return 1
 fi
-
-$SHELL
