@@ -49,18 +49,15 @@ echo "STEP 4/4: Deploy to EC2 instance"
 echo "******************************"
 echo " "
 
-cd ..
 sudo scp -i ${AWS_PEM_FILE_LOCATION} movie-fav/.env ubuntu@${APP_PUBLIC_IP_ADDRESS}:/home/ubuntu/movie-fav
 sudo ssh -i ${AWS_PEM_FILE_LOCATION} ubuntu@${APP_PUBLIC_IP_ADDRESS}
 cd movie-fav
 git stash
 git pull https://github.com/africanpilot/movie-fav.git
 source run.sh deploy prod down
-source run.sh deploy prod build
+docker system prune --all --force
+# source run.sh deploy prod pull
 source run.sh deploy prod up
-
-
-docker-compose -f server/docker-compose.yml -p services pull
 
 echo " "
 echo "******************************"
