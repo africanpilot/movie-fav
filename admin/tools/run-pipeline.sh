@@ -19,7 +19,7 @@ echo "STEP 1/4: Running server tests"
 echo "******************************"
 echo " "
 
-# source $tools_location/run-test-server.sh
+source $tools_location/run-test-server.sh
 
 echo " "
 echo "******************************"
