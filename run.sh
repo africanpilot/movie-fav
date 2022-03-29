@@ -76,4 +76,4 @@ else
     return 1
 fi
 
-$SHELL
+# $SHELL

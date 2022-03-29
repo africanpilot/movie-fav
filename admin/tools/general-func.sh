@@ -168,6 +168,19 @@ docker_compose_up () {
     fi
 }
 
+docker_compose_pull () {
+
+    ycommand="$1"
+    shift 1
+    xcommand="${ycommand} pull $*"
+    announce "Running $xcommand"
+    eval $xcommand
+    if [ $? -ne 0 ]; then
+        echo " CRITICAL ERROR: docker_compose_pull"
+	    return 1
+    fi
+}
+
 do_dir () {
 
     d="$1"
@@ -177,6 +190,9 @@ do_dir () {
     case $command in
 	build)
 	    docker_compose_build "docker-compose" $*
+	    ;;
+     pull)
+	    docker_compose_pull "docker-compose" $*
 	    ;;
 	 up)
 	     docker_compose_up "docker-compose" $*
