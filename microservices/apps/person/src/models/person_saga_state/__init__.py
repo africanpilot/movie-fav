@@ -1,4 +1,4 @@
-# Copyright © 2022 by Richard Maku, Inc.
+# Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
 from person.src.models.person_saga_state.base import PersonSagaState, PersonSagaStateBase

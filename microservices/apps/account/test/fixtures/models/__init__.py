@@ -1,4 +1,4 @@
-# Copyright © 2022 by Richard Maku, Inc.
+# Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
 from account.test.fixtures.models.account_lib import link_account_lib, private_schema

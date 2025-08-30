@@ -1,4 +1,4 @@
-# Copyright © 2022 by Richard Maku, Inc.
+# Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
 from notifications.src.domain.step_handler.send_account_forgot_password_email_task import send_account_forgot_password_email_task

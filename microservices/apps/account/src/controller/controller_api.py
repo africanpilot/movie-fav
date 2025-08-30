@@ -1,4 +1,4 @@
-# Copyright © 2022 by Richard Maku, Inc.
+# Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
 from link_lib.microservice_controller import ControllerToApollo
@@ -26,7 +26,6 @@ class APIController(ControllerToApollo):
         "AccountCompanyUpdateMutation",
         "AccountCompanyQuery",
         "AccountGuestLoginMutation",
-        "AccountAuthenticationAuthZeroLoginMutation",
     ]
     
     private_models_to_load = []

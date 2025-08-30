@@ -1,4 +1,4 @@
-# Copyright © 2022 by Richard Maku, Inc.
+# Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
 from notifications.src.models.notifications_info.create import NotificationsInfoCreateInput, NotificationsInfoCreateFormInput
