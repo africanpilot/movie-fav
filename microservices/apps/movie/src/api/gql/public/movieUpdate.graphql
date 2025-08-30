@@ -1,0 +1,10 @@
+mutation MovieUpdate($movieInfoId: Int!) {
+  movieUpdate(movie_info_id: $movieInfoId) {
+    response {
+      code
+      success
+      message
+      version
+    }
+  }
+}

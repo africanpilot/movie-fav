@@ -1,0 +1,64 @@
+extend type Query {
+    movieInfo(pageInfo: MovieInfoPageInfoInput, filterInput: MovieInfoFilterInput): MovieInfoResponse
+}
+
+extend type Mutation {
+    movieDownload(searchInput: [MovieInfoDownloadInput]): MovieInfoResponse
+    movieUpdate(movie_info_id: Int!): MovieInfoResponse
+}
+
+type MovieInfoResponse {
+    response: GeneralResponse!
+    pageInfo: PageInfo
+    result: [MovieInfo]
+}
+
+extend type MovieInfo @key(fields: "id") {
+    imdb_id: String
+    title: String
+    cast: [String]
+    year: Int
+    directors: [String]
+    genres: [String]
+    countries: [String]
+    plot: String
+    cover: String
+    rating: Float
+    votes: Int
+    run_times: [String]
+    creators: [String]
+    full_cover: String
+    popular_id: Int
+    release_date: String
+    trailer_link: String
+    added_count: Int
+    download_1080p_url: String
+    download_720p_url: String
+    download_480p_url: String
+    videos: [String]
+}
+
+extend type TrackerMovie @key(fields: "movie_info_id") {
+    movie_info_id: Int @external
+    movie_info: MovieInfo
+}
+
+input MovieInfoFilterInput {
+    id: [Int]
+    title: [String]
+    year: [Int]
+}
+
+input MovieInfoPageInfoInput {
+  first: Int
+  pageNumber: Int
+  minId: Int
+  maxId: Int
+  orderBy: OrderByEnum
+  sortBy: [MovieInfoSortByEnum]
+}
+
+input MovieInfoDownloadInput {
+    imdb_id: String!
+    download_type: DownloadTypeEnum!
+}

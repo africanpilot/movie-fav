@@ -1,0 +1,18 @@
+mutation AccountAuthenticationLogin($accountLoginInput: AccountLoginInput!){
+  accountAuthenticationLogin(accountLoginInput: $accountLoginInput) {
+      response{ code success message version}
+      pageInfo{ ...PageInfo}
+      result{
+        authenticationToken
+        authenticationTokenType
+        registrationStatus
+        account_info {
+          id
+          email
+          status
+          registration_status
+          profile_image
+        }
+      }
+  }
+}

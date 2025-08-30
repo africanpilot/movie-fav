@@ -1,0 +1,10 @@
+mutation MovieDownload($searchInput: [MovieInfoDownloadInput]) {
+  movieDownload(searchInput: $searchInput) {
+    response {
+      code
+      success
+      message
+      version
+    }
+  }
+}

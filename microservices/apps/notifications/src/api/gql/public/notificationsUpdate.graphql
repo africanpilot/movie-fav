@@ -1,0 +1,59 @@
+mutation NotificationsUpdate($updateInput: NotificationsSagaStateUpdateInput!, $pageInfo: NotificationsSagaStatePageInfoInput, $filterInput: NotificationsSagaStateFilterInput) {
+  notificationsUpdate(updateInput: $updateInput, pageInfo: $pageInfo, filterInput: $filterInput) {
+    response{ code success message version}
+    pageInfo{ ...PageInfo}
+    result{
+      id
+      status
+      account_store_id
+      body{
+        email
+        template
+        requestor_name
+        patient_name
+        relationship
+        phone
+        mailing_address
+        transport_type
+        wheelchair
+        oxygen
+        starting_address
+        ending_address
+        transport_date
+        additional_needs
+        message
+        payment_method
+        drop_off_date
+        billing_type
+        patient_weight
+        drop_off_message
+        pickup_message
+        status
+      }
+      modified_body{
+        email
+        template
+        requestor_name
+        patient_name
+        relationship
+        phone
+        mailing_address
+        transport_type
+        wheelchair
+        oxygen
+        starting_address
+        ending_address
+        transport_date
+        additional_needs
+        message
+        payment_method
+        drop_off_date
+        billing_type
+        patient_weight
+        drop_off_message
+        pickup_message
+        status
+      }
+    }
+  }
+}

@@ -1,11 +1,39 @@
 #!/bin/bash
 
-# Copyright © 2022 by Richard Maku.
-# All Rights Reserved. Proprietary and confidential.
+validate_engine () {
+    if [ "$1" = "docker" ]; then
+        if command -v docker &> /dev/null; then
+            DOCKER="docker"
+            DOCKER_COMPOSE="docker compose"
+            APP_DEFAULT_ENV="DEFAULT"
+            announce "WARNING: Docker engine depricated Use lima script instead"
+        else
+            echo "CRITICAL ERROR: docker does not exist or please start the docker engine"
+            return 1
+        fi
+    fi
+
+    if [ "$1" = "nerdctl" ]; then
+        if command -v nerdctl &> /dev/null; then
+            DOCKER="nerdctl"
+            DOCKER_COMPOSE="nerdctl compose"
+        else
+            echo "CRITICAL ERROR: nerdctl does not exist"
+            return 1
+        fi
+    fi
+}
+
+create_env_from_sample () {
+    environment="$1"
+    if [ ! -f ".$environment.env" ]; then
+        cp Sample-env .$environment.env
+    fi
+}
 
 validate_script_agr () {
     case $1 in
-    docker|local|deploy|pipeline)
+    docker|nerdctl|deploy)
         a=1
         ;;
     *)
@@ -15,9 +43,10 @@ validate_script_agr () {
     esac
 }
 
+
 validate_enviornment_agr () {
     case $1 in
-    test|prod|dev)
+    dev|test|prod)
         a=1
         ;;
     *)
@@ -27,9 +56,10 @@ validate_enviornment_agr () {
     esac
 }
 
+
 validate_command_agr () {
     case $1 in
-    build|up|down|pull)
+    build|up|down|pull|dry)
         a=1
         ;;
     *)
@@ -39,40 +69,6 @@ validate_command_agr () {
     esac
 }
 
-validate_app_setup () {
-    echo " "
-    echo "******************************"
-    echo "Checking app integerity"
-    echo "******************************"
-    echo " "
-
-    dir_todo="\
-        db/postgres \
-        db/redis \
-        server \
-        api/apollo \
-        client \
-        api/nginx \
-        api/nginx-apollo \
-    "
-    for d in $dir_todo; do
-        if [ ! -d "$d" ]; then
-            echo "CRITICAL ERROR: Please add the directory $d"
-            return 1
-        fi
-    done
-
-    if [ ! -f ".env" ]; then
-        echo "CRITICAL ERROR: Please add and configure the .env file"
-        return 1
-    fi
-
-    if ! [ -x "$(command -v docker-compose)" ]; then
-        echo 'CRITICAL ERROR: docker-compose is not installed.' >&2
-        return 1
-    fi
-}
-
 exists_in_list () {
     LIST=$1
     DELIMITER=$2
@@ -80,36 +76,21 @@ exists_in_list () {
     echo $LIST | tr "$DELIMITER" '\n' | grep -F -q -x "$VALUE"
 }
 
-pass_down_env_copies () {
 
-    dir_todo="\
-        db/postgres \
-        db/redis \
-        server \
-        api/apollo \
-        client \
-        api/nginx \
-        api/nginx-apollo \
-    "
-
-    for d in $dir_todo; do
-        cp .env "$d"
-    done
+get_list_of_services (){
+    $(grep container_name: docker-compose-dev.yml | awk '{ printf $2 "," }')
 }
 
-aws_erc_login () {
-    aws ecr get-login-password --region $2 --profile default | docker login --username AWS --password-stdin $1.dkr.ecr.$2.amazonaws.com
-}
 
 validate_service_todo_env () {
-
-    if set|grep '^SERVICES_TODO=' >/dev/null; then
-        return
-    else
-    echo "CRITICAL ERROR: Please set and export the SERVICES_TODO env"
-        return 1
+    echo "checking validate_service_todo_env: ${SERVICES_TODO}"
+    if [ -z "$SERVICES_TODO" ]; then
+        services=$(grep container_name: docker-compose-dev.yml | awk '{ printf $2 "," }')
+        export SERVICES_TODO=$services
+        echo "SER: $SERVICES_TODO"
     fi
 }
+
 
 set_environment () {
 
@@ -128,11 +109,14 @@ announce (){
     echo "******************************"
 }
 
+
 docker_compose_down () {
 
     ycommand="$1"
-    shift 1
-    xcommand="${ycommand} -p services down -v ${ORPHANS}"
+    d="$2"
+    shift 2
+    # xcommand="${ycommand} -p services down $d -v ${ORPHANS}"
+    xcommand="${ycommand} -p services down"
     announce "Running $xcommand"
     eval $xcommand
     if [ $? -ne 0 ]; then
@@ -141,12 +125,13 @@ docker_compose_down () {
     fi
 }
 
+
 docker_compose_build () {
 
-    echo $*
     ycommand="$1"
-    shift 1
-    xcommand="${ycommand} build $*"
+    d="$2"
+    shift 2
+    xcommand="${ycommand} -p services build $d"
     announce "Running $xcommand"
     eval $xcommand
     if [ $? -ne 0 ]; then
@@ -155,11 +140,13 @@ docker_compose_build () {
     fi
 }
 
+
 docker_compose_up () {
 
     ycommand="$1"
-    shift 1
-    xcommand="${ycommand} ${PROJECT_OPTION}up -d $*"
+    d="$2"
+    shift 2
+    xcommand="${ycommand} -p services up -d $d"
     announce "Running $xcommand"
     eval $xcommand
     if [ $? -ne 0 ]; then
@@ -168,11 +155,13 @@ docker_compose_up () {
     fi
 }
 
+
 docker_compose_pull () {
 
     ycommand="$1"
-    shift 1
-    xcommand="${ycommand} pull $*"
+    d="$2"
+    shift 2
+    xcommand="${ycommand} -p services pull $d"
     announce "Running $xcommand"
     eval $xcommand
     if [ $? -ne 0 ]; then
@@ -181,147 +170,117 @@ docker_compose_pull () {
     fi
 }
 
-do_dir () {
+nerdctl_build () {
+    ycommand="$1"
+    d="$2"
+    shift 2
+    xcommand="${ycommand} --build-arg APP_DEFAULT_ENV=${APP_DEFAULT_ENV} -t $d:${APP_DEFAULT_ENV} $*"
+    announce "Running $xcommand"
+    eval $xcommand
+    if [ $? -ne 0 ]; then
+        echo " CRITICAL ERROR: nerdctl_build"
+	    return 1
+    fi
+}
 
+helm_check () {
+    chart=$1
+    command=$2
+    
+    helm lint ./deployment/helm/$chart/
+    helm install --dry-run --debug ./deployment/helm/$chart/ --generate-name
+}
+
+do_helm_deployment () {
+    announce "Deploying $d"
+    chart=$1
+    command=$2
+
+    helm upgrade -i --timeout 20s $chart ./deployment/helm/$chart/
+}
+
+do_dir () {
     d="$1"
     command="$2"
-    echo "C=$command"
     shift 2
     case $command in
 	build)
-	    docker_compose_build "docker-compose" $*
-	    ;;
+        # nerdctl build --namespace k8s.io -t $d ./microservices/.
+        if [ "${DOCKER}" = "nerdctl" ]; then
+            nerdctl_build "nerdctl build" $d ./microservices/.
+        else
+	        docker_compose_build "docker compose -f ${DOCKER_COMPOSE_FILE_NAME}" $d $*
+	    fi
+        ;;
      pull)
-	    docker_compose_pull "docker-compose" $*
+	    docker_compose_pull "${DOCKER_COMPOSE} -f ${DOCKER_COMPOSE_FILE_NAME}" $d $*
 	    ;;
 	 up)
-	     docker_compose_up "docker-compose" $*
+	     docker_compose_up "${DOCKER_COMPOSE} -f ${DOCKER_COMPOSE_FILE_NAME}" $d $*
       	    ;;
 	 down)
-      	     docker_compose_down "docker-compose" $*
+      	     docker_compose_down "${DOCKER_COMPOSE} -f ${DOCKER_COMPOSE_FILE_NAME}" $d $*
       	     ;;
        	 *)
 	     echo " CRITICAL ERROR: Unknown command $1"
 	     return 1
-       	     ;;	
+       	     ;;
 	esac
 }
 
-do_custom () {
 
-    d="$1"
-    command="$2"
-    shift 2
-    case $command in
-	build)
-	    docker_compose_build "./custom-compose" $*
-	    ;;
-	 up)
-	     docker_compose_up "./custom-compose" $*
-      	    ;;
-	 down)
-      	     docker_compose_down "./custom-compose" $*
-      	     ;;
-       	 *)
-	     echo "Unknown command $1"
-	     return 1
-       	     ;;	
-	esac
+announce_setup_check (){
+
+    echo "******************************"
+    echo "** $1"
+    echo "******************************"
 }
 
-install_server_env () {
 
-    echo " "
-    echo "******************************"
-    echo "Setting up server dependancies"
-    echo "******************************"
-    echo " "
+export_env_var () {
+    environment=$1
+    export $(grep -v '^#' .$environment.env | xargs)
+}
 
-    if [ -d "server/pyenv" ] 
-    then
-        echo "Directory server/pyenv exists."
-        source server/pyenv/bin/activate
+
+validate_packages() {
+    package_name=$1
+    $package_name --version 2>&1 >/dev/null
+    PACKAGE_IS_AVAILABLE=$?
+    if [ $PACKAGE_IS_AVAILABLE -eq 0 ]; then
+        echo "$package_name is installed"
     else
-        echo "Directory server/pyenv does not exists. Installing Enviornment"
-        python3.10 -m venv server/pyenv
-        source server/pyenv/bin/activate
-        pip install -r server/requirements.txt
+        echo "$package_name is not installed!"
     fi
 }
 
-install_api_env () {
 
+validate_app_setup () {
+    environment=$1
     echo " "
     echo "******************************"
-    echo "Setting up apollo packages"
-    echo "******************************"
-    echo " "
-
-    if [ -d "api/apollo/node_modules" ] 
-    then
-        echo "Directory api/apollo/node_modules exists."
-    else
-        echo "Directory api/apollo/node_modules does not exists. Installing Enviornment"
-        npm --prefix api/apollo install
-    fi
-}
-
-install_client_env () {
-
-    echo " "
-    echo "******************************"
-    echo "Setting up client packages"
+    echo "Checking app integrity"
     echo "******************************"
     echo " "
 
-    if [ -d "client/node_modules" ] 
-    then
-        echo "Directory client/node_modules exists."
-    else
-        echo "Directory client/node_modules does not exists. Installing Enviornment"
-        npm --prefix client install
-    fi
-}
-
-validate_local_setup () {
-
-    if exists_in_list "$1" " " "server"; then
-        install_server_env
-    fi
-    if exists_in_list "$1" " " "client"; then
-        install_client_env
-    fi
-    if exists_in_list "$1" " " "api/apollo"; then
-        install_api_env
-    fi
-}
-
-prep_for_deploy () {
-
-    build_todo="\
-        server \
-        api/apollo \
-        client \
-        api/nginx-apollo
+    dir_todo="\
+        microservices \
+        microservices/apps/postgres \
+        microservices/apps/rabbitmq \
+        microservices/apps/redis
     "
-    for d in $build_todo; do
-        sed -i 's/# build: ./build: ./' "$d/docker-compose.yml"
-        sed -i 's/build: ./# build: ./' "$d/docker-compose.yml"
+    for d in $dir_todo; do
+        if [ ! -d "$d" ]; then
+            echo "CRITICAL ERROR: Please add the directory $d"
+            return 1
+        fi
     done
+
+    if ! [ -x "$(command -v docker compose)" ]; then
+        echo 'CRITICAL ERROR: docker compose is not installed.' >&2
+        return 1
+    fi
+
+    create_env_from_sample $environment
+    export_env_var $environment
 }
-
-prep_for_dev () {
-
-    build_todo="\
-        server \
-        api/apollo \
-        client \
-        api/nginx-apollo
-    "
-    for d in $build_todo; do
-        sed -i 's/# build: ./build: ./' "$d/docker-compose.yml"
-    done
-}
-
-
-# validate_orign_run_command

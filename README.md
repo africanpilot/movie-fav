@@ -1,70 +1,61 @@
-# Introduction
+## Commands
 
-This project aims to create a ready to use tech stack with a focus on a development friendly environment. A single script entry point will allow one to transition between local, dev, test, and prod enviornments. The tech stack is meant to be for a monolithic application but some higher level microservices concepts are included in order to improve development time. General tech stack includes Apollo Graphql, Python, Reactjs, Docker/Docker compose, Postgresql, and Redis.
+| Objective      | Command
+|----------------|-------------------------------------------------
+| General        | `monxt [script] [environment] [command]`
+| Dev Server     | `monxt docker dev up `
+| Prod Server    | `monxt docker prod up`
+| Test Server    | `monxt docker test up`
 
-A working copy of the "Movie Fav" application can be found here https://www.moviefav.xyz 
 
-The focus for the application has been mainly backend, server, and deployment related but there is plenty of client side implementaion to explore. Working more on the client side in the days to come.
+## Installation
 
-The end result has been published on a simple AWS EC2 instance mainly using docker-compose. You can signup with your own email (check spam folder for email verification), or use the included account 
-- username:makurichard14@gmail.com
-- password:richardMaku1!
+- This repo uses a docker work flow for development, running tests, and simulating a prod environment. Bind mount will take care of connecting the microservices directory to the docker container to take advantage of the reloader when making changes locally. You can still, however, develop locally without docker on your own terms
+- Install Docker Hub desktop: This is the best way to move through different containers, view server logs, and other useful docker features
+- .env: Copy the "Sample-env" file and change it to ".env"
+- specify ms: use the .env file var "SERVICES_TODO" when you want to specify the microservice to run.
+- Homebrew: Install Homebrew. Other packages needed for the run.sh file will be installed using homebrew
 
-Feel free to reach out if you have any improvements, questions, or comments :) makurichard14@gmail.com
 
-# Deployment
-- for continuos deployment after initial set-up
-  ```bash
-      source run.sh pipeline prod up
-  ```
-  
-# Development
- ### First Time Setup all dev
- - Install prerequisites in from admin/docs/linuxLocalDev.md
- - rename the sample-env file to .env and configure
- - run 
-  ```bash 
-     source run.sh docker dev build
-     source run.sh docker dev up
-  ```
+## pre-commit
 
- ### Enviornments and commands
+- Install: https://pre-commit.com/
+- running locally: This will also happen automatically before committing to a branch, but you can also run the tasks with `pre-commit run --all-files`
 
-   - you can run devlopment enviornments and deployments with: 
-  
-     ```bash 
-        source run.sh [script] [enviornment] [command]
-     ```
-       - script = local, docker, delpoy, pipeline
-       - enviornment = dev, prod, test
-       - command = build, up, down
+## Run options
 
-       example: 
-        ```bash 
-           source run.sh docker dev build
-           source run.sh docker dev up
-        ```
 
- ### Running pytest
- - must be in local environment
+| Objective      | Command Options
+|----------------|-------------------------------------------------
+| script         | `docker`
+| environment    | `dev, test, prod`
+| command        | `build, up, down`
 
-     ```bash 
-         source run.sh local test up
-         source run.sh local test down
-     ```
 
-   example:
-     ```python 
-       pytest -v -m account server/apps/account
-       pytest -v -m account_bench server/apps/account
-     ```
-# TODO
+## Script
 
-- [x] add redis
-- [x] add ci/cd pipelines
-- [ ] add search
-- [ ] clean up frontend for reusability
-- [ ] create test enviornment for frontend
-- [ ] possibly add protable kubernetes for orchestration
-- [ ] add Cython or C extensions
-- [ ] add multithreading
+- currently only the docker script is available
+
+
+## Environment
+
+- There are 3 types of environments available dev, test, and prod. Each with there own docker compose file
+
+
+## Command
+
+- these commands are docker compose commands
+
+## Directories
+
+#### admin:
+- here we can store general purpose scripts that will help with development. Documents for this repo will be stored here too
+
+#### deployment
+- placeholder for developing with deployment repos
+
+#### microservices
+- all core microservices go here.
+- The use of the links directory allows us to have a space to share code between different microservices, thus reducing on duplicate code.
+- This directory approach also focuses on providing standards, here the Dockerfile, makefile, start, and others apply to all microservices. However, one can still create a microservice with its own independent rules, but lets try not to do that.
+- You are free to checkout other backend microservices that have not been officially migrated. There are some that have been tried and added to the docker-compose files.

@@ -1,0 +1,10 @@
+[flake8]
+max-line-length=200
+
+# For Black compatibility, ignore:
+# E203 whitespace before ':', see: https://github.com/psf/black/issues/1859
+ignore=E203,E501,E731,F403,F405,W503,W504
+
+# Ignore import path hacking in the bin/ scripts
+per-file-ignores=
+    **/src/app_lib/app.py:F401,

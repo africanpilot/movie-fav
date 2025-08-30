@@ -1,0 +1,10 @@
+mutation ShowsDownload($searchInput: [ShowsDownloadInput]) {
+  showsDownload(searchInput: $searchInput) {
+    response {
+      code
+      success
+      message
+      version
+    }
+  }
+}

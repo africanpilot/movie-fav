@@ -1,0 +1,26 @@
+query MoviePopular($pageInfo: MovieInfoPageInfoInput) {
+  movieInfo(pageInfo: $pageInfo) {
+    response {
+      code
+      message
+      success
+      version
+    }
+    pageInfo {
+      page_info_count
+    }
+    result {
+      id
+      imdb_id
+      title
+      popular_id
+      full_cover
+      cover
+      trailer_link
+      download_1080p_url
+      download_720p_url
+      download_480p_url
+      plot
+    }
+  }
+}

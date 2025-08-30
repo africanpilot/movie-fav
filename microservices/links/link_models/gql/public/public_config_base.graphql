@@ -1,0 +1,380 @@
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type GeneralResponse {
+    code: Int!
+    success: Boolean
+    message: String
+    version: String
+}
+
+type PageInfo{
+    page_info_count: Int
+}
+
+input PageInfoInput {
+    first: Int
+    pageNumber: Int
+    minId: Int
+    maxId: Int
+    orderBy: OrderByEnum
+    refresh: Boolean
+}
+
+enum OrderByEnum {
+  ASC
+  DESC
+}
+
+enum AccountStatusEnum {
+  ACTIVE
+  DEACTIVATED
+  DELETED
+}
+
+enum AuthenticationTokenTypeEnum {
+  ACCESS_TOKEN
+  REFRESH_TOKEN
+  CSRF_TOKEN
+  OTHER
+}
+
+enum AccountRegistrationEnum{
+  NOT_COMPLETE
+  COMPLETE
+  WAITING
+  APPROVED
+}
+
+enum AccountInfoSortByEnum {
+  ID
+}
+
+enum AccountCompanySortByEnum {
+  ID
+  NAME
+}
+
+enum AccountStoreSortByEnum {
+  ID
+  NAME
+}
+
+enum AccountStoreEmployeeSortByEnum {
+  ID
+}
+
+enum AccountClassificationEnum {
+  RETAIL
+  NON_PROFIT
+  OTHER
+}
+
+enum AccountBusinessTypeEnum {
+  SOLE_PROPRIETARY
+  UNINCORPORATED_ASSOCIATION
+  TRUST
+  CORPORATION
+  PUBLICLY_TRADED_CORPORATION
+  NON_PROFIT
+  LLC
+  PARTNERSHIPS_LP_AND_LLP
+}
+
+enum MovieInfoSortByEnum {
+  ID
+  IMDB_ID
+  TITLE
+  POPULAR_ID
+}
+
+enum TrackerMovieSortByEnum {
+  ID
+  COMPLETED
+  RATING
+}
+
+enum TrackerTypeEnum {
+  MOVIE
+  SHOW
+}
+
+enum MovieStatusEnum {
+  COMPLETED
+  NOT_COMPLETED
+}
+
+enum ReactionEmojiEnum {
+  SHOCKED
+  SAD
+  FRUSTRATED
+  REFLECTIVE
+  TOUCHED
+  AMUSED
+  SCARED
+  BORED
+  UNDERSTOOD
+  THRILLED
+  CONFUSED
+  TENSE
+}
+
+enum WatchLocationEnum {
+  THEATER
+  OTHER
+  UNOFFICIAL
+  TELEVISION
+  COMPUTER
+  PHONE
+  TABLET
+}
+
+enum ProviderTypeEnum {
+  NETFLIX
+  DISNEY
+  HULU
+  AMAZON
+  APPLETV
+}
+
+enum TrackerShowsStatusEnum {
+  WATCH_LATER
+  STOP_WATCHING
+  WATCHING
+  UP_TO_DATE
+  COMPLETED
+  REMOVED
+}
+
+enum TrackerShowsSortByEnum {
+  ID
+}
+
+enum TrackerShowsSeasonSortByEnum {
+  ID
+}
+
+enum TrackerShowsEpisodeSortByEnum {
+  ID
+}
+
+enum ShowsInfoSortByEnum {
+  ID
+  IMDB_ID
+  TITLE
+  POPULAR_ID
+}
+
+enum ShowsSeasonSortByEnum {
+  ID
+}
+
+enum ShowsEpisodeSortByEnum {
+  ID
+}
+
+enum PersonInfoSortByEnum {
+  ID
+}
+
+enum SubscriptionTypeEnum {
+  FREE
+  MACAUS_MEMBER
+}
+
+enum SubscriptionStatusEnum {
+  ACTIVE
+  SUSPENDED
+  CANCELED
+}
+
+enum SubscriptionGroupsEnum {
+  GENERAL
+  DEVELOPER
+  EXECUTIVE
+  YOUTH
+}
+
+enum DownloadTypeEnum {
+  DOWNLOAD_1080p
+  DOWNLOAD_720p
+  DOWNLOAD_480p
+}
+
+enum DownloadLocationEnum {
+  DATABASE
+  REDIS
+  IMDB
+  IMDB_ALL
+}
+
+enum EventInfoSortByEnum {
+  ID
+  NAME
+}
+
+enum EventScheduleSortByEnum {
+  ID
+  NAME
+}
+
+enum EventTicketSortByEnum {
+  ID
+  NAME
+}
+
+enum ProductInfoSortByEnum {
+  ID
+  NAME
+  MSRP_PRICE
+}
+
+enum ProductVariantSortByEnum {
+  ID
+  NAME
+}
+
+enum ProductColorSortByEnum {
+  ID
+  NAME
+}
+
+enum ProductCategorySortByEnum {
+  ID
+  NAME
+}
+
+enum ProductIngestEnum {
+  LA_DIVINE
+  JOVANI
+  ELLIE_WILD
+  ADRIANNA_PAPELL
+  JESSICA_ANGEL
+  PORTIA_AND_SCARLETT
+  COLORS_DRESS
+  SHERRI_HILL
+  SOPHIA_THOMAS
+  SCALA
+  ASHLEY_LAUREN
+  MNM_COUTURE
+  NOX_ANABEL
+  AMELIA_COUTURE
+  SYDNEYS_CLOSET
+  PRIMAVERA_COUTURE
+  CLARISSE
+  JASZ_COUTURE
+  STELLA_COUTURE
+  MANUAL
+}
+
+enum ProductBrandEnum {
+  LA_DIVINE
+  JOVANI
+  ELLIE_WILD
+  ADRIANNA_PAPELL
+  JESSICA_ANGEL
+  PORTIA_AND_SCARLETT
+  COLORS_DRESS
+  SHERRI_HILL
+  SOPHIA_THOMAS
+  SCALA
+  ASHLEY_LAUREN
+  MNM_COUTURE
+  NOX_ANABEL
+  AMELIA_COUTURE
+  SYDNEYS_CLOSET
+  PRIMAVERA_COUTURE
+  OTHER
+  CLARISSE
+  JASZ_COUTURE
+  STELLA_COUTURE
+  WALMART
+}
+
+enum NotifyTemplateEnum {
+  LABELLE_APPOINTMENT
+  ALL_NATION_CONTACT
+  LABELLE_CONTACT
+  LABELLE_RSVP
+  PROMEDEXPRESS_CONTACT
+  SUMEXUS_CONTACT
+  PROMEDEXPRESS_REQUEST_TRANSPORT
+  SUMEXUS_REQUEST_TRANSPORT
+}
+
+enum RedisDatabaseEnum {
+  ACCOUNT
+  CART
+  COLLECTION
+  EVENT
+  MOVIE
+  NOTIFICATIONS
+  ORDERS
+  PERSON
+  PRODUCT
+  SHOWS
+  TRACKSTAR
+  DEFAULT
+}
+
+enum CollectionInfoSortByEnum {
+  ID
+  NAME
+}
+
+enum CartProductSortByEnum {
+  ID
+}
+
+enum CartWishlistSortByEnum {
+  ID
+}
+
+enum CartEventSortByEnum {
+  ID
+}
+
+enum OrdersInfoSortByEnum {
+  ID
+}
+
+enum OrdersInfoStatusEnum {
+  SUCCESS
+  CANCELED
+  PENDING
+  ERROR
+}
+
+enum OrdersTypeEnum {
+  PRODUCT
+  EVENT
+}
+
+enum AccountRoleEnum {
+  ADMIN
+  COMPANY
+  MANAGER
+  EMPLOYEE
+  CUSTOMER
+  GUEST
+}
+
+
+enum NotificationsSagaStateSortByEnum {
+  ID
+}
+
+enum NotifyStatusEnum {
+  OPEN
+  CLOSED
+}
+
+enum CompanyNameEnum {
+  WALMART
+  AMAZON
+  TARGET
+  GIANT
+  OTHER
+}

@@ -1,0 +1,7 @@
+mutation NotificationsCreateForm($createInput: NotificationsInfoCreateFormInput!) {
+  notificationsCreateForm(createInput: $createInput) {
+    response{ code success message version}
+    pageInfo{ ...PageInfo}
+    result
+  }
+}

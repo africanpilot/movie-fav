@@ -1,0 +1,3 @@
+fragment PageInfo on PageInfo {
+    page_info_count
+}

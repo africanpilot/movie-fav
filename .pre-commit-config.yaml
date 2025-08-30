@@ -1,0 +1,22 @@
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.1.0
+  hooks:
+  - id: end-of-file-fixer
+  - id: trailing-whitespace
+- repo: https://github.com/pycqa/isort
+  rev: 5.10.1
+  hooks:
+  - id: isort
+    args: ["--profile", "black"]
+    exclude: ^bin/
+- repo: https://github.com/psf/black
+  rev: 22.3.0
+  hooks:
+  - id: black
+    args: [--config=microservices/pyproject.toml, microservices/]
+- repo: https://github.com/pycqa/flake8
+  rev: 5.0.4  # Keep this sync'd with requirements-test.txt
+  hooks:
+  - id: flake8
+    args: [--config=microservices/.flake8, microservices/]

@@ -1,0 +1,17 @@
+{
+  "name": "apollo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/gateway.js",
+  "scripts": {
+    "start-gateway-development": "nodemon src/gateway.js",
+    "start-gateway-production": "node src/gateway.js"
+  },
+  "dependencies": {
+    "@apollo/gateway": "^2.1.4",
+    "apollo-server": "^3.11.1",
+    "dotenv": "^16.0.3",
+    "graphql": "^16.6.0",
+    "nodemon": "^2.0.20"
+  }
+}

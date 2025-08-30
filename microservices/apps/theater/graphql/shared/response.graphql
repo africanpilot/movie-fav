@@ -1,0 +1,6 @@
+fragment GeneralResponse on GeneralResponse {
+    code
+    success
+    message
+    version
+}

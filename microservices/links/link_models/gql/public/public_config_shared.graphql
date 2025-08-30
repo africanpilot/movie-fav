@@ -1,0 +1,95 @@
+type AccountInfo {
+    id: Int
+}
+
+type AccountCompany {
+    id: Int
+}
+
+type AccountStore {
+    id: Int
+}
+
+type AccountStoreEmployee {
+    id: Int
+}
+
+type EventInfo {
+    id: Int
+}
+
+type CartProduct {
+    id: Int
+}
+
+type CartWishlist {
+    id: Int
+}
+
+type CartEvent {
+    id: Int
+}
+
+type CollectionInfo {
+    id: Int
+}
+
+type EventSchedule {
+    id: Int
+}
+
+type EventTicket {
+    id: Int
+}
+
+type MovieInfo {
+    id: Int
+}
+
+type OrdersInfo {
+    id: Int
+}
+
+type PersonInfo {
+    id: Int
+}
+
+type ProductInfo {
+    id: Int
+}
+
+type ProductVariant {
+    id: Int
+}
+
+type ProductColor {
+    id: Int
+}
+
+type ProductCategory {
+    id: Int
+}
+
+type ShowsInfo {
+    id: Int
+}
+
+type TrackerMovie {
+    id: Int
+}
+
+type TrackerShows {
+    id: Int
+}
+
+type Subscriptions {
+    id: Int
+}
+
+type NotificationsSagaState {
+    id: Int
+}
+
+type StoreInfo {
+    id: Int
+}

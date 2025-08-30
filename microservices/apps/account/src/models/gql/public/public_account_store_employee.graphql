@@ -1,0 +1,45 @@
+extend type Query {
+  accountStoreEmployee(pageInfo: AccountStoreEmployeePageInfoInput, filterInput: AccountStoreEmployeeFilterInput): AccountStoreEmployeeResponse
+}
+
+extend type Mutation {
+  accountStoreEmployeeCreate(createInput: [AccountStoreEmployeeCreateInput]!, pageInfo: AccountStoreEmployeePageInfoInput, filterInput: AccountStoreEmployeeFilterInput): AccountStoreEmployeeResponse
+  accountStoreEmployeeUpdate(updateInput: [AccountStoreEmployeeUpdateInput]!, pageInfo: AccountStoreEmployeePageInfoInput, filterInput: AccountStoreEmployeeFilterInput): AccountStoreEmployeeResponse
+  accountStoreEmployeeDelete(deleteInput: [Int]!, pageInfo: AccountStoreEmployeePageInfoInput, filterInput: AccountStoreEmployeeFilterInput): AccountStoreEmployeeResponse
+}
+
+type AccountStoreEmployeeResponse {
+  response: GeneralResponse!
+  pageInfo: PageInfo
+  result: [AccountStoreEmployee]
+}
+
+extend type AccountStoreEmployee @key(fields: "id") {
+  account_company_id: Int
+  account_store_id: Int
+  account_info_id: Int
+  user_role: AccountRoleEnum
+}
+
+input AccountStoreEmployeeFilterInput {
+  id: [Int]
+}
+
+input AccountStoreEmployeePageInfoInput {
+  first: Int
+  pageNumber: Int
+  minId: Int
+  maxId: Int
+  orderBy: OrderByEnum
+  sortBy: [AccountStoreEmployeeSortByEnum]
+}
+
+input AccountStoreEmployeeCreateInput {
+  email: String!
+  user_role: AccountRoleEnum!
+}
+
+input AccountStoreEmployeeUpdateInput {
+  account_store_employee_id: Int!
+  user_role: AccountRoleEnum!
+}

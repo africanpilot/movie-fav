@@ -1,0 +1,73 @@
+# Copyright © 2022 by Richard Maku, Inc.
+# All Rights Reserved. Proprietary and confidential.
+
+from datetime import datetime
+from typing import Optional
+from link_models.enums import AccountRegistrationEnum, AccountStatusEnum, AccountInfoSortByEnum
+from account.src.models.account_info.validate import AccountInfoValidate
+from pydantic import BaseModel, root_validator
+from sqlmodel import Column, Field, SQLModel
+from sqlalchemy import Enum
+from link_models.base import PageInfoInput
+
+
+class AccountInfoBase(SQLModel):
+  id: Optional[int] = Field(primary_key=True)
+  email: Optional[str] = Field(unique=True, min_length=8, max_length=100)
+  password: Optional[str] = Field(max_length=255)
+  registration_date: Optional[datetime] = Field(default=datetime.now())
+  registration_status: Optional[AccountRegistrationEnum] = Field(default=AccountRegistrationEnum.NOT_COMPLETE, sa_column=Column(Enum(AccountRegistrationEnum)))
+  verified_email: Optional[bool] = Field(default=False)
+  last_login_date: Optional[datetime]
+  last_logout_date: Optional[datetime]
+  profile_image: Optional[str]
+  profile_thumbnail: Optional[str]
+  status: Optional[AccountStatusEnum] = Field(default=AccountStatusEnum.ACTIVE, sa_column=Column(Enum(AccountStatusEnum)))
+  forgot_password_expire_date: Optional[datetime]
+  first_name: Optional[str] = Field(default=None, max_length=100)
+  last_name: Optional[str] = Field(default=None, max_length=100)
+  middle_name: Optional[str] = Field(default=None, max_length=100)
+  maiden_name: Optional[str] = Field(default=None, max_length=100)
+  title: Optional[str] = Field(default=None, max_length=100)
+  preferred_name: Optional[str] = Field(default=None, max_length=100)
+  birthday: Optional[datetime]
+  address: Optional[str]
+  city: Optional[str] = Field(default=None, max_length=100)
+  state: Optional[str] = Field(default=None, max_length=100)
+  zip_code: Optional[int] = Field(default=None)
+  created: Optional[datetime] = Field(default=datetime.now())
+  updated: Optional[datetime] = Field(default=datetime.now())
+  
+class AccountInfo(AccountInfoBase, table=True):
+  """_summary_
+  Args:
+    SQLModel (_type_): _description_
+    table (bool, optional): _description_. Defaults to True.
+  """
+
+  __tablename__ = "account_info"
+  __table_args__ = {'extend_existing': True, 'schema': 'account'}
+  
+  registration_status: Optional[AccountRegistrationEnum] = Field(default=AccountRegistrationEnum.NOT_COMPLETE, sa_column=Column(Enum(AccountRegistrationEnum)))
+  status: Optional[AccountStatusEnum] = Field(default=AccountStatusEnum.ACTIVE, sa_column=Column(Enum(AccountStatusEnum)))
+
+class AccountLoginInput(BaseModel):
+  login: str
+  password: str
+  
+  @root_validator(pre=True)
+  def _validate_account_create_input(cls, values):
+    validate = AccountInfoValidate()
+
+    validate.validate_email(values["login"])
+
+    validate.validate_password(values["password"])
+
+    return values
+
+class AccountInfoPageInfoInput(PageInfoInput):
+	sortBy: list[AccountInfoSortByEnum] = [AccountInfoSortByEnum.ID]
+
+class AccountInfoFilterInput(SQLModel):
+  id: Optional[list[int]]
+  email: Optional[list[str]]

@@ -1,0 +1,200 @@
+# Copyright © 2022 by Richard Maku, Inc.
+# All Rights Reserved. Proprietary and confidential.
+
+
+import json
+from typing import Union
+from sqlalchemy import select
+from sqlalchemy.sql.selectable import Select
+from link_lib.microservice_general import LinkGeneral
+from link_models.base import BaseResponse, GeneralResponse, PageInfo, PageInfoInput
+from sqlmodel import Session, asc, desc, func
+from sqlalchemy.engine.base import Connection
+
+from link_lib.microservice_general import GeneralJSONEncoder
+
+
+class HTTPException(Exception):
+    pass
+
+class LinkResponse(LinkGeneral):
+	def __init__(self, **kwargs):
+		super().__init__(**kwargs)
+  
+	def get_filter_info(self, filterInput: dict, obj: object):
+		return [getattr(obj, k) == v for k,v in filterInput.items()]
+
+	def get_filter_info_in(self, filterInput: object, obj: object, exclude: dict = None):
+		return [
+			getattr(obj, k).in_(v) if isinstance(v, list) else getattr(obj, k) == v
+			for k,v in filterInput.dict(exclude_unset=True, exclude=exclude).items()
+    ] if filterInput else []
+
+	def get_json_row(self, cols: list[object], name: str):
+		return select(
+			func.row_to_json(select(*cols).subquery().table_valued())
+		).label(name)
+  
+	def get_json_row_response(self, cols: list[object], name: str):
+		if not cols:
+			return []
+		return [self.get_json_row(cols, name)]
+
+	def query_cols(self, cols: list)-> Select:
+		return select(*cols,func.count().over().label("page_info_count"))
+
+	def get_page_info_count_over(self, result: list):
+		if not result:
+			return {}
+		return {k: v for k, v in dict(result[0]).items() if k == "page_info_count"}
+
+	def join_tables(self, sql_query: Select, dbJoinType: list[dict] = None)-> Select:
+		if dbJoinType:
+			for j in dbJoinType:
+				sql_query = sql_query.join_from(**j)
+		return sql_query
+
+	def query_filter(self, sql_query: Select, filterInput: list)-> Select:
+		if filterInput:
+			sql_query = sql_query.where(*filterInput)
+		return sql_query
+
+	def paginate_by_page_number(self, sql_query: Select, pageInfo: PageInfoInput)-> Select:
+		if pageInfo.pageNumber:
+			sql_query = sql_query.offset((pageInfo.pageNumber-1)*pageInfo.first)
+		return sql_query
+
+	def sort_by_sql(self, pageInfo, baseObject):
+		if hasattr(pageInfo, 'sortBy') and pageInfo.sortBy:
+			return [getattr(baseObject, i.value) for i in pageInfo.sortBy]
+		return [baseObject.id]
+
+	def get_table_cols(self, obj: object):
+		return [getattr(obj, k) for k in obj.__fields__.keys()]
+
+	def convert_sql_response_to_dict(self, result) -> list[dict]:
+		return [dict(r) for r in result]
+
+	def convert_response(self, response) -> dict:
+		redis_conv = response.dict()
+		redis_conv.update(dict(result=self.convert_sql_response_to_dict(redis_conv["result"])))
+		return redis_conv
+
+	def create_array_subquery(self, obj, name: str):
+		return (
+      select(func.to_json(func.array_agg(func.row_to_json(obj))))
+      .label(name)
+    )
+
+	def order_by_sql(self, pageInfo):
+		return desc if pageInfo.orderBy.value == "desc" else asc
+
+	def order_and_sort(self, sql_query: Select, baseObject, pageInfo):
+		order_by = self.order_by_sql(pageInfo)
+		sort_by = self.sort_by_sql(pageInfo, baseObject)
+		return sql_query.order_by(order_by(*sort_by))
+
+	def get_all(self, db: Connection, sql_query: Select) -> tuple[list, PageInfo]:
+		# self.log.debug(f"sql_query: {sql_query}")
+		# execute result and pageInfo
+		result = db.execute(sql_query).all()
+		page_info = PageInfo(**self.get_page_info_count_over(result))
+		# self.log.debug(f"result query: {self.convert_sql_response_to_dict(result)}")
+		return result, page_info
+
+	def filter_sql(
+		self,
+		db: Connection,
+  		baseObject,
+   		cols: list = None,
+		pageInfo = None,
+		dbJoinType: list = None,
+		filterInput: list = None,
+		oneQuery = None,
+		query_all: bool = True,
+	) -> tuple[list, PageInfo]:
+		# check nulls
+		pageInfo = pageInfo or PageInfoInput()
+
+		# set all columns to return
+		sql_query = self.query_cols(cols) if cols else oneQuery
+
+		# resolve all joins
+		sql_query = self.join_tables(sql_query, dbJoinType)
+
+		# apply filters
+		sql_query = self.query_filter(sql_query, filterInput)
+
+		# sort and order results
+		sql_query = self.order_and_sort(sql_query, baseObject, pageInfo)
+
+		# paginate by page
+		sql_query = self.paginate_by_page_number(sql_query, pageInfo)
+
+		# limit the rows returned
+		sql_query = sql_query.limit(pageInfo.first)
+
+		# self.log.info(f"sql_query: {sql_query}")
+		if query_all:
+			return self.get_all(db, sql_query)
+		
+		return sql_query
+		
+	def general_response_model(self, resultObject):
+		return resultObject(
+			response=GeneralResponse(), 
+   		pageInfo=PageInfo(),
+     	result=None,
+		)
+
+	def update_general_response(self, response: GeneralResponse, resultObject):
+		payload = self.general_response_model(resultObject)
+		payload.response = response
+		return payload
+
+	def success_response(self, resultObject, result: Union[list, dict] = None, pageInfo: PageInfo = None, nullPass: bool = False) -> dict:
+		if not result and not nullPass:
+			self.http_404_not_found_response(msg="expecting data but nothing was returned")
+
+		payload = self.update_general_response(
+    	GeneralResponse(code=200, success=True, message="Success"), 
+     	resultObject
+    )
+		payload.pageInfo = pageInfo
+		payload.result = result
+		return payload
+
+	def http_400_bad_request_response(self, msg: str = None) -> dict:
+		raise HTTPException(json.dumps(self.update_general_response(
+    		GeneralResponse(code=400, message=f"http_400_bad_request: {msg}"), BaseResponse).dict(),
+            cls=GeneralJSONEncoder))
+
+	def http_401_unauthorized_response(self, msg: str = None) -> dict:
+		raise HTTPException(json.dumps(self.update_general_response(
+      		GeneralResponse(code=401, message=f"http_401_unauthorized: {msg}"), BaseResponse).dict(), 
+        	cls=GeneralJSONEncoder))
+
+	def http_403_forbidden_response(self, msg: str = None) -> dict:
+		raise HTTPException(json.dumps(self.update_general_response(
+			GeneralResponse(code=403, message=f"http_403_forbidden: {msg}"), BaseResponse).dict(),
+			cls=GeneralJSONEncoder))
+
+	def http_404_not_found_response(self, msg: str = None) -> dict:
+		raise HTTPException(json.dumps(self.update_general_response(
+			GeneralResponse(code=404, message=f"http_404_not_found: {msg}"), BaseResponse).dict(),
+			cls=GeneralJSONEncoder))
+
+	def http_498_invalid_token_response(self, msg: str = None) -> dict:
+		raise HTTPException(json.dumps(self.update_general_response(
+			GeneralResponse(code=498, message=f"http_498_invalid_token: {msg}"), BaseResponse).dict(),
+            cls=GeneralJSONEncoder))
+
+	def http_499_token_required_response(self, msg: str = None) -> dict:
+		raise HTTPException(json.dumps(self.update_general_response(
+			GeneralResponse(code=499, message=f"http_499_token_required: {msg}"), BaseResponse).dict(),
+			cls=GeneralJSONEncoder))
+
+	def http_500_internal_server_error(self, msg: str = None) -> dict:
+		raise HTTPException(json.dumps(self.update_general_response(
+			GeneralResponse(code=500, message=f"http_500_internal_server_error: {msg}"), BaseResponse).dict(),
+            cls=GeneralJSONEncoder))

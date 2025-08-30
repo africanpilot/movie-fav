@@ -1,0 +1,40 @@
+query MovieDetails($filterInput: MovieInfoFilterInput) {
+  movieInfo(filterInput: $filterInput) {
+    response {
+      code
+      message
+      success
+      version
+    }
+    pageInfo {
+      page_info_count
+    }
+    result {
+      id
+      imdb_id
+      title
+      popular_id
+      genres
+      cast
+      casts {
+        id
+        head_shot
+        name
+        imdb_id
+      }
+      plot
+      rating
+      release_date
+      run_times
+      trailer_link
+      full_cover
+      cover
+      votes
+      year
+      download_1080p_url
+      download_720p_url
+      download_480p_url
+      videos
+    }
+  }
+}

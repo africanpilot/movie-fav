@@ -1,0 +1,11 @@
+# Copyright © 2022 by Richard Maku, Inc.
+# All Rights Reserved. Proprietary and confidential.
+
+import pytest
+import test_app_lib.link  # noqa: F401
+
+
+pytest_plugins = [
+  "fixtures.models",
+  "link_test.fixtures.models",
+]

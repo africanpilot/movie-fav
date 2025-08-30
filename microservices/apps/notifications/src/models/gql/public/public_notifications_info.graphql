@@ -1,0 +1,139 @@
+extend type Query {
+    notificationsSagaState(pageInfo: NotificationsSagaStatePageInfoInput, filterInput: NotificationsSagaStateFilterInput): NotificationsSagaStateResponse
+}
+
+extend type Mutation {
+  notificationsCreate(createInput: NotificationsInfoCreateInput!): NotificationsInfoResponse
+  notificationsUpdate(updateInput: NotificationsSagaStateUpdateInput!, pageInfo: NotificationsSagaStatePageInfoInput, filterInput: NotificationsSagaStateFilterInput): NotificationsSagaStateResponse
+  notificationsCreateForm(createInput: NotificationsInfoCreateFormInput!): NotificationsInfoResponse
+}
+
+type NotificationsInfoResponse {
+  response: GeneralResponse!
+  pageInfo: PageInfo
+  result: [String]
+}
+
+type NotificationsSagaStateResponse {
+  response: GeneralResponse!
+  pageInfo: PageInfo
+  result: [NotificationsSagaState]
+}
+
+extend type NotificationsSagaState @key(fields: "id") {
+  last_message_id: String
+  status: String
+  failed_step: String
+  failed_at: String
+  failure_details: String
+  account_store_id: Int
+  body: NotificationsSagaStateBody
+  modified_body: NotificationsSagaStateBody
+}
+
+type NotificationsSagaStateBody {
+  email: String
+  template: String
+  requestor_name: String
+  patient_name: String
+  relationship: String
+  phone: String
+  mailing_address: String
+  transport_type: String
+  wheelchair: String
+  oxygen: String
+  starting_address: String
+  ending_address: String
+  transport_date: String
+  additional_needs: String
+  message: String
+  payment_method: String
+  drop_off_date: String
+  billing_type: String
+  patient_weight: String
+  drop_off_message: String
+  pickup_message: String
+  status: String
+}
+
+input NotificationsSagaStateFilterInput {
+    id: [Int]
+}
+
+input NotificationsSagaStatePageInfoInput {
+  first: Int
+  pageNumber: Int
+  minId: Int
+  maxId: Int
+  orderBy: OrderByEnum
+  sortBy: [NotificationsSagaStateSortByEnum]
+}
+
+input NotificationsInfoCreateInput {
+  email: String!
+  template: NotifyTemplateEnum!
+  name: String
+  message: String
+  number: String
+  subject: String
+  date: String
+  duration: String
+  high_school_name: String
+  first_guest: String
+  second_guest: String
+}
+
+input NotificationsInfoCreateFormInput {
+  email: String!
+  template: NotifyTemplateEnum!
+  requestor_name: String!
+  patient_name: String!
+  relationship: String!
+  phone: String!
+  mailing_address: String
+  transport_type: String!
+  wheelchair: String!
+  oxygen: String!
+  starting_address: String!
+  ending_address: String!
+  transport_date: String!
+  additional_needs: String
+  message: String
+  payment_method: String
+  drop_off_date: String
+  billing_type: String!
+  patient_weight: String!
+  drop_off_message: String
+  pickup_message: String
+  status: NotifyStatusEnum
+}
+
+input NotificationsSagaStateUpdateInput {
+    saga_id: Int!
+    modified_body: NotificationsSagaStateBodyUpdateInput!
+}
+
+input NotificationsSagaStateBodyUpdateInput {
+  email: String
+  template: String
+  requestor_name: String
+  patient_name: String
+  relationship: String
+  phone: String
+  mailing_address: String
+  transport_type: String
+  wheelchair: String
+  oxygen: String
+  starting_address: String
+  ending_address: String
+  transport_date: String
+  additional_needs: String
+  message: String
+  payment_method: String
+  drop_off_date: String
+  billing_type: String
+  patient_weight: String
+  drop_off_message: String
+  pickup_message: String
+  status: String
+}
