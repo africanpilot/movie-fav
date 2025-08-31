@@ -33,7 +33,7 @@ class MovieImportMutation(GraphQLModel, MovieLib):
             
             pageInfo = PageInfoInput(**pageInfo) if pageInfo else PageInfoInput()
         
-            with self.get_connection("psqldb_movie").connect() as db:
+            with self.get_connection("psqldb_movie").connection() as db:
  
                 all_import = self.movie_saga_state_create(db, imdb_ids=[f"movie_import:{uuid.uuid4()}"], body=dict(download_type=downloadType.value, page=pageInfo.first))
                 

@@ -31,7 +31,7 @@ class MovieFederations(GraphQLModel, MovieLib):
                 self.log.info("movie_get_movie_by_id: by redis")
                 return redis_response.result[0]
             
-            with self.get_connection("psqldb_movie").connect() as db:
+            with self.get_connection("psqldb_movie").connection() as db:
                 response = self.movie_info_response(
                     info=info,
                     db=db,

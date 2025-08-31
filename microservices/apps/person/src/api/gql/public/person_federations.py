@@ -44,7 +44,7 @@ class PersonFederations(GraphQLModel, PersonLib):
                 self.log.info("person_get_person_by_imdb: by redis")
                 return redis_response.result
             
-            with self.get_connection("psqldb_person").connect() as db:
+            with self.get_connection("psqldb_person").connection() as db:
                 response = self.person_response(
                     info=info,
                     db=db,

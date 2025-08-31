@@ -20,7 +20,7 @@ class MovieUpdateMutation(GraphQLModel, MovieLib):
             
             self.general_validation_process(info)
             
-            with self.get_connection("psqldb_movie").connect() as db:
+            with self.get_connection("psqldb_movie").connection() as db:
 
                 movie = self.get_movie_update(db, movie_info_id)
                 

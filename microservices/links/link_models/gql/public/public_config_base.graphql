@@ -95,31 +95,6 @@ enum MovieStatusEnum {
   NOT_COMPLETED
 }
 
-enum ReactionEmojiEnum {
-  SHOCKED
-  SAD
-  FRUSTRATED
-  REFLECTIVE
-  TOUCHED
-  AMUSED
-  SCARED
-  BORED
-  UNDERSTOOD
-  THRILLED
-  CONFUSED
-  TENSE
-}
-
-enum WatchLocationEnum {
-  THEATER
-  OTHER
-  UNOFFICIAL
-  TELEVISION
-  COMPUTER
-  PHONE
-  TABLET
-}
-
 enum ProviderTypeEnum {
   NETFLIX
   DISNEY
@@ -145,24 +120,6 @@ enum ShowsEpisodeSortByEnum {
 
 enum PersonInfoSortByEnum {
   ID
-}
-
-enum SubscriptionTypeEnum {
-  FREE
-  MACAUS_MEMBER
-}
-
-enum SubscriptionStatusEnum {
-  ACTIVE
-  SUSPENDED
-  CANCELED
-}
-
-enum SubscriptionGroupsEnum {
-  GENERAL
-  DEVELOPER
-  EXECUTIVE
-  YOUTH
 }
 
 enum DownloadTypeEnum {
@@ -215,12 +172,4 @@ enum NotificationsSagaStateSortByEnum {
 enum NotifyStatusEnum {
   OPEN
   CLOSED
-}
-
-enum CompanyNameEnum {
-  WALMART
-  AMAZON
-  TARGET
-  GIANT
-  OTHER
 }

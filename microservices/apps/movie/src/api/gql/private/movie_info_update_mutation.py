@@ -32,7 +32,7 @@ class MovieInfoUpdateMutation(GraphQLModel, MovieLib):
             
             imdb_ids = []
             
-            with self.get_connection("psqldb_movie").connect() as db:
+            with self.get_connection("psqldb_movie").connection() as db:
 
                 if updateFilterInput:
                     updateFilterInput = MovieInfoUpdateFilterInput(**updateFilterInput)

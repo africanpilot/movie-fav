@@ -31,7 +31,7 @@ class ShowsInfoUpdateMutation(GraphQLModel, ShowsLib):
             
             imdb_ids = []
             
-            with self.get_connection("psqldb_shows").connect() as db:
+            with self.get_connection("psqldb_shows").connection() as db:
                 
                 if updateFilterInput:
                     updateFilterInput = ShowsUpdateFilterInput(**updateFilterInput)

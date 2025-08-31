@@ -12,7 +12,7 @@ class GetRemainingShowsDownloadsQuery(ShowsLib):
     self.body: dict = kwargs.get('body')
 
   def execute(self):
-    with self.get_connection("psqldb_shows").connect() as db:
+    with self.get_connection("psqldb_shows").connection() as db:
       results = self.get_no_download_urls(db)
 
     return dict(

@@ -11,7 +11,7 @@ class GetRemainingMovieCastQuery(MovieLib):
     self.body = kwargs.get('body')
 
   def execute(self):
-    with self.get_connection("psqldb_movie").connect() as db:
+    with self.get_connection("psqldb_movie").connection() as db:
       result = self.get_all_movie_cast(db)
   
     return dict(

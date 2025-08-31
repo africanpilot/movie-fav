@@ -40,7 +40,7 @@ class ShowsEpisodeQuery(GraphQLModel, ShowsLib, ShowsEpisodeResponses):
                     self.log.info("shows_episode_query: by redis")
                     return redis_response       
             
-            with self.get_connection("psqldb_shows").connect() as db:
+            with self.get_connection("psqldb_shows").connection() as db:
                 response = self.shows_episode_response(
                     info=info,
                     db=db,

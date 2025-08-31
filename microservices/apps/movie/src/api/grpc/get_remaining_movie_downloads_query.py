@@ -12,7 +12,7 @@ class GetRemainingMovieDownloadsQuery(MovieLib):
     self.body = kwargs.get('body')
 
   def execute(self):
-    with self.get_connection("psqldb_movie").connect() as db:
+    with self.get_connection("psqldb_movie").connection() as db:
       results = self.get_no_download_urls(db)
 
     return dict(

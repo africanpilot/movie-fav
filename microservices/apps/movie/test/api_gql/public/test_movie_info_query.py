@@ -5,7 +5,7 @@ import pytest
 
 from link_lib.microservice_general import LinkGeneral
 from ariadne import gql, graphql_sync
-from movie.test.fixtures.models import MOVIE_RESPONSE_FRAGMENT
+from movie.test.fixtures.models import MOVIE_INFO_RESPONSE_FRAGMENT
 from link_models.enums import AccountRegistrationEnum
 from link_test.fixtures import GeneralMovieLib
 
@@ -18,7 +18,7 @@ query movieInfo ($pageInfo: MovieInfoPageInfoInput, $filterInput: MovieInfoFilte
     ...MovieInfoResponse
   }
 }
-""" + MOVIE_RESPONSE_FRAGMENT)
+""" + MOVIE_INFO_RESPONSE_FRAGMENT)
 
 # add general pytest markers
 GENERAL_PYTEST_MARK = LinkGeneral().compose_decos([pytest.mark.movie_info_query, pytest.mark.movie])

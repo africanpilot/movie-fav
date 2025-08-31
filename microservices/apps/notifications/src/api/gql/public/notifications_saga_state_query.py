@@ -56,7 +56,7 @@ class NotificationsSagaStateQuery(GraphQLModel, NotificationsLib, NotificationsS
             if account_user.email not in ["info@sumexus.com"]:
                 filterInputExtra.append(text(f"notifications_saga_state.body->>'email' = '{account_user.email}'"))
 
-            with self.get_connection("psqldb_notifications").connect() as db:
+            with self.get_connection("psqldb_notifications").connection() as db:
     
                 response = self.notifications_saga_state_response(
                     info=info,

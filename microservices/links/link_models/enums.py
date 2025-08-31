@@ -172,37 +172,6 @@ class MovieInfoSortByEnum(Enum):
 class MovieSearchEnum(Enum):
     SEARCH_TITLE = "search_title"
     SEARCH_IMDB_ID = "search_imdb_id"
-
-class ReactionEmojiEnum(Enum):
-    SHOCKED = "shocked"
-    SAD = "sad"
-    FRUSTRATED = "frustrated"
-    REFLECTIVE = "reflective"
-    TOUCHED = "touched"
-    AMUSED = "amused"
-    SCARED = "scared"
-    BORED = "bored"
-    UNDERSTOOD = "understood"
-    THRILLED = "thrilled"
-    CONFUSED = "confused"
-    TENSE = "tense"
-    
-    @property
-    def is_gql():
-        return True
-    
-class WatchLocationEnum(Enum):
-    THEATER = "theater"
-    OTHER = "other"
-    UNOFFICIAL = "unofficial"
-    TELEVISION = "television"
-    COMPUTER = "computer"
-    PHONE = "phone"
-    TABLET = "tablet"
-
-    @property
-    def is_gql():
-        return True
     
 class ProviderTypeEnum(Enum):
     NETFLIX = "netflix"
@@ -329,17 +298,6 @@ class NotifyStatusEnum(Enum):
     OPEN = "open"
     CLOSED = "closed"
     
-    @property
-    def is_gql():
-        return True
-
-class CompanyNameEnum(Enum):
-    WALMART = "walmart"
-    AMAZON = "amazon"
-    TARGET = "target"
-    GIANT = "giant"
-    OTHER = "other"
-
     @property
     def is_gql():
         return True

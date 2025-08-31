@@ -48,7 +48,7 @@ class MovieInfoPopulateMutation(GraphQLModel, MovieLib):
             
             self.log.info(f"all_popular_ids: {len(all_popular_ids)}")
 
-            with self.get_connection("psqldb_movie").connect() as db:
+            with self.get_connection("psqldb_movie").connection() as db:
                 
                 if DownloadLocationEnum.DATABASE in location:
                     no_movie_info = [r.imdb_id for r in self.get_no_movie_info(db)]
