@@ -158,15 +158,6 @@ class MovieStatusEnum(Enum):
         return True
 
 
-class TrackerMovieSortByEnum(Enum):
-    ID = "id"
-    COMPLETED = "completed"
-    RATING = "rating"
-    
-    @property
-    def is_gql():
-        return True
-
 class MovieInfoSortByEnum(Enum):
     ID = "id"
     IMDB_ID = "imdb_id"
@@ -177,14 +168,6 @@ class MovieInfoSortByEnum(Enum):
     def is_gql():
         return True
 
-
-class TrackerTypeEnum(Enum):
-    MOVIE = "movie"
-    SHOW = "show"
-    
-    @property
-    def is_gql():
-        return True
 
 class MovieSearchEnum(Enum):
     SEARCH_TITLE = "search_title"
@@ -240,40 +223,6 @@ class ImportProviderTypeEnum(ExtendedEnum):
     APPLETV = "ATVP"
     HBO_MAX = "HMAX"
 
-class TrackerShowsSortByEnum(Enum):
-    ID = "id"
-
-    @property
-    def is_gql():
-        return True
-    
-class TrackerShowsSeasonSortByEnum(Enum):
-    ID = "id"
-
-    @property
-    def is_gql():
-        return True
-    
-
-class TrackerShowsEpisodeSortByEnum(Enum):
-    ID = "id"
-
-    @property
-    def is_gql():
-        return True
-
-class TrackerShowsStatusEnum(Enum):
-    WATCH_LATER = "watch_later"
-    STOP_WATCHING = "stop_watching"
-    WATCHING = "watching"
-    UP_TO_DATE = "up_to_date"
-    COMPLETED = "completed"
-    REMOVED = "removed"
-
-    @property
-    def is_gql():
-        return True
-
 class ShowsInfoSortByEnum(Enum):
     ID = "id"
     IMDB_ID = "imdb_id"
@@ -304,35 +253,6 @@ class PersonInfoSortByEnum(Enum):
     @property
     def is_gql():
         return True
-    
-class SubscriptionTypeEnum(Enum):
-    FREE = "free"
-    MACAUS_MEMBER = "macaus_member"
-
-    @property
-    def is_gql():
-        return True
-    
-
-class SubscriptionStatusEnum(Enum):
-    ACTIVE = "active"
-    SUSPENDED = "suspended"
-    CANCELED = "canceled"
-
-    @property
-    def is_gql():
-        return True
-    
-    
-class SubscriptionGroupsEnum(Enum):
-    GENERAL = "general"
-    DEVELOPER = "developer"
-    EXECUTIVE = "executive"
-    YOUTH = "youth"
-
-    @property
-    def is_gql():
-        return True
 
 
 class DownloadTypeEnum(Enum):
@@ -354,30 +274,6 @@ class DownloadLocationEnum(Enum):
     def is_gql():
         return True
 
-class EventInfoSortByEnum(Enum):
-    ID = "id"
-    NAME = "name"
-    
-    @property
-    def is_gql():
-        return True
-
-class EventScheduleSortByEnum(Enum):
-    ID = "id"
-    NAME = "name"
-    
-    @property
-    def is_gql():
-        return True
-class EventTicketSortByEnum(Enum):
-    ID = "id"
-    NAME = "name"
-    
-    @property
-    def is_gql():
-        return True
-
-
 class StripeMethodEnum(Enum):
     CREATE_CUSTOMER = "create_customer"
     CREATE_EPHEMERAL_KEY = "create_ephemeral_key"
@@ -394,94 +290,6 @@ class StripeMethodEnum(Enum):
     PAYOUT_LIST = "payout_list"
     PAYOUT_TRANSACTION_LIST = "payout_transaction_list"
     VERIFICATION_ID_CHECK = "verification_id_check"
-
-
-# product
-class ProductInfoSortByEnum(Enum):
-    ID = "id"
-    NAME = "name"
-    MSRP_PRICE = "msrp_price"
-    
-    @property
-    def is_gql():
-        return True
-
-class ProductVariantSortByEnum(Enum):
-    ID = "id"
-    NAME = "name"
-    
-    @property
-    def is_gql():
-        return True
-    
-class ProductColorSortByEnum(Enum):
-    ID = "id"
-    NAME = "name"
-    
-    @property
-    def is_gql():
-        return True
-    
-class ProductCategorySortByEnum(Enum):
-    ID = "id"
-    NAME = "name"
-    
-    @property
-    def is_gql():
-        return True
-    
-class ProductIngestEnum(Enum):
-    LA_DIVINE = "la_divine"
-    JOVANI = "jovani"
-    ELLIE_WILD = "ellie_wild"
-    ADRIANNA_PAPELL = "adrianna_papell"
-    JESSICA_ANGEL = "jessica_angel"
-    PORTIA_AND_SCARLETT = "portia_and_scarlett"
-    COLORS_DRESS = "colors_dress"
-    SHERRI_HILL = "sherri_hill"
-    SOPHIA_THOMAS = "sophia_thomas"
-    SCALA = "scala"
-    ASHLEY_LAUREN = "ashley_lauren"
-    MNM_COUTURE = "mnm_couture"
-    NOX_ANABEL = "nox_anabel"
-    AMELIA_COUTURE = "amelia_couture"
-    SYDNEYS_CLOSET = "sydneys_closet"
-    PRIMAVERA_COUTURE = "primavera_couture"
-    CLARISSE =  "clarisse"
-    JASZ_COUTURE = "jasz_couture"
-    STELLA_COUTURE = "stella_couture"
-    MANUAL = "manual"
-    
-    @property
-    def is_gql():
-        return True
-    
-class ProductBrandEnum(Enum):
-    LA_DIVINE = "la_divine"
-    JOVANI = "jovani"
-    ELLIE_WILD = "ellie_wild"
-    ADRIANNA_PAPELL = "adrianna_papell"
-    JESSICA_ANGEL = "jessica_angel"
-    PORTIA_AND_SCARLETT = "portia_and_scarlett"
-    COLORS_DRESS = "colors_dress"
-    SHERRI_HILL = "sherri_hill"
-    SOPHIA_THOMAS = "sophia_thomas"
-    SCALA = "scala"
-    ASHLEY_LAUREN = "ashley_lauren"
-    MNM_COUTURE = "mnm_couture"
-    NOX_ANABEL = "nox_anabel"
-    AMELIA_COUTURE = "amelia_couture"
-    SYDNEYS_CLOSET = "sydneys_closet"
-    PRIMAVERA_COUTURE = "primavera_couture"
-    CLARISSE =  "clarisse"
-    JASZ_COUTURE = "jasz_couture"
-    STELLA_COUTURE = "stella_couture"
-    OTHER = "other"
-    WALMART = "walmart"
-    
-    @property
-    def is_gql():
-        return True
 
 class NotifyTemplateEnum(Enum):
     LABELLE_APPOINTMENT = "labelle_appointment"
@@ -500,149 +308,15 @@ class NotifyTemplateEnum(Enum):
 
 class RedisDatabaseEnum(Enum):
     ACCOUNT = "account"
-    CART = "cart"
-    COLLECTION = "collection"
-    EVENT = "event"
     MOVIE = "movie"
     NOTIFICATIONS = "notifications"
-    ORDERS = "orders"
     PERSON = "person"
-    PRODUCT = "product"
     SHOWS = "shows"
-    TRACKSTAR = "trackstar"
     DEFAULT = "default"
     
     @property
     def is_gql():
         return True
-
-class CollectionInfoSortByEnum(Enum):
-    ID = "id"
-    NAME = "name"
-    
-    @property
-    def is_gql():
-        return True
-    
-class CartProductSortByEnum(Enum):
-    ID = "id"
-    
-    @property
-    def is_gql():
-        return True
-    
-class CartWishlistSortByEnum(Enum):
-    ID = "id"
-    
-    @property
-    def is_gql():
-        return True
-    
-class CartEventSortByEnum(Enum):
-    ID = "id"
-    
-    @property
-    def is_gql():
-        return True
-    
-class OrdersInfoSortByEnum(Enum):
-    ID = "id"
-    
-    @property
-    def is_gql():
-        return True
-    
-class OrdersInfoStatusEnum(Enum):
-    SUCCESS = "success"
-    CANCELED = "canceled"
-    PENDING = "pending"
-    ERROR = "error"
-
-    @property
-    def is_gql():
-        return True
-
-class OrdersTypeEnum(Enum):
-    PRODUCT = "product"
-    EVENT = "event"
-
-    @property
-    def is_gql():
-        return True
-    
-class ProductLadivineSortByEnum(Enum):
-    ID = "id"
-    TITLE = "title"
-
-    # @property
-    # def is_gql():
-    #     return True
-
-
-class ProductLadivineVariantSortByEnum(Enum):
-    ID = "id"
-    TITLE = "title"
-
-    # @property
-    # def is_gql():
-    #     return True
-
-class ProductIngestSortByEnum(Enum):
-    ID = "id"
-    BRAND = "brand"
-
-    # @property
-    # def is_gql():
-    #     return True
-
-
-class ProductJovaniVariantSortByEnum(Enum):
-    ID = "id"
-    TITLE = "title"
-
-    # @property
-    # def is_gql():
-    #     return True
-
-class ProductAdriannaPapellSortByEnum(Enum):
-    ID = "id"
-    TITLE = "title"
-
-    # @property
-    # def is_gql():
-    #     return True
-
-
-class ProductAdriannaPapellVariantSortByEnum(Enum):
-    ID = "id"
-    TITLE = "title"
-
-    # @property
-    # def is_gql():
-    #     return True
-    
-class ProductFashionSortByEnum(Enum):
-    ID = "id"
-    
-    # @property
-    # def is_gql():
-    #     return True
-
-
-class ProductFashionVariantSortByEnum(Enum):
-    ID = "id"
-    
-    # @property
-    # def is_gql():
-    #     return True
-
-class StoreInfoSortByEnum(Enum):
-    ID = "id"
-    
-    # @property
-    # def is_gql():
-    #     return True
-
 
 class NotificationsSagaStateSortByEnum(Enum):
     ID = "id"

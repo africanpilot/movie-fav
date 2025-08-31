@@ -82,8 +82,6 @@ class AccountLib(LinkRequest, LinkRedis, AccountInfoRead):
 			self.account_redis_engine,
 			[
 				f"""account_me_query:{account_id}:*""",
-				f"""tracker_movie_me_query:{account_id}:*""",
-				f"""tracker_shows_me_query:{account_id}:*""",
 			]
 		).execute()
   

@@ -16,15 +16,10 @@ class MovieFederations(GraphQLModel, MovieLib):
     def load_defs(self):
         
         movieInfo = ApolloTypes.get("MovieInfo")
-        trackerMovie = ApolloTypes.get("TrackerMovie")
 
         @movieInfo.reference_resolver
         def resolve_movie_info_reference(_, _info, representation):
             return None
-
-        @trackerMovie.field("movie_info")
-        def resolve_movie_info_movie_info(representation, *_):
-            return get_movie_by_id(_[0], representation["movie_info_id"])
         
         def get_movie_by_id(info, movie_info_id: int):            
             query_context = self.get_query_request(selections=info.field_nodes, fragments=info.fragments)

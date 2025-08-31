@@ -80,6 +80,25 @@ services:
     networks:
       - secms
 
+  selenium:
+    # image: selenium/standalone-chrome
+    image: seleniarm/standalone-chromium
+    hostname: selenium
+    container_name: selenium
+    restart: always
+    environment:
+      - DOCKER_DEFAULT_PLATFORM=linux/amd64
+      - GRID_MAX_SESSION=20
+      - SE_NODE_MAX_SESSIONS=20
+      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+      - VNC_NO_PASSWORD=1
+    ports:
+      - "4013:4444"
+    volumes:
+      - /dev/shm:/dev/shm
+    networks:
+      - secms
+
 
 ###################
 # Monitoring

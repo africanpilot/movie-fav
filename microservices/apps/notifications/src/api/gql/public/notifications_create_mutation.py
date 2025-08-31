@@ -45,7 +45,6 @@ class NotificationsCreateMutation(GraphQLModel, NotificationsLib, NotificationsS
 				self.log.error(e)
 				self.log.error(f"Unable to schedule create notifications saga: {saga_state.id} for notifications {createInput.email}")
 			
-			self.redis_delete_keys_pipe(self.event_redis_engine, [f"event_info_query:{token_decode.account_store_id}:*"]).execute()
 			self.redis_delete_notifications_saga_state_keys(token_decode.account_store_id)
    
 			return self.success_response(resultObject=NotificationsInfoResponse, nullPass=True)

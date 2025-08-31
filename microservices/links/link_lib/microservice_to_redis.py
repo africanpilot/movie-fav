@@ -25,18 +25,6 @@ class LinkRedis(LinkGeneral, DbConn):
         return self.get_redis_session("redisdb_account")
     
     @cached_property
-    def cart_redis_engine(self) -> Redis:
-        return self.get_redis_session("redisdb_cart")
-    
-    @cached_property
-    def collection_redis_engine(self) -> Redis:
-        return self.get_redis_session("redisdb_collection")
-
-    @cached_property
-    def event_redis_engine(self) -> Redis:
-        return self.get_redis_session("redisdb_event")
-    
-    @cached_property
     def movie_redis_engine(self) -> Redis:
         return self.get_redis_session("redisdb_movie")
     
@@ -45,28 +33,12 @@ class LinkRedis(LinkGeneral, DbConn):
         return self.get_redis_session("redisdb_notifications")
     
     @cached_property
-    def orders_redis_engine(self) -> Redis:
-        return self.get_redis_session("redisdb_orders")
-    
-    @cached_property
     def person_redis_engine(self) -> Redis:
         return self.get_redis_session("redisdb_person")
     
     @cached_property
-    def product_redis_engine(self) -> Redis:
-        return self.get_redis_session("redisdb_product")
-    
-    @cached_property
     def shows_redis_engine(self) -> Redis:
         return self.get_redis_session("redisdb_shows")
-    
-    @cached_property
-    def store_redis_engine(self) -> Redis:
-        return self.get_redis_session("redisdb_store")
-    
-    @cached_property
-    def trackstar_redis_engine(self) -> Redis:
-        return self.get_redis_session("redisdb_trackstar")
     
     def batcher(self, iterable: object, n: int) -> object:
         return zip_longest(*[iter(iterable)] * n)

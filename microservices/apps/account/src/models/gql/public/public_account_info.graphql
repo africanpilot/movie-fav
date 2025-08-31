@@ -14,7 +14,6 @@ extend type Mutation {
   accountForgotPasswordConfirmEmail: AccountInfoResponse
 
   accountAuthenticationLogin(accountLoginInput: AccountLoginInput!): AccountAuthenticationResponse
-  accountAuthenticationAuthZeroLogin: AccountAuthenticationResponse
   accountGuestLogin: AccountAuthenticationResponse
   accountAuthenticationLogout: AccountAuthenticationResponse
 }

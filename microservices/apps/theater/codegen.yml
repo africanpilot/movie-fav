@@ -5,7 +5,6 @@ schema: [
   "../movie/src/models/gql/public/**/*.{gql,graphql}",
   "../person/src/models/gql/public/**/*.{gql,graphql}",
   "../shows/src/models/gql/public/**/*.{gql,graphql}",
-  "../tracker/src/models/gql/public/**/*.{gql,graphql}",
 ]
 documents: [
   "graphql/**/*.{gql,graphql}",
@@ -13,7 +12,6 @@ documents: [
   "../movie/src/api/gql/public/**/*.{gql,graphql}",
   "../person/src/api/gql/public/**/*.{gql,graphql}",
   "../shows/src/api/gql/public/**/*.{gql,graphql}",
-  "../tracker/src/api/gql/public/**/*.{gql,graphql}",
   "../../links/link_api/gql/public/**/*.{gql,graphql}",
 ]
 generates:

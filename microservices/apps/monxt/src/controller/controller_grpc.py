@@ -14,10 +14,6 @@ class GrpcController:
     @staticmethod
     def handler(topic: str, **kwargs) -> dict:
       registered_topics = [
-        "CartProductQuery",
-        "CartEventQuery",
-        "ProductVariantQuery",
-        "EventTicketQuery",
         "GetRemainingMovieCastQuery",
         "GetRemainingMovieDownloadsQuery",
         "GetMovieDownloadsQuery",

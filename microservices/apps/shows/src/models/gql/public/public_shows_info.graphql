@@ -39,11 +39,6 @@ extend type ShowsInfo @key(fields: "id") {
     shows_season: [ShowsSeason]
 }
 
-extend type TrackerShows @key(fields: "shows_info_id") {
-    shows_info_id: Int @external
-    shows_info: ShowsInfo
-}
-
 input ShowsInfoFilterInput {
     id: [Int]
     title: [String]

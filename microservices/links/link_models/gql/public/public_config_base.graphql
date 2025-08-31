@@ -90,17 +90,6 @@ enum MovieInfoSortByEnum {
   POPULAR_ID
 }
 
-enum TrackerMovieSortByEnum {
-  ID
-  COMPLETED
-  RATING
-}
-
-enum TrackerTypeEnum {
-  MOVIE
-  SHOW
-}
-
 enum MovieStatusEnum {
   COMPLETED
   NOT_COMPLETED
@@ -137,27 +126,6 @@ enum ProviderTypeEnum {
   HULU
   AMAZON
   APPLETV
-}
-
-enum TrackerShowsStatusEnum {
-  WATCH_LATER
-  STOP_WATCHING
-  WATCHING
-  UP_TO_DATE
-  COMPLETED
-  REMOVED
-}
-
-enum TrackerShowsSortByEnum {
-  ID
-}
-
-enum TrackerShowsSeasonSortByEnum {
-  ID
-}
-
-enum TrackerShowsEpisodeSortByEnum {
-  ID
 }
 
 enum ShowsInfoSortByEnum {
@@ -210,89 +178,6 @@ enum DownloadLocationEnum {
   IMDB_ALL
 }
 
-enum EventInfoSortByEnum {
-  ID
-  NAME
-}
-
-enum EventScheduleSortByEnum {
-  ID
-  NAME
-}
-
-enum EventTicketSortByEnum {
-  ID
-  NAME
-}
-
-enum ProductInfoSortByEnum {
-  ID
-  NAME
-  MSRP_PRICE
-}
-
-enum ProductVariantSortByEnum {
-  ID
-  NAME
-}
-
-enum ProductColorSortByEnum {
-  ID
-  NAME
-}
-
-enum ProductCategorySortByEnum {
-  ID
-  NAME
-}
-
-enum ProductIngestEnum {
-  LA_DIVINE
-  JOVANI
-  ELLIE_WILD
-  ADRIANNA_PAPELL
-  JESSICA_ANGEL
-  PORTIA_AND_SCARLETT
-  COLORS_DRESS
-  SHERRI_HILL
-  SOPHIA_THOMAS
-  SCALA
-  ASHLEY_LAUREN
-  MNM_COUTURE
-  NOX_ANABEL
-  AMELIA_COUTURE
-  SYDNEYS_CLOSET
-  PRIMAVERA_COUTURE
-  CLARISSE
-  JASZ_COUTURE
-  STELLA_COUTURE
-  MANUAL
-}
-
-enum ProductBrandEnum {
-  LA_DIVINE
-  JOVANI
-  ELLIE_WILD
-  ADRIANNA_PAPELL
-  JESSICA_ANGEL
-  PORTIA_AND_SCARLETT
-  COLORS_DRESS
-  SHERRI_HILL
-  SOPHIA_THOMAS
-  SCALA
-  ASHLEY_LAUREN
-  MNM_COUTURE
-  NOX_ANABEL
-  AMELIA_COUTURE
-  SYDNEYS_CLOSET
-  PRIMAVERA_COUTURE
-  OTHER
-  CLARISSE
-  JASZ_COUTURE
-  STELLA_COUTURE
-  WALMART
-}
-
 enum NotifyTemplateEnum {
   LABELLE_APPOINTMENT
   ALL_NATION_CONTACT
@@ -306,50 +191,11 @@ enum NotifyTemplateEnum {
 
 enum RedisDatabaseEnum {
   ACCOUNT
-  CART
-  COLLECTION
-  EVENT
   MOVIE
   NOTIFICATIONS
-  ORDERS
   PERSON
-  PRODUCT
   SHOWS
-  TRACKSTAR
   DEFAULT
-}
-
-enum CollectionInfoSortByEnum {
-  ID
-  NAME
-}
-
-enum CartProductSortByEnum {
-  ID
-}
-
-enum CartWishlistSortByEnum {
-  ID
-}
-
-enum CartEventSortByEnum {
-  ID
-}
-
-enum OrdersInfoSortByEnum {
-  ID
-}
-
-enum OrdersInfoStatusEnum {
-  SUCCESS
-  CANCELED
-  PENDING
-  ERROR
-}
-
-enum OrdersTypeEnum {
-  PRODUCT
-  EVENT
 }
 
 enum AccountRoleEnum {

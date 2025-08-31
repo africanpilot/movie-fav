@@ -38,11 +38,6 @@ extend type MovieInfo @key(fields: "id") {
     videos: [String]
 }
 
-extend type TrackerMovie @key(fields: "movie_info_id") {
-    movie_info_id: Int @external
-    movie_info: MovieInfo
-}
-
 input MovieInfoFilterInput {
     id: [Int]
     title: [String]

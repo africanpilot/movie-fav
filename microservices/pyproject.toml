@@ -1,6 +1,6 @@
 [tool.black]
 line-length = 120
-target-version = ['py310']
+target-version = ['py313']
 include = '\.pyi?$'
 exclude = '.venv/*'
 
@@ -29,6 +29,7 @@ requests = "2.32.5"
 cinemagoer = "2023.5.1"
 sendgrid = "6.12.4"
 sqlmodel = "0.0.24"
+selenium = "4.35.0"
 watchgod = "0.8.2"
 celery = "5.5.3"
 asyncapi = {extras = ["http", "yaml", "redis", "subscriber", "docs"], version = "0.14.1"}
@@ -41,7 +42,7 @@ pandas = "2.3.2"
 webdriver-manager = "4.0.2"
 alembic = "1.16.5"
 beautifulsoup4 = "4.13.5"
-stripe = "12.5.0"
+itsdangerous = "2.2.0"
 numpy = "2.3.2"
 geopy = "2.4.1"
 parsel = "1.10.0"

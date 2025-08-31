@@ -22,14 +22,9 @@ class GenericLinkModel:
         self.log: logging = MicroserviceLogger.format_base(self.name)
         self.enabled_microservices = [
             "account",
-            "cart",
-            "collection",
-            "event",
             "movie",
             "notifications",
-            "orders",
             "person",
-            "product",
             "shows",
         ]
 

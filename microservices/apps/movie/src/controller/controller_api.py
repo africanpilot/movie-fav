@@ -14,7 +14,6 @@ class APIController(ControllerToApollo):
     public_models_to_load = [
         "MovieInfoQuery",
         "MovieFederations",
-        "MovieDownloadMutation",
         "MovieUpdateMutation",
     ]
     

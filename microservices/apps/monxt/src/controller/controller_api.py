@@ -27,48 +27,10 @@ class APIController(ControllerToApollo):
       "AccountCompanyUpdateMutation",
       "AccountCompanyQuery",
       "AccountGuestLoginMutation",
-      "AccountAuthenticationAuthZeroLoginMutation",
-      
-      # cart
-      "CartEventCreateMutation",
-      "CartEventDeleteMutation",
-      "CartEventUpdateMutation",
-      "CartEventQuery",
-      "CartProductCreateMutation",
-      "CartProductDeleteMutation",
-      "CartProductUpdateMutation",
-      "CartProductQuery",
-      "CartWishlistCreateMutation",
-      "CartWishlistDeleteMutation",
-      "CartWishlistUpdateMutation",
-      "CartWishlistQuery",
-      
-      # collection
-      "CollectionInfoCreateMutation",
-      "CollectionInfoDeleteMutation",
-      "CollectionInfoUpdateMutation",
-      "CollectionInfoQuery",
-      
-      # event
-      "EventInfoCreateMutation",
-      "EventInfoDeleteMutation",
-      "EventInfoUpdateMutation",
-      "EventInfoQuery",
-      "EventGeoQuery",
-      "EventScheduleCreateMutation",
-      "EventScheduleDeleteMutation",
-      "EventScheduleUpdateMutation",
-      "EventScheduleQuery",
-      "EventTicketCreateMutation",
-      "EventTicketDeleteMutation",
-      "EventTicketUpdateMutation",
-      "EventTicketQuery",
-      "EventFederations",
       
       # movie
       "MovieInfoQuery",
       "MovieFederations",
-      "MovieDownloadMutation",
       "MovieUpdateMutation",
       
       # notifications
@@ -77,35 +39,14 @@ class APIController(ControllerToApollo):
       "NotificationsSagaStateQuery",
       "NotificationsUpdateMutation",
       
-      # orders
-      "OrdersInfoCreateMutation",
-      "OrdersInfoUpdateMutation",
-      "OrdersInfoQuery",
-      "OrdersIntentCreateMutation",
-      
       # person
       "PersonInfoQuery",
       "PersonFederations",
-      
-      # product
-      "ProductInfoCreateMutation",
-      "ProductInfoDeleteMutation",
-      "ProductInfoUpdateMutation",
-      "ProductInfoQuery",
-      "ProductVariantCreateMutation",
-      "ProductVariantDeleteMutation",
-      "ProductVariantUpdateMutation",
-      "ProductVariantQuery",
-      "ProductCategoryQuery",
-      "ProductColorQuery",
-      "ProductFederations",
-      "ProductSearchQuery",
       
       # shows
       "ShowsInfoQuery",
       "ShowsFederations",
       "ShowsEpisodeQuery",
-      "ShowsDownloadMutation",
       "ShowsEpisodeUpdateMutation",
     ]
     
@@ -117,13 +58,6 @@ class APIController(ControllerToApollo):
       "MovieRedisSyncMutation",
       "MovieImportMutation",
       "MovieInfoUpdateMutation",
-
-      # orders
-      "OrdersInfoDeleteMutation",
-      
-      # product
-      "ProductIngestMutation",
-      "ProductColorCreateMutation",
       
       # person
       "PersonInfoPopulateMutation",

@@ -16,15 +16,10 @@ class ShowsFederations(GraphQLModel, ShowsLib):
     def load_defs(self):
         
         showsInfo = ApolloTypes.get("ShowsInfo")
-        trackerShows = ApolloTypes.get("TrackerShows")
 
         @showsInfo.reference_resolver
         def resolve_shows_info_reference(_, _info, representation):
             return None
-
-        @trackerShows.field("shows_info")
-        def resolve_shows_info_shows_info(representation, *_):
-            return get_shows_by_id(_[0], representation["shows_info_id"])
         
         def get_shows_by_id(info, shows_info_id: int):            
             query_context = self.get_query_request(selections=info.field_nodes, fragments=info.fragments)

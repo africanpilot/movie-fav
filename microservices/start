@@ -16,7 +16,7 @@ def change_dir(service_name: str, path: str):
     os.chdir(os.path.abspath(target_dir))
     
 def run_migrations(microservices: Optional[list[str]] = None):
-    ms = microservices if microservices else ["account", "notifications", "product", "movie", "shows", "person"]
+    ms = microservices if microservices else ["account", "notifications", "movie", "shows", "person"]
     for d in ms:
         os.system(f"cd /home/svc/microservices/apps/{d}/src/models/;alembic upgrade head")
 
