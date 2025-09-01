@@ -18,16 +18,16 @@ class AccountInfoBaseResponse(AccountInfoBase):
   pass
 
 class AccountInfoResponse(BaseResponse):
-  result: list[AccountInfoBaseResponse] = None
+  result: Optional[list[AccountInfoBaseResponse]] = None
 
 class AccountAuthentication(BaseModel):
   authenticationToken: str
   authenticationTokenType: AuthenticationTokenTypeEnum
   registrationStatus: AccountRegistrationEnum
-  account_info: list[AccountInfoBaseResponse]
+  account_info: Optional[list[AccountInfoBaseResponse]] = None
 
 class AccountAuthenticationResponse(ConstBase):
-  result: AccountAuthentication = None
+  result: Optional[AccountAuthentication] = None
 
 
 class AccountInfoResponses(LinkRequest):

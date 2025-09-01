@@ -12,9 +12,9 @@ from link_models.base import PageInfoInput
 
 
 class AccountInfoBase(SQLModel):
-  id: Optional[int] = Field(primary_key=True)
-  email: Optional[str] = Field(unique=True, min_length=8, max_length=100)
-  password: Optional[str] = Field(max_length=255)
+  id: Optional[int] = Field(default=None, nullable=False, primary_key=True)
+  email: Optional[str] = Field(default=None, nullable=False, unique=True, min_length=8, max_length=100)
+  password: Optional[str] = Field(default=None, nullable=False, max_length=255)
   registration_date: Optional[datetime] = Field(default=datetime.now())
   registration_status: Optional[AccountRegistrationEnum] = Field(default=AccountRegistrationEnum.NOT_COMPLETE, sa_column=Column(Enum(AccountRegistrationEnum)))
   verified_email: Optional[bool] = Field(default=False)
@@ -47,7 +47,7 @@ class AccountInfo(AccountInfoBase, table=True):
 
   __tablename__ = "account_info"
   __table_args__ = {'extend_existing': True, 'schema': 'account'}
-  
+
   registration_status: Optional[AccountRegistrationEnum] = Field(default=AccountRegistrationEnum.NOT_COMPLETE, sa_column=Column(Enum(AccountRegistrationEnum)))
   status: Optional[AccountStatusEnum] = Field(default=AccountStatusEnum.ACTIVE, sa_column=Column(Enum(AccountStatusEnum)))
 

@@ -46,7 +46,27 @@ class LinkResponse(LinkGeneral):
 	def get_page_info_count_over(self, result: list):
 		if not result:
 			return {}
-		return {k: v for k, v in dict(result[0]).items() if k == "page_info_count"}
+		
+		first_result = result[0]
+		if first_result is None:
+			return {}
+		
+		try:
+			# Handle SQLAlchemy Row objects or dict-like objects
+			if hasattr(first_result, '_asdict'):
+				# SQLAlchemy Row object
+				result_dict = first_result._asdict()
+			elif hasattr(first_result, '__dict__'):
+				# Object with __dict__
+				result_dict = first_result.__dict__
+			else:
+				# Try to convert to dict
+				result_dict = dict(first_result)
+			
+			return {k: v for k, v in result_dict.items() if k == "page_info_count"}
+		except (TypeError, AttributeError, ValueError) as e:
+			self.log.warning(f"Error processing page info count: {e}, result[0]: {first_result}")
+			return {}
 
 	def join_tables(self, sql_query: Select, dbJoinType: list[dict] = None)-> Select:
 		if dbJoinType:
