@@ -44,7 +44,7 @@ class PersonInfoPopulateMutation(GraphQLModel, PersonLib):
                 
                 person_ids = set(remaining_movie_person_imdbs + remaining_shows_person_imdbs)
             
-            with self.get_connection("psqldb_person").connection() as db:
+            with self.get_connection("psqldb_person") as db:
                 
                 person_complete = [
                     person.imdb_id for person in self.find_person_imdb_completed(db, person_ids)

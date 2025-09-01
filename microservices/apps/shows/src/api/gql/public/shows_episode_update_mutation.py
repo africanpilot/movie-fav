@@ -20,7 +20,7 @@ class ShowsEpisodeUpdateMutation(GraphQLModel, ShowsLib):
             
             self.general_validation_process(info)
             
-            with self.get_connection("psqldb_shows").connection() as db:
+            with self.get_connection("psqldb_shows") as db:
 
                 show_episode = self.get_shows_episode_update(db, shows_episode_id)
                 

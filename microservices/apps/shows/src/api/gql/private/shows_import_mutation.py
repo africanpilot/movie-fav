@@ -33,7 +33,7 @@ class ShowsImportMutation(GraphQLModel, ShowsLib):
             
             pageInfo = PageInfoInput(**pageInfo) if pageInfo else PageInfoInput()
         
-            with self.get_connection("psqldb_shows").connection() as db:
+            with self.get_connection("psqldb_shows") as db:
  
                 all_import = self.shows_saga_state_create(db, imdb_ids=[f"shows_import:{uuid.uuid4()}"], body=dict(download_type=downloadType.value, page=pageInfo.first))
                 

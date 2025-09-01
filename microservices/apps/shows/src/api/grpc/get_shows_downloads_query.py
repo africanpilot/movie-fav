@@ -12,7 +12,7 @@ class GetShowsDownloadsQuery(ShowsLib):
     self.body: dict = kwargs.get('body')
 
   def execute(self):
-    with self.get_connection("psqldb_shows").connection() as db:
+    with self.get_connection("psqldb_shows") as db:
       results = self.get_download_urls(db, self.body.get("imdb_ids"))
 
     return dict(

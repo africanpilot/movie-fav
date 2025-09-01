@@ -17,7 +17,7 @@ get_db = DbConn()
 
 @pytest.fixture(scope="session")
 def test_database():
-  with get_db.get_engine("psqldb_monxt").connection() as db:
+  with get_db.get_engine("psqldb_monxt") as db:
     try:
       get_db.create_database(db, ALL_MODELS)
       
@@ -34,7 +34,7 @@ def test_database():
 @pytest.fixture
 def reset_database():
   def reset_db():
-    with get_db.get_engine("psqldb_monxt").connection() as db:
+    with get_db.get_engine("psqldb_monxt") as db:
       get_db.drop_database(db, ALL_MODELS)
       get_db.create_database(db, ALL_MODELS)
   return reset_db

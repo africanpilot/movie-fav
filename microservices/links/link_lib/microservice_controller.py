@@ -114,6 +114,9 @@ class ControllerToApollo(ControllerToApolloArbitraryStaticTypeDef):
         """
         type_defs = []
 
+        # Clear Apollo types to avoid conflicts between schema creations
+        ApolloTypes.types.clear()
+
         self._load_registered_type_defs(type_defs)
 
         self._set_query_load_context_skeleton()

@@ -39,7 +39,7 @@ class PersonInfoQuery(GraphQLModel, PersonLib):
                 self.log.info("person_info_query: by redis")
                 return redis_response
             
-            with self.get_connection("psqldb_person").connection() as db:
+            with self.get_connection("psqldb_person") as db:
                 response = self.person_response(
                     info=info,
                     db=db,

@@ -40,7 +40,7 @@ class MovieInfoQuery(GraphQLModel, MovieLib):
                     self.log.info("movie_info_query: by redis")
                     return redis_response
 
-            with self.get_connection("psqldb_movie").connection() as db:
+            with self.get_connection("psqldb_movie") as db:
                 response = self.movie_info_response(
                     info=info,
                     db=db,

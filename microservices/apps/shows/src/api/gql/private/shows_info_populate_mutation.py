@@ -44,7 +44,7 @@ class ShowsInfoPopulateMutation(GraphQLModel, ShowsLib):
                 if page:
                     all_popular_ids += self.get_imdb_popular(page)
 
-            with self.get_connection("psqldb_shows").connection() as db:
+            with self.get_connection("psqldb_shows") as db:
                 
                 if DownloadLocationEnum.DATABASE in location:
                     no_shows_info = [r.imdb_id for r in self.get_no_shows_info(db)]

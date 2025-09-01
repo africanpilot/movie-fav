@@ -40,7 +40,7 @@ class ShowsInfoQuery(GraphQLModel, ShowsLib):
                     self.log.info("shows_info_query: by redis")
                     return redis_response
 
-            with self.get_connection("psqldb_shows").connection() as db:
+            with self.get_connection("psqldb_shows") as db:
                 response = self.shows_response(
                     info=info,
                     db=db,
