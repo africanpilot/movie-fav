@@ -1,14 +1,16 @@
-# Copyright © 2025 by Richard Maku, Inc.
+# Copyright © 2022 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
 import os
 import redis
 
 from redis.client import Redis
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.schema import CreateSchema, DropSchema
 from sqlmodel import SQLModel, Session
-from sqlalchemy.engine.base import Connection
+from sqlalchemy.engine.base import Connection, Engine
+from contextlib import contextmanager
+from typing import Generator
 from link_lib.microservice_generic_model import GenericLinkModel
 
 
@@ -46,6 +48,8 @@ class DbConn:
 				pool_size=20,
 				max_overflow=0,
 				pool_recycle=3600,
+				pool_pre_ping=True,  # Verify connections before use
+				echo=False,  # Set to True for SQL debugging
 			)
 
 		if dbType == "redis":
@@ -55,13 +59,39 @@ class DbConn:
 		return engine
 
 	def get_connection(self, *args) -> Connection:
-		return Connection(self.get_engine(*args))
+		"""Get a raw SQLAlchemy connection. Use sparingly - prefer get_session()."""
+		engine = self.get_engine(*args)
+		return engine.connect()
 
 	def get_session(self, *args) -> Session:
-		return Session(self.get_engine(*args))
+		"""Get a SQLModel session with proper configuration for SQLAlchemy 2.0+."""
+		engine = self.get_engine(*args)
+		return Session(engine, autocommit=False, autoflush=False)
 
 	def get_redis_session(self, *args) -> Redis:
 		return self.get_engine(*args, dbType="redis")
+
+	@contextmanager
+	def get_db_session(self, *args) -> Generator[Session, None, None]:
+		"""Context manager for database sessions with automatic cleanup."""
+		session = self.get_session(*args)
+		try:
+			yield session
+			session.commit()
+		except Exception:
+			session.rollback()
+			raise
+		finally:
+			session.close()
+
+	@contextmanager
+	def get_db_connection(self, *args) -> Generator[Connection, None, None]:
+		"""Context manager for database connections with automatic cleanup."""
+		connection = self.get_connection(*args)
+		try:
+			yield connection
+		finally:
+			connection.close()
 
 	def create_db_and_tables(self, name):
 		SQLModel.metadata.create_all(self.get_engine(f"psqldb_{name}"))
@@ -70,26 +100,32 @@ class DbConn:
 		SQLModel.metadata.drop_all(self.get_engine(f"psqldb_{name}"), checkfirst=False)
   
 	def create_default_schema(self):
-		with self.get_connection(f"psqldb_default") as db:
+		"""Create schemas for all enabled microservices using modern SQLAlchemy 2.0+ syntax."""
+		engine = self.get_engine("psqldb_default")
+		with engine.begin() as conn:
 			for ms in self.general.enabled_microservices:
-				if not db.dialect.has_schema(db, ms):
-					db.execute(CreateSchema(ms))
-			db.commit()
+				if not conn.dialect.has_schema(conn, ms):
+					conn.execute(CreateSchema(ms))
    
 	def drop_default_schema(self):
-		with self.get_connection(f"psqldb_default") as db:
+		"""Drop schemas for all enabled microservices using modern SQLAlchemy 2.0+ syntax."""
+		engine = self.get_engine("psqldb_default")
+		with engine.begin() as conn:
 			for ms in self.general.enabled_microservices:
-				if db.dialect.has_schema(db, ms):
-					db.execute(DropSchema(ms))
-			db.commit()
+				if conn.dialect.has_schema(conn, ms):
+					conn.execute(DropSchema(ms, cascade=True))
 			
 	def create_database(self, name: str, models: list[SQLModel]):
-		with self.get_connection(f"psqldb_{name}") as db:
+		"""Create database tables for the given models using modern SQLAlchemy 2.0+ syntax."""
+		engine = self.get_engine(f"psqldb_{name}")
+		with engine.begin() as conn:
 			for model in models:
-				model.metadata.create_all(db, checkfirst=True)
-			db.commit()
+				model.metadata.create_all(conn, checkfirst=True)
 
 	def drop_database(self, name: str, models: list[SQLModel]):
-		with self.get_connection(f"psqldb_{name}") as db:
+		"""Drop database tables for the given models using modern SQLAlchemy 2.0+ syntax."""
+		engine = self.get_engine(f"psqldb_{name}")
+		with engine.begin() as conn:
+			# Drop tables in reverse order to handle foreign key dependencies
 			for model in reversed(models):
-				model.metadata.drop_all(db, checkfirst=True)
+				model.metadata.drop_all(conn, checkfirst=True)

@@ -18,7 +18,9 @@ class AccountInfoCreateInput(BaseModel):
   email: str
   password: str
   reTypePassword: str
-  profile_image: Optional[str] = None
+  registration_status: Optional[AccountRegistrationEnum] = None
+  verified_email: Optional[bool] = None
+  status: Optional[AccountStatusEnum] = None
   profile_thumbnail: Optional[str] = None
   first_name: Optional[str] = None
   last_name: Optional[str] = None

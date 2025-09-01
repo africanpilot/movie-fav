@@ -166,35 +166,35 @@ class LinkResponse(LinkGeneral):
 
 	def http_400_bad_request_response(self, msg: str = None) -> dict:
 		raise HTTPException(json.dumps(self.update_general_response(
-    		GeneralResponse(code=400, message=f"http_400_bad_request: {msg}"), BaseResponse).dict(),
+    		GeneralResponse(code=400, message=f"http_400_bad_request: {msg}"), BaseResponse).model_dump(),
             cls=GeneralJSONEncoder))
 
 	def http_401_unauthorized_response(self, msg: str = None) -> dict:
 		raise HTTPException(json.dumps(self.update_general_response(
-      		GeneralResponse(code=401, message=f"http_401_unauthorized: {msg}"), BaseResponse).dict(), 
+      		GeneralResponse(code=401, message=f"http_401_unauthorized: {msg}"), BaseResponse).model_dump(), 
         	cls=GeneralJSONEncoder))
 
 	def http_403_forbidden_response(self, msg: str = None) -> dict:
 		raise HTTPException(json.dumps(self.update_general_response(
-			GeneralResponse(code=403, message=f"http_403_forbidden: {msg}"), BaseResponse).dict(),
+			GeneralResponse(code=403, message=f"http_403_forbidden: {msg}"), BaseResponse).model_dump(),
 			cls=GeneralJSONEncoder))
 
 	def http_404_not_found_response(self, msg: str = None) -> dict:
 		raise HTTPException(json.dumps(self.update_general_response(
-			GeneralResponse(code=404, message=f"http_404_not_found: {msg}"), BaseResponse).dict(),
+			GeneralResponse(code=404, message=f"http_404_not_found: {msg}"), BaseResponse).model_dump(),
 			cls=GeneralJSONEncoder))
 
 	def http_498_invalid_token_response(self, msg: str = None) -> dict:
 		raise HTTPException(json.dumps(self.update_general_response(
-			GeneralResponse(code=498, message=f"http_498_invalid_token: {msg}"), BaseResponse).dict(),
+			GeneralResponse(code=498, message=f"http_498_invalid_token: {msg}"), BaseResponse).model_dump(),
             cls=GeneralJSONEncoder))
 
 	def http_499_token_required_response(self, msg: str = None) -> dict:
 		raise HTTPException(json.dumps(self.update_general_response(
-			GeneralResponse(code=499, message=f"http_499_token_required: {msg}"), BaseResponse).dict(),
+			GeneralResponse(code=499, message=f"http_499_token_required: {msg}"), BaseResponse).model_dump(),
 			cls=GeneralJSONEncoder))
 
 	def http_500_internal_server_error(self, msg: str = None) -> dict:
 		raise HTTPException(json.dumps(self.update_general_response(
-			GeneralResponse(code=500, message=f"http_500_internal_server_error: {msg}"), BaseResponse).dict(),
+			GeneralResponse(code=500, message=f"http_500_internal_server_error: {msg}"), BaseResponse).model_dump(),
             cls=GeneralJSONEncoder))
