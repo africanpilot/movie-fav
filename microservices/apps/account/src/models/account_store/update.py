@@ -13,25 +13,25 @@ from sqlalchemy.sql.dml import Update
 
 class AccountStoreUpdateInput(BaseModel):
   account_store_id: int
-  name: Optional[str]
-  ein: Optional[str]
-  phone_number: Optional[str]
-  website: Optional[str]
-  fax_number: Optional[str]
-  tax_rate_applied: Optional[float]
-  image: Optional[str]
-  thumb_nail: Optional[str]
-  images: Optional[Set[str]]
-  logo: Optional[str]
-  logo_thumbnail: Optional[str]
-  is_closed: Optional[bool]
-  return_policy: Optional[str]
-  address: Optional[str]
-  city: Optional[str]
-  state: Optional[str]
-  zip_code: Optional[int]
-  latitude: Optional[float]
-  longitude: Optional[float]
+  name: Optional[str] = None
+  ein: Optional[str] = None
+  phone_number: Optional[str] = None
+  website: Optional[str] = None
+  fax_number: Optional[str] = None
+  tax_rate_applied: Optional[float] = None
+  image: Optional[str] = None
+  thumb_nail: Optional[str] = None
+  images: Optional[Set[str]] = None
+  logo: Optional[str] = None
+  logo_thumbnail: Optional[str] = None
+  is_closed: Optional[bool] = None
+  return_policy: Optional[str] = None
+  address: Optional[str] = None
+  city: Optional[str] = None
+  state: Optional[str] = None
+  zip_code: Optional[int] = None
+  latitude: Optional[float] = None
+  longitude: Optional[float] = None
 
 class AccountStoreUpdate(LinkGeneral):
   def __init__(self, **kwargs):
@@ -41,7 +41,7 @@ class AccountStoreUpdate(LinkGeneral):
     sql_query = (
       update(AccountStore)
       .where(AccountStore.id == updateInput.account_store_id)
-      .values(**updateInput.dict(exclude_unset=True, exclude={"account_store_id"}), updated=datetime.now())
+      .values(**updateInput.model_dump(exclude_unset=True, exclude={"account_store_id"}), updated=datetime.now())
     )
 
     if commit:

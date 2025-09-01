@@ -22,19 +22,19 @@ class AccountStoreBase(SQLModel):
   website: Optional[str] = Field(max_length=255)
   fax_number: Optional[str] = Field(max_length=30)
   tax_rate_applied: Optional[float] = Field(nullable=False)
-  image: Optional[str]
-  thumb_nail: Optional[str]
+  image: Optional[str] = None
+  thumb_nail: Optional[str] = None
   images: Optional[Set[str]] = Field(sa_column=Column(postgresql.ARRAY(String)))
-  logo: Optional[str]
-  logo_thumbnail: Optional[str]
+  logo: Optional[str] = None
+  logo_thumbnail: Optional[str] = None
   is_closed: Optional[bool] = Field(default=False)
-  return_policy: Optional[str]
+  return_policy: Optional[str] = None
   address: Optional[str] = Field(max_length=255)
   city: Optional[str] = Field(max_length=100)
   state: Optional[str] = Field(max_length=50)
-  zip_code: Optional[int]
-  latitude: Optional[float]
-  longitude: Optional[float]
+  zip_code: Optional[int] = None
+  latitude: Optional[float] = None
+  longitude: Optional[float] = None
   created: Optional[datetime] = Field(default=datetime.now())
   updated: Optional[datetime] = Field(default=datetime.now())
 
@@ -57,5 +57,5 @@ class AccountStorePageInfoInput(PageInfoInput):
 	sortBy: list[AccountStoreSortByEnum] = [AccountStoreSortByEnum.ID]
 
 class AccountStoreFilterInput(BaseModel):
-  id: Optional[list[int]]
-  name: Optional[list[str]]
+  id: Optional[list[int]] = None
+  name: Optional[list[str]] = None

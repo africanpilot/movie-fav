@@ -4,7 +4,7 @@
 from datetime import datetime
 from typing import Optional
 from sqlmodel import Session
-from pydantic import BaseModel, root_validator
+from pydantic import BaseModel, model_validator
 from account.src.models.account_info.base import AccountInfo, AccountInfoBase
 from account.src.models.account_info.validate import AccountInfoValidate
 from link_lib.microservice_general import LinkGeneral
@@ -19,7 +19,7 @@ class AccountInfoUpdatePasswordInput(BaseModel):
   password: str
   password_retype: str
   
-  @root_validator(pre=True)
+  @model_validator(mode='before')
   def _validate_account_create_input(cls, values):
 
     if values["password"]:
@@ -38,7 +38,7 @@ class AccountInfoUpdate(LinkGeneral):
   def account_info_update(self, db: Optional[Session], updateInput: AccountInfoUpdateInput, commit: bool = True) -> Optional[Update]:
     sql_query = (update(AccountInfo)
       .where(AccountInfo.id == updateInput.account_info_id)
-      .values(**updateInput.dict(exclude_unset=True, exclude={"id", "account_info_id"}), updated=datetime.now())
+      .values(**updateInput.model_dump(exclude_unset=True, exclude={"id", "account_info_id"}), updated=datetime.now())
     )
                      
     if commit:

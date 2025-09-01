@@ -14,9 +14,9 @@ class AccountCompanyBase(SQLModel):
   ein: Optional[str] = Field(max_length=50, unique=True)
   name: Optional[str] = Field(max_length=255)
   registration_date: Optional[datetime] = Field(default=datetime.now())
-  cover_image: Optional[str]
-  logo: Optional[str]
-  profile_thumbnail: Optional[str]
+  cover_image: Optional[str] = None
+  logo: Optional[str] = None
+  profile_thumbnail: Optional[str] = None
   status: Optional[AccountStatusEnum] = Field(default=AccountStatusEnum.ACTIVE, sa_column=Column(Enum(AccountStatusEnum)))
   stripe_connect_account_id: Optional[str] = Field(max_length=50)
   business_type: Optional[AccountBusinessTypeEnum] = Field(default=AccountBusinessTypeEnum.LLC, sa_column=Column(Enum(AccountBusinessTypeEnum)))
@@ -34,12 +34,12 @@ class AccountCompanyBase(SQLModel):
   sole_job_title: Optional[str] = Field(max_length=100)
   sole_phone_number: Optional[str] = Field(max_length=12)
   sole_email: Optional[str] = Field(nullable=False, max_length=255)
-  sole_birthday: Optional[datetime]
+  sole_birthday: Optional[datetime] = None
   sole_ssn: Optional[str] = Field(max_length=50)
   sole_address: Optional[str] = Field(max_length=255)
   sole_city: Optional[str] = Field(max_length=100)
   sole_state: Optional[str] = Field(max_length=50)
-  sole_zip_code: Optional[int]
+  sole_zip_code: Optional[int] = None
   created: Optional[datetime] = Field(default=datetime.now())
   updated: Optional[datetime] = Field(default=datetime.now())
 
@@ -62,5 +62,5 @@ class AccountCompanyPageInfoInput(PageInfoInput):
 	sortBy: list[AccountCompanySortByEnum] = [AccountCompanySortByEnum.ID]
 
 class AccountCompanyFilterInput(BaseModel):
-  id: Optional[list[int]]
-  name: Optional[list[str]]
+  id: Optional[list[int]] = None
+  name: Optional[list[str]] = None

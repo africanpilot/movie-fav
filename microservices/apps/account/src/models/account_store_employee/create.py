@@ -51,7 +51,7 @@ class AccountStoreEmployeeCreate(AccountInfoValidate, AccountInfoRead):
         account_company_id=account_company_id,
         account_store_id=account_store_id,
         account_info_id=account_info_id,
-        **employee.dict(exclude_unset=True, exclude={"email"})
+        **employee.model_dump(exclude_unset=True, exclude={"email"})
       ))
 
     if commit:

@@ -16,35 +16,35 @@ from sqlalchemy.sql.dml import Update
 
 class AccountCompanyUpdateInput(BaseModel):
   account_company_id: int
-  name: Optional[str]
+  name: Optional[str] = None
   cover_image: Optional[str] = None
   logo: Optional[str] = None
   profile_thumbnail: Optional[str] = None
-  business_type: Optional[AccountBusinessTypeEnum]
-  first_name: Optional[str]
-  last_name: Optional[str]
-  dba: Optional[str]
-  phone_number: Optional[str]
-  classification: Optional[AccountClassificationEnum]
-  ein: Optional[str]
-  product_description: Optional[str]
-  website: Optional[str]
-  address: Optional[str]
-  city: Optional[str]
-  state: Optional[str]
-  zip_code: Optional[int]
-  sole_first_name: Optional[str]
-  sole_last_name: Optional[str]
-  sole_job_title: Optional[str]
-  sole_phone_number: Optional[str]
-  sole_email: Optional[str]
-  sole_birthday: Optional[datetime]
-  sole_ssn: Optional[str]
-  sole_address: Optional[str]
-  sole_city: Optional[str]
-  sole_state: Optional[str]
-  sole_zip_code: Optional[int]
-  account_store: Optional[AccountStoreUpdateInput]
+  business_type: Optional[AccountBusinessTypeEnum] = None
+  first_name: Optional[str] = None
+  last_name: Optional[str] = None
+  dba: Optional[str] = None
+  phone_number: Optional[str] = None
+  classification: Optional[AccountClassificationEnum] = None
+  ein: Optional[str] = None
+  product_description: Optional[str] = None
+  website: Optional[str] = None
+  address: Optional[str] = None
+  city: Optional[str] = None
+  state: Optional[str] = None
+  zip_code: Optional[int] = None
+  sole_first_name: Optional[str] = None
+  sole_last_name: Optional[str] = None
+  sole_job_title: Optional[str] = None
+  sole_phone_number: Optional[str] = None
+  sole_email: Optional[str] = None
+  sole_birthday: Optional[datetime] = None
+  sole_ssn: Optional[str] = None
+  sole_address: Optional[str] = None
+  sole_city: Optional[str] = None
+  sole_state: Optional[str] = None
+  sole_zip_code: Optional[int] = None
+  account_store: Optional[AccountStoreUpdateInput] = None
 
 class AccountCompanyUpdate(LinkGeneral):
   def __init__(self, **kwargs):
@@ -56,14 +56,14 @@ class AccountCompanyUpdate(LinkGeneral):
     sql_query.append((
       update(AccountCompany)
       .where(AccountCompany.id == updateInput.account_company_id)
-      .values(**updateInput.dict(exclude_unset=True, exclude={"account_company_id", "account_store"}), updated=datetime.now())
+      .values(**updateInput.model_dump(exclude_unset=True, exclude={"account_company_id", "account_store"}), updated=datetime.now())
     ))
     
     if updateInput.account_store:
       sql_query.append((
         update(AccountStore)
         .where(AccountStore.id == updateInput.account_store.account_store_id)
-        .values(**updateInput.account_store.dict(exclude_unset=True, exclude={"account_store_id"}), updated=datetime.now())
+        .values(**updateInput.account_store.model_dump(exclude_unset=True, exclude={"account_store_id"}), updated=datetime.now())
       ))
 
     if commit:

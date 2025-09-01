@@ -55,7 +55,7 @@ class DbConn:
 		return engine
 
 	def get_connection(self, *args) -> Connection:
-		return self.get_engine(*args).connect()
+		return Connection(self.get_engine(*args))
 
 	def get_session(self, *args) -> Session:
 		return Session(self.get_engine(*args))
@@ -70,26 +70,26 @@ class DbConn:
 		SQLModel.metadata.drop_all(self.get_engine(f"psqldb_{name}"), checkfirst=False)
   
 	def create_default_schema(self):
-		with self.get_engine(f"psqldb_default").connect() as db:
+		with self.get_connection(f"psqldb_default") as db:
 			for ms in self.general.enabled_microservices:
 				if not db.dialect.has_schema(db, ms):
 					db.execute(CreateSchema(ms))
 			db.commit()
    
 	def drop_default_schema(self):
-		with self.get_engine(f"psqldb_default").connect() as db:
+		with self.get_connection(f"psqldb_default") as db:
 			for ms in self.general.enabled_microservices:
 				if db.dialect.has_schema(db, ms):
 					db.execute(DropSchema(ms))
 			db.commit()
 			
 	def create_database(self, name: str, models: list[SQLModel]):
-		with self.get_engine(f"psqldb_{name}").connect() as db:
+		with self.get_connection(f"psqldb_{name}") as db:
 			for model in models:
 				model.metadata.create_all(db, checkfirst=True)
 			db.commit()
 
 	def drop_database(self, name: str, models: list[SQLModel]):
-		with self.get_engine(f"psqldb_{name}").connect() as db:
+		with self.get_connection(f"psqldb_{name}") as db:
 			for model in reversed(models):
 				model.metadata.drop_all(db, checkfirst=True)

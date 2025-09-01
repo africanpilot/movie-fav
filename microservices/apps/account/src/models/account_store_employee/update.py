@@ -14,7 +14,7 @@ from sqlalchemy.sql.dml import Update
 
 class AccountStoreEmployeeUpdateInput(BaseModel):
   account_store_employee_id: int
-  user_role: Optional[AccountRoleEnum]
+  user_role: Optional[AccountRoleEnum] = None
 
 class AccountStoreEmployeeUpdate(LinkGeneral):
   def __init__(self, **kwargs):
@@ -24,7 +24,7 @@ class AccountStoreEmployeeUpdate(LinkGeneral):
     sql_query = (
       update(AccountStoreEmployee)
       .where(AccountStoreEmployee.id == updateInput.account_store_employee_id)
-      .values(**updateInput.dict(exclude_unset=True, exclude={"account_store_employee_id"}), updated=datetime.now())
+      .values(**updateInput.model_dump(exclude_unset=True, exclude={"account_store_employee_id"}), updated=datetime.now())
     )
 
     if commit:

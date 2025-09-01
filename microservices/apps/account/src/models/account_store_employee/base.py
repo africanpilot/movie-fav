@@ -52,4 +52,4 @@ class AccountStoreEmployeePageInfoInput(PageInfoInput):
 	sortBy: list[AccountStoreEmployeeSortByEnum] = [AccountStoreEmployeeSortByEnum.ID]
 
 class AccountStoreEmployeeFilterInput(BaseModel):
-  id: Optional[list[int]]
+  id: Optional[list[int]] = None

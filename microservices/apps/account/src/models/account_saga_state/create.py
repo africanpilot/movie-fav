@@ -30,13 +30,7 @@ class AccountSagaStateCreate(LinkResponse):
       for r in sql_query:
         db.exec(r)
       db.commit()
-      
-      # return db.execute(
-      #   self.query_filter(
-      #     self.query_cols([AccountSagaState]),
-      #     [AccountSagaState.account_info_id.in_([account.get("account_info_id") for account in payload])]
-      # )).all()
-      
+
       return db.query(AccountSagaState).filter(AccountSagaState.account_info_id.in_([account.get("account_info_id") for account in payload])).all()
 
     return sql_query

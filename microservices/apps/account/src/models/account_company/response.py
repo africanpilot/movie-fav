@@ -14,10 +14,10 @@ from sqlmodel import Session, func
 
 
 class AccountCompanyBaseResponse(AccountCompanyBase):
-  account_store: Optional[list[AccountStoreBaseResponse]]
+  account_store: Optional[list[AccountStoreBaseResponse]] = None
 
 class AccountCompanyResponse(BaseResponse):
-  result: Optional[list[AccountCompanyBaseResponse]]
+  result: Optional[list[AccountCompanyBaseResponse]] = None
 
 class AccountCompanyResponses(LinkRequest):
   def __init__(self, **kwargs):

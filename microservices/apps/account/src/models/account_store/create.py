@@ -16,24 +16,24 @@ from account.src.models.account_store.base import AccountStore
 class AccountStoreCreateInput(BaseModel):
   name: str
   ein: str
-  phone_number: Optional[str]
   website: str
-  fax_number: Optional[str]
   tax_rate_applied: float
-  image: Optional[str]
-  thumb_nail: Optional[str]
-  images: Optional[Set[str]]
-  logo: Optional[str]
-  logo_thumbnail: Optional[str]
-  is_closed: Optional[bool]
-  return_policy: Optional[str]
-  address: Optional[str]
-  city: Optional[str]
-  state: Optional[str]
-  zip_code: Optional[int]
-  latitude: Optional[float]
-  longitude: Optional[float]
-  account_store_employee: Optional[list[AccountStoreEmployeeCreateInput]]
+  phone_number: Optional[str] = None
+  fax_number: Optional[str] = None
+  image: Optional[str] = None
+  thumb_nail: Optional[str] = None
+  images: Optional[Set[str]] = None
+  logo: Optional[str] = None
+  logo_thumbnail: Optional[str] = None
+  is_closed: Optional[bool] = None
+  return_policy: Optional[str] = None
+  address: Optional[str] = None
+  city: Optional[str] = None
+  state: Optional[str] = None
+  zip_code: Optional[int] = None
+  latitude: Optional[float] = None
+  longitude: Optional[float] = None
+  account_store_employee: Optional[list[AccountStoreEmployeeCreateInput]] = None
 
 
 class AccountStoreCreate:
@@ -46,7 +46,7 @@ class AccountStoreCreate:
     sql_query.append(insert(AccountStore).values(
       id=text("nextval('account.account_store_id_seq')"),
       account_company_id=account_company_id,
-      **createInput.dict(exclude_unset=True, exclude={"account_store_employee"})
+      **createInput.model_dump(exclude_unset=True, exclude={"account_store_employee"})
     ))
     
     account_store_id = text("currval('account.account_store_id_seq')")

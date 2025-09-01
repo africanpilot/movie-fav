@@ -22,7 +22,7 @@ class ConstBase(BaseModel):
 	pageInfo: PageInfo
 
 class BaseResponse(ConstBase):
-	result: list = None
+	result: Optional[list] = None
 
 
 class PageInfoInput(BaseModel):

@@ -26,9 +26,7 @@ def test_database():
   try:
     get_db.create_default_schema()
     get_db.create_database("default", ALL_MODELS)
-    with get_db.get_session("psqldb_default") as db:
-      # db.execute("CREATE UNIQUE INDEX uniq_idx_cart_product_item ON cart.cart_product(account_info_id, product_variant_id)")
-      # db.execute("CREATE UNIQUE INDEX uniq_idx_cart_event_item ON cart.cart_event(account_info_id, event_ticket_id)")
+    with get_db.get_connection("psqldb_default") as db:
       yield db
   finally:
     # Cancel any aborted transaction that may be in progress

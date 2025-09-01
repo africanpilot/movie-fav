@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Optional
 from link_models.enums import AccountRegistrationEnum, AccountStatusEnum, AccountInfoSortByEnum
 from account.src.models.account_info.validate import AccountInfoValidate
-from pydantic import BaseModel, root_validator
+from pydantic import BaseModel, model_validator
 from sqlmodel import Column, Field, SQLModel
 from sqlalchemy import Enum
 from link_models.base import PageInfoInput
@@ -18,20 +18,20 @@ class AccountInfoBase(SQLModel):
   registration_date: Optional[datetime] = Field(default=datetime.now())
   registration_status: Optional[AccountRegistrationEnum] = Field(default=AccountRegistrationEnum.NOT_COMPLETE, sa_column=Column(Enum(AccountRegistrationEnum)))
   verified_email: Optional[bool] = Field(default=False)
-  last_login_date: Optional[datetime]
-  last_logout_date: Optional[datetime]
-  profile_image: Optional[str]
-  profile_thumbnail: Optional[str]
+  last_login_date: Optional[datetime] = None
+  last_logout_date: Optional[datetime] = None
+  profile_image: Optional[str] = None
+  profile_thumbnail: Optional[str] = None
   status: Optional[AccountStatusEnum] = Field(default=AccountStatusEnum.ACTIVE, sa_column=Column(Enum(AccountStatusEnum)))
-  forgot_password_expire_date: Optional[datetime]
+  forgot_password_expire_date: Optional[datetime] = None
   first_name: Optional[str] = Field(default=None, max_length=100)
   last_name: Optional[str] = Field(default=None, max_length=100)
   middle_name: Optional[str] = Field(default=None, max_length=100)
   maiden_name: Optional[str] = Field(default=None, max_length=100)
   title: Optional[str] = Field(default=None, max_length=100)
   preferred_name: Optional[str] = Field(default=None, max_length=100)
-  birthday: Optional[datetime]
-  address: Optional[str]
+  birthday: Optional[datetime] = None
+  address: Optional[str] = None
   city: Optional[str] = Field(default=None, max_length=100)
   state: Optional[str] = Field(default=None, max_length=100)
   zip_code: Optional[int] = Field(default=None)
@@ -55,7 +55,7 @@ class AccountLoginInput(BaseModel):
   login: str
   password: str
   
-  @root_validator(pre=True)
+  @model_validator(mode='before')
   def _validate_account_create_input(cls, values):
     validate = AccountInfoValidate()
 
@@ -69,5 +69,5 @@ class AccountInfoPageInfoInput(PageInfoInput):
 	sortBy: list[AccountInfoSortByEnum] = [AccountInfoSortByEnum.ID]
 
 class AccountInfoFilterInput(SQLModel):
-  id: Optional[list[int]]
-  email: Optional[list[str]]
+  id: Optional[list[int]] = None
+  email: Optional[list[str]] = None

@@ -1,22 +1,40 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
-from pydantic import root_validator
+from link_models.enums import AccountStatusEnum
+from pydantic import BaseModel, model_validator
 from typing import Union, Optional
+from datetime import datetime
 from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import insert
 from sqlmodel import Session
-from account.src.models.account_info.base import AccountInfo, AccountInfoBase
+from account.src.models.account_info.base import AccountInfo
 from account.src.models.account_info.validate import AccountInfoValidate
 from account.src.models.account_company.create import AccountCompanyCreate, AccountCompanyCreateInput
+from link_models.enums import AccountRegistrationEnum, AccountStatusEnum
+from account.src.models.account_info.validate import AccountInfoValidate
 
-
-class AccountInfoCreateInput(AccountInfoBase):
+class AccountInfoCreateInput(BaseModel):
+  email: str
+  password: str
   reTypePassword: str
-  account_company: Optional[AccountCompanyCreateInput]
+  profile_image: Optional[str] = None
+  profile_thumbnail: Optional[str] = None
+  first_name: Optional[str] = None
+  last_name: Optional[str] = None
+  middle_name: Optional[str] = None
+  maiden_name: Optional[str] = None
+  title: Optional[str] = None
+  preferred_name: Optional[str] = None
+  birthday: Optional[datetime] = None
+  address: Optional[str] = None
+  city: Optional[str] = None
+  state: Optional[str] = None
+  zip_code: Optional[int] = None
+  account_company: Optional[AccountCompanyCreateInput] = None
 
 
-  @root_validator(pre=True)
+  @model_validator(mode='before')
   def _validate_account_create_input(cls, values):
     validate = AccountInfoValidate()
 
@@ -40,7 +58,7 @@ class AccountInfoCreate(AccountInfoValidate):
       insert(AccountInfo).values(
       id=text("nextval('account.account_info_id_seq')"),
       password=self.hash_password(createInput.password).decode("utf-8"),
-      **createInput.dict(exclude_unset=True, exclude={"account_company", "password", "reTypePassword"})
+      **createInput.model_dump(exclude_unset=True, exclude={"account_company", "password", "reTypePassword"})
     ))
     
     account_info_id = text("currval('account.account_info_id_seq')")
