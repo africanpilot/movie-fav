@@ -27,7 +27,7 @@ class LinkResponse(LinkGeneral):
 	def get_filter_info_in(self, filterInput: object, obj: object, exclude: dict = None):
 		return [
 			getattr(obj, k).in_(v) if isinstance(v, list) else getattr(obj, k) == v
-			for k,v in filterInput.dict(exclude_unset=True, exclude=exclude).items()
+			for k,v in filterInput.model_dump(exclude_unset=True, exclude=exclude).items()
     ] if filterInput else []
 
 	def get_json_row(self, cols: list[object], name: str):
