@@ -11,7 +11,7 @@ from sqlalchemy import Enum, Integer, ForeignKey, Column
 
 
 class AccountStoreEmployeeBase(SQLModel):
-  id: Optional[int] = Field(primary_key=True)
+  id: Optional[int] = Field(default=None, nullable=False, primary_key=True)
   account_company_id: Optional[int] = Field(
     sa_column=Column(Integer, ForeignKey("account.account_company.id", ondelete="CASCADE"))
   )

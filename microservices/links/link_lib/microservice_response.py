@@ -93,10 +93,36 @@ class LinkResponse(LinkGeneral):
 		return [getattr(obj, k) for k in obj.__fields__.keys()]
 
 	def convert_sql_response_to_dict(self, result) -> list[dict]:
-		return [dict(r) for r in result]
+		if not result:
+			return []
+		
+		converted_result = []
+		for r in result:
+			if hasattr(r, '_asdict'):
+				# For namedtuple-like objects
+				converted_result.append(r._asdict())
+			elif hasattr(r, '_mapping'):
+				# For SQLAlchemy Row objects with _mapping attribute
+				converted_result.append(dict(r._mapping))
+			elif hasattr(r, 'keys') and callable(r.keys):
+				# For Row objects that have keys() method
+				converted_result.append({key: getattr(r, key) for key in r.keys()})
+			elif isinstance(r, dict):
+				# Already a dictionary
+				converted_result.append(r)
+			else:
+				# Fallback: try to convert directly
+				try:
+					converted_result.append(dict(r))
+				except (TypeError, ValueError) as e:
+					# If conversion fails, convert to string representation
+					self.log.warning(f"Could not convert row to dict: {r}, error: {e}")
+					converted_result.append({"raw_data": str(r)})
+		
+		return converted_result
 
 	def convert_response(self, response) -> dict:
-		redis_conv = response.dict()
+		redis_conv = response.model_dump() if hasattr(response, 'model_dump') else response.dict()
 		redis_conv.update(dict(result=self.convert_sql_response_to_dict(redis_conv["result"])))
 		return redis_conv
 

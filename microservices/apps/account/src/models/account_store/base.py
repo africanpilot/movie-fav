@@ -12,29 +12,29 @@ from sqlalchemy.dialects import postgresql
 
 
 class AccountStoreBase(SQLModel):
-  id: Optional[int] = Field(primary_key=True)
+  id: Optional[int] = Field(default=None, nullable=False,primary_key=True)
   account_company_id: Optional[int] = Field(
     sa_column=Column(Integer, ForeignKey("account.account_company.id", ondelete="CASCADE"))
   )
-  ein: Optional[str] = Field(max_length=50, unique=True)
-  name: Optional[str] = Field(max_length=255)
-  phone_number: Optional[str] = Field(max_length=12)
-  website: Optional[str] = Field(max_length=255)
-  fax_number: Optional[str] = Field(max_length=30)
-  tax_rate_applied: Optional[float] = Field(nullable=False)
-  image: Optional[str] = None
-  thumb_nail: Optional[str] = None
-  images: Optional[Set[str]] = Field(sa_column=Column(postgresql.ARRAY(String)))
-  logo: Optional[str] = None
-  logo_thumbnail: Optional[str] = None
+  ein: Optional[str] = Field(default=None, nullable=False, max_length=50, unique=True)
+  name: Optional[str] = Field(default=None, nullable=False, max_length=255)
+  phone_number: Optional[str] = Field(default=None, max_length=12)
+  website: Optional[str] = Field(default=None, nullable=False, max_length=255)
+  fax_number: Optional[str] = Field(default=None, max_length=30)
+  tax_rate_applied: Optional[float] = Field(default=None, nullable=False)
+  image: Optional[str] = Field(default=None)
+  thumb_nail: Optional[str] = Field(default=None)
+  images: Optional[Set[str]] = Field(default=None, sa_column=Column(postgresql.ARRAY(String)))
+  logo: Optional[str] = Field(default=None)
+  logo_thumbnail: Optional[str] = Field(default=None)
   is_closed: Optional[bool] = Field(default=False)
-  return_policy: Optional[str] = None
-  address: Optional[str] = Field(max_length=255)
-  city: Optional[str] = Field(max_length=100)
-  state: Optional[str] = Field(max_length=50)
-  zip_code: Optional[int] = None
-  latitude: Optional[float] = None
-  longitude: Optional[float] = None
+  return_policy: Optional[str] = Field(default=None)
+  address: Optional[str] = Field(default=None, max_length=255)
+  city: Optional[str] = Field(default=None, max_length=100)
+  state: Optional[str] = Field(default=None, max_length=50)
+  zip_code: Optional[int] = Field(default=None)
+  latitude: Optional[float] = Field(default=None)
+  longitude: Optional[float] = Field(default=None)
   created: Optional[datetime] = Field(default=datetime.now())
   updated: Optional[datetime] = Field(default=datetime.now())
 

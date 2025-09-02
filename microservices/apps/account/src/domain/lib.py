@@ -86,7 +86,7 @@ class AccountLib(LinkRequest, LinkRedis, AccountInfoRead):
 		).execute()
   
 	def account_company_query_redis_dump(self, account_company_id: int, key, response: AccountCompanyResponse):
-		redis_conv = response.dict()
+		redis_conv = response.model_dump() if hasattr(response, 'model_dump') else response.dict()
 		redis_conv.update(dict(result=self.convert_sql_response_to_dict(redis_conv["result"])))
 		self.load_to_redis(self.account_redis_engine, f"account_company_query:{account_company_id}:{key}", redis_conv)
 

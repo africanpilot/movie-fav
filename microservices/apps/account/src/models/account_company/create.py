@@ -15,6 +15,8 @@ from account.src.models.account_company.base import AccountCompany
 
 class AccountCompanyCreateInput(BaseModel):
   name: str
+  website: str
+  sole_email: str
   cover_image: Optional[str] = None
   logo: Optional[str] = None
   profile_thumbnail: Optional[str] = None
@@ -26,7 +28,6 @@ class AccountCompanyCreateInput(BaseModel):
   classification: Optional[AccountClassificationEnum] = None
   ein: Optional[str] = None
   product_description: Optional[str] = None
-  website: str
   address: Optional[str] = None
   city: Optional[str] = None
   state: Optional[str] = None
@@ -35,7 +36,6 @@ class AccountCompanyCreateInput(BaseModel):
   sole_last_name: Optional[str] = None
   sole_job_title: Optional[str] = None
   sole_phone_number: Optional[str] = None
-  sole_email: str
   sole_birthday: Optional[datetime] = None
   sole_ssn: Optional[str] = None
   sole_address: Optional[str] = None

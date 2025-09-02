@@ -8,7 +8,7 @@ from sqlalchemy import Column
 from sqlalchemy.dialects import postgresql
 
 class AccountSagaStateBase(SQLModel):
-  id: Optional[int] = Field(primary_key=True)
+  id: Optional[int] = Field(default=None, nullable=False, primary_key=True)
   last_message_id: Optional[str] = Field(default=None)
   status: Optional[str] = Field(default=None)
   failed_step: Optional[str] = Field(default=None)
