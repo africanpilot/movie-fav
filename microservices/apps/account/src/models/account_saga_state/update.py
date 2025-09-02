@@ -6,13 +6,13 @@ from typing import Optional
 from link_lib.microservice_to_postgres import DbConn
 from link_lib.saga_framework import BaseStep, AbstractSagaStateRepository
 from account.src.models.account_saga_state.base import AccountSagaState
-from sqlmodel import Session
+from sqlmodel import Session, select
 from sqlalchemy import update
 
 class AccountSagaStateUpdate(AbstractSagaStateRepository, DbConn):
   def get_saga_state_by_id(self, saga_id: int) -> AccountSagaState:
     with self.get_session("psqldb_account") as db:
-      return db.query(AccountSagaState).get(saga_id)
+      return db.exec(select(AccountSagaState).where(AccountSagaState.id == saga_id)).one_or_none()
 
   def update_status(self, saga_id: int, status: str) -> None:
     with self.get_session("psqldb_account") as db:

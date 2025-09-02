@@ -53,5 +53,5 @@ def test_account_authentication_login_mutation(benchmark, test_database, private
   assert response["result"]["registrationStatus"] == "APPROVED"
   assert response["result"]["account_info"][0]["email"] == auth_1['rand_login']
 
-  # # run benchmark
-  # benchmark(graphql_sync, private_schema, {"query": qgl_query, "variables": variables}, context_value=auth_1["context_value"])
+  # run benchmark
+  benchmark(graphql_sync, private_schema, {"query": qgl_query, "variables": variables}, context_value=auth_1["context_value"])

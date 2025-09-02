@@ -4,7 +4,7 @@
 from typing import Union
 from link_lib.microservice_response import LinkResponse
 from sqlalchemy.dialects.postgresql import insert
-from sqlmodel import Session
+from sqlmodel import Session, select
 from account.src.models.account_saga_state.base import AccountSagaState
 
 
@@ -31,6 +31,6 @@ class AccountSagaStateCreate(LinkResponse):
         db.exec(r)
       db.commit()
 
-      return db.query(AccountSagaState).filter(AccountSagaState.account_info_id.in_([account.get("account_info_id") for account in payload])).all()
+      return db.exec(select(AccountSagaState).where(AccountSagaState.account_info_id.in_([account.get("account_info_id") for account in payload]))).all()
 
     return sql_query

@@ -8,6 +8,7 @@ from link_lib.microservice_to_postgres import DbConn
 from link_lib.saga_framework import BaseStep, AbstractSagaStateRepository
 from notifications.src.models.notifications_saga_state.base import NotificationsSagaState
 from sqlalchemy import update
+from sqlmodel import select
 from sqlalchemy.sql.dml import Update
 from sqlalchemy.engine.base import Connection
 from link_lib.microservice_general import LinkGeneral
@@ -20,7 +21,7 @@ class NotificationsSagaStateUpdateInput(BaseModel):
 class NotificationsSagaStateUpdate(AbstractSagaStateRepository, DbConn):
   def get_saga_state_by_id(self, saga_id: int) -> NotificationsSagaState:
     with self.get_session("psqldb_notifications") as db:
-      return db.query(NotificationsSagaState).get(saga_id)
+      return db.exec(select(NotificationsSagaState).where(NotificationsSagaState.id == saga_id)).one_or_none()
 
   def update_status(self, saga_id: int, status: str) -> None:
     with self.get_session("psqldb_notifications") as db:
