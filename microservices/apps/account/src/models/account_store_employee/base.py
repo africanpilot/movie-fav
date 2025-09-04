@@ -21,7 +21,7 @@ class AccountStoreEmployeeBase(SQLModel):
   account_info_id: Optional[int] = Field(
     sa_column=Column(Integer, ForeignKey("account.account_info.id", ondelete="CASCADE"))
   )
-  user_role: Optional[AccountRoleEnum] = Field(sa_column=Column(Enum(AccountRoleEnum)))
+  user_role: Optional[AccountRoleEnum] = Field(default=AccountRoleEnum.GUEST, sa_column=Column(Enum(AccountRoleEnum)))
   created: Optional[datetime] = Field(default=datetime.now())
   updated: Optional[datetime] = Field(default=datetime.now())
 
@@ -45,7 +45,7 @@ class AccountStoreEmployee(AccountStoreEmployeeBase, table=True):
   account_info_id: Optional[int] = Field(
     sa_column=Column(Integer, ForeignKey("account.account_info.id", ondelete="CASCADE"))
   )
-  user_role: Optional[AccountRoleEnum] = Field(sa_column=Column(Enum(AccountRoleEnum)))
+  user_role: Optional[AccountRoleEnum] = Field(default=AccountRoleEnum.GUEST, sa_column=Column(Enum(AccountRoleEnum)))
 
 
 class AccountStoreEmployeePageInfoInput(PageInfoInput):

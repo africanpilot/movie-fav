@@ -128,9 +128,9 @@ class LinkResponse(LinkGeneral):
 
 	def create_array_subquery(self, obj, name: str):
 		return (
-      select(func.to_json(func.array_agg(func.row_to_json(obj))))
-      .label(name)
-    )
+			select(func.to_json(func.array_agg(func.row_to_json(obj))))
+			.label(name)
+		)
 
 	def order_by_sql(self, pageInfo):
 		return desc if pageInfo.orderBy.value == "desc" else asc
@@ -198,15 +198,19 @@ class LinkResponse(LinkGeneral):
 		payload.response = response
 		return payload
 
-	def success_response(self, resultObject, result: Union[list, dict] = None, pageInfo: PageInfo = None, nullPass: bool = False) -> dict:
+	def success_response(self, resultObject, result: Union[list, dict] = None, pageInfo: PageInfo = None, nullPass: bool = False, resultBase = None) -> dict:
 		if not result and not nullPass:
 			self.http_404_not_found_response(msg="expecting data but nothing was returned")
 
 		payload = self.update_general_response(
-    	GeneralResponse(code=200, success=True, message="Success"), 
-     	resultObject
-    )
+			GeneralResponse(code=200, success=True, message="Success"), 
+			resultObject
+		)
 		payload.pageInfo = pageInfo
+
+		if result and resultBase:
+			result = [resultBase(**item._asdict()) for item in result]
+
 		payload.result = result
 		return payload
 

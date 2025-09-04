@@ -38,7 +38,7 @@ class CreateAccountSaga(StatefulSaga):
         token=self.saga_state.body.get("token"),
         service_name=self.saga_state.body.get("service_name"),
         template="VerifyEmail"
-      ).dict()
+      ).model_dump()
     )
 
     self.saga_state_repository.update(self.saga_id, last_message_id=message_id)

@@ -1,6 +1,8 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
+from typing import Optional
+from account.src.models.account_store_employee import AccountStoreEmployeeBaseResponse
 from graphql import GraphQLResolveInfo
 from link_lib.microservice_request import LinkRequest
 from link_models.base import PageInfoInput, BaseResponse
@@ -10,10 +12,10 @@ from sqlmodel import Session
 
 
 class AccountStoreBaseResponse(AccountStoreBase):
-  pass
+  account_store_employee: Optional[list[AccountStoreEmployeeBaseResponse]] = None
 
 class AccountStoreResponse(BaseResponse):
-  result: list[AccountStoreBaseResponse] = None
+  result: Optional[list[AccountStoreBaseResponse]] = None
 
 class AccountStoreResponses(LinkRequest):
   def __init__(self, **kwargs):

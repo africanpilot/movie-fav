@@ -125,7 +125,7 @@ def upgrade() -> None:
         sa.Column('account_company_id', sa.INTEGER, sa.ForeignKey("account.account_company.id", ondelete="CASCADE"), nullable=False),
         sa.Column('account_store_id', sa.INTEGER, sa.ForeignKey("account.account_store.id", ondelete="CASCADE"), nullable=False),
         sa.Column('account_info_id', sa.INTEGER, sa.ForeignKey("account.account_info.id", ondelete="CASCADE"), nullable=False),
-        sa.Column('user_role', sa.Enum(AccountRoleEnum), nullable=False),
+        sa.Column('user_role', sa.Enum(AccountRoleEnum), nullable=False, server_default=AccountRoleEnum.GUEST.name),
         sa.Column('created', sa.DateTime(), nullable=False, server_default=sa.sql.func.now()),
         sa.Column('updated', sa.DateTime(), nullable=False, server_default=sa.sql.func.now()),
         schema='account'

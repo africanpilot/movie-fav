@@ -3,7 +3,7 @@
 
 from datetime import datetime
 import uuid
-from link_models.enums import AccountRoleEnum
+from link_models.enums import AccountRoleEnum, AccountClassificationEnum
 from link_test.fixtures.link_domain import GeneralBase
 import pytest
 
@@ -42,11 +42,12 @@ def test_account_company_create_mutation(benchmark, test_database, flush_redis_d
     profile_thumbnail="test",
     website="https://example.com",
     sole_email="test@example.com",
-    ein=str(uuid.uuid4())[:15],  # Generate unique EIN using UUID
+    ein=GeneralBase().rand_word_gen_range(start=10, end=15),
+    classification=AccountClassificationEnum.RETAIL.name,
     account_store=dict(
       name="test account store",
       tax_rate_applied=0.07,
-      ein=str(uuid.uuid4())[:15],  # Generate unique EIN using UUID
+      ein=GeneralBase().rand_word_gen_range(start=10, end=15),
       website="https://example.com",
       account_store_employee=[dict(
         email="testeployee@example.com",
@@ -66,5 +67,5 @@ def test_account_company_create_mutation(benchmark, test_database, flush_redis_d
   assert response["result"][0]["name"] == "test company name"
   assert response["result"][0]["cover_image"] == "test cover_image"
 
-  # run benchmark
-  benchmark(graphql_sync, private_schema, {"query": gql_query, "variables": variables}, context_value=auth_1["context_value"])
+  # # run benchmark
+  # benchmark(graphql_sync, private_schema, {"query": gql_query, "variables": variables}, context_value=auth_1["context_value"])

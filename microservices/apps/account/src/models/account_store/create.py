@@ -56,7 +56,7 @@ class AccountStoreCreate:
       account_company_id=account_company_id,
       account_store_id=account_store_id,
       account_info_id=account_info_id,
-      user_role=AccountRoleEnum.COMPANY,
+      user_role=AccountRoleEnum.COMPANY.name,
     ))
     
     if createInput.account_store_employee:

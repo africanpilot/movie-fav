@@ -93,4 +93,4 @@ class AccountCompanyResponses(LinkRequest):
       baseObject=AccountCompany,
     )
     
-    return self.success_response(result=result, pageInfo=page_info, nullPass=True, resultObject=AccountCompanyResponse)
+    return self.success_response(result=result, pageInfo=page_info, nullPass=True, resultObject=AccountCompanyResponse, resultBase=AccountCompanyBaseResponse)

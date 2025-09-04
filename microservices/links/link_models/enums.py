@@ -52,15 +52,19 @@ class ServiceTypeEnum(Enum):
     LINKS = "links"
     
 class AccountRoleEnum(Enum):
-    ADMIN = "admin"
-    COMPANY = "company"
-    MANAGER = "manager"
-    EMPLOYEE = "employee"
-    CUSTOMER = "customer"
-    GUEST = "guest"
+    ADMIN = "ADMIN"
+    COMPANY = "COMPANY"
+    MANAGER = "MANAGER"
+    EMPLOYEE = "EMPLOYEE"
+    CUSTOMER = "CUSTOMER"
+    GUEST = "GUEST"
     
     @property
     def is_gql():
+        return True
+    
+    @property
+    def is_database():
         return True
 
 
@@ -74,6 +78,10 @@ class AccountRegistrationEnum(Enum):
     @property
     def is_gql():
         return True
+    
+    @property
+    def is_database():
+        return True
 
 class AccountStatusEnum(Enum):
     ACTIVE = "active"
@@ -82,6 +90,10 @@ class AccountStatusEnum(Enum):
     
     @property
     def is_gql():
+        return True
+    
+    @property
+    def is_database():
         return True
 
 class AccountInfoSortByEnum(Enum):
@@ -110,26 +122,34 @@ class AuthenticationTokenTypeEnum(Enum):
         return True
     
 class AccountBusinessTypeEnum(Enum):
-    SOLE_PROPRIETARY = "sole_proprietary"
-    UNINCORPORATED_ASSOCIATION = "unincorporated_association"
-    TRUST = "trust"
-    CORPORATION = "corporation"
-    PUBLICLY_TRADED_CORPORATION = "publicly_traded_corporation"
-    NON_PROFIT = "non_profit"
-    LLC = "llc"
-    PARTNERSHIPS_LP_AND_LLP = "partnerships_lp_and_llp"
+    SOLE_PROPRIETARY = "SOLE_PROPRIETARY"
+    UNINCORPORATED_ASSOCIATION = "UNINCORPORATED_ASSOCIATION"
+    TRUST = "TRUST"
+    CORPORATION = "CORPORATION"
+    PUBLICLY_TRADED_CORPORATION = "PUBLICLY_TRADED_CORPORATION"
+    NON_PROFIT = "NON_PROFIT"
+    LLC = "LLC"
+    PARTNERSHIPS_LP_AND_LLP = "PARTNERSHIPS_LP_AND_LLP"
 
     @property
     def is_gql():
         return True
+    
+    @property
+    def is_database():
+        return True
 
 class AccountClassificationEnum(Enum):
-    RETAIL = "retail"
-    NON_PROFIT = "non_profit"
-    OTHER = "other"
+    RETAIL = "RETAIL"
+    NON_PROFIT = "NON_PROFIT"
+    OTHER = "OTHER"
     
     @property
     def is_gql():
+        return True
+    
+    @property
+    def is_database():
         return True
 
 class AccountStoreSortByEnum(Enum):

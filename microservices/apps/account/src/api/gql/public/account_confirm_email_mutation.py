@@ -21,9 +21,6 @@ class AccountConfirmEmailMutation(GraphQLModel, AccountLib, AccountInfoUpdate):
 
             # Token and service Validation Process
             token_decode = self.general_validation_process(info, email=True, reg=True)
-            
-            self.log.info(f"token_decode {token_decode}")
-
             updateInput = AccountInfoUpdateInput(
                 account_info_id=token_decode.account_info_id,
                 verified_email=True,
