@@ -33,30 +33,26 @@ GENERAL_PYTEST_MARK = LinkGeneral().compose_decos([pytest.mark.account_delete_mu
 def test_account_delete_mutation(benchmark, test_database: Session, reset_database, private_schema, create_account, flush_redis_db, link_account_lib: GeneralAccountLib):
 
   account_1, auth_1 = create_account(test_database)
-
-  def bench_func(graphql_info, auth):
-    graphql_sync(private_schema, graphql_info, context_value=auth["context_value"])
+  link_account_lib.account_me_token_redis_dump(account_1.id, auth_1.get("token"))
 
   def setup():
-    link_account_lib.account_me_token_redis_dump(account_1.id, auth_1.get("token"))
     graphql_info = {"query": gql_query}
     return (), {"graphql_info": graphql_info, "auth": auth_1}
+  
+  def bench_func(graphql_info, auth):
+    success, result = graphql_sync(private_schema, graphql_info, context_value=auth["context_value"])
+    assert success == True
 
-  _, setup_kwarg = setup()
-  success, result = graphql_sync(private_schema, setup_kwarg["graphql_info"], context_value=setup_kwarg["auth"]["context_value"])
+    response = result["data"][QUERY_NAME]
+    assert response["response"] == dict(
+      success=True, code=200, message="Success", version="1.0",
+    )
+    assert response["pageInfo"] is None
+    assert response["result"] is None 
 
-  assert success == True
-
-  response = result["data"][QUERY_NAME]
-  assert response["response"] == dict(
-    success=True, code=200, message="Success", version="1.0",
-  )
-  assert response["pageInfo"] is None
-  assert response["result"] is None 
-
-  with link_account_lib.get_session("psqldb_account") as db:
-    account = db.exec(select(AccountInfo).where(AccountInfo.email == setup_kwarg["auth"]["rand_login"])).all()
-    assert account == []
+    with link_account_lib.get_session("psqldb_account") as db:
+      account = db.exec(select(AccountInfo).where(AccountInfo.email == auth["rand_login"])).all()
+      assert account == []
 
   # run benchmark
   benchmark.pedantic(bench_func, setup=setup, rounds=5)

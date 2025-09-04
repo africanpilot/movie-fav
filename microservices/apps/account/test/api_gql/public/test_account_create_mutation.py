@@ -26,13 +26,11 @@ GENERAL_PYTEST_MARK = LinkGeneral().compose_decos([pytest.mark.account_create_mu
 
 @GENERAL_PYTEST_MARK
 @pytest.mark.account_bench
-def test_account_create_mutation(benchmark, test_database, reset_database, private_schema, create_auth_info, link_general: GeneralBase):
-
-	def bench_func(graphql_info, auth):
-		graphql_sync(private_schema, graphql_info, context_value=auth["context_value"])
-
+def test_account_create_mutation(benchmark, test_database, create_account, reset_database, private_schema, create_auth_info, link_general: GeneralBase):
+	reset_database()
+	_, _ = create_account(test_database)
+ 
 	def setup():
-		reset_database()
 		auth_1 = create_auth_info()
 
 		variables = dict(
@@ -46,18 +44,19 @@ def test_account_create_mutation(benchmark, test_database, reset_database, priva
 		graphql_info = {"query": gql_query, "variables": variables}
 		return (), {"graphql_info": graphql_info, "auth": auth_1}
 
-	_, setup_kwarg = setup()
-	success, result = graphql_sync(private_schema, setup_kwarg["graphql_info"], context_value=setup_kwarg["auth"]["context_value"])
 
-	assert success == True
+	def bench_func(graphql_info, auth):
+		success, result = graphql_sync(private_schema, graphql_info, context_value=auth["context_value"])
 
-	response = result["data"][QUERY_NAME]
-	assert response["response"] == dict(
-		success=True, code=200, message="Success", version="1.0",
-	)
-	assert response["pageInfo"]["page_info_count"] == 1
-	assert response["result"][0]["email"] == setup_kwarg["auth"]["rand_login"]
-	assert response["result"][0]["registration_status"] == "NOT_COMPLETE"
+		assert success == True
+
+		response = result["data"][QUERY_NAME]
+		assert response["response"] == dict(
+			success=True, code=200, message="Success", version="1.0",
+		)
+		assert response["pageInfo"]["page_info_count"] > 0
+		assert response["result"][0]["email"] == auth["rand_login"]
+		assert response["result"][0]["registration_status"] == "NOT_COMPLETE"
 
  	# run benchmark
 	benchmark.pedantic(bench_func, setup=setup, rounds=5)

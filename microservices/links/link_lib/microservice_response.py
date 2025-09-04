@@ -106,7 +106,7 @@ class LinkResponse(LinkGeneral):
 				converted_result.append(dict(r._mapping))
 			elif hasattr(r, 'keys') and callable(r.keys):
 				# For Row objects that have keys() method
-				converted_result.append({key: getattr(r, key) for key in r.keys()})
+				converted_result.append({key: r[key] for key in r.keys()})
 			elif isinstance(r, dict):
 				# Already a dictionary
 				converted_result.append(r)
