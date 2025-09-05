@@ -3,7 +3,7 @@ services:
 # Database
 ###################
   postgres:
-    image: postgres
+    image: postgres:17
     hostname: postgres
     container_name: postgres
     restart: always
@@ -43,7 +43,7 @@ services:
       - secms
 
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:4.1.4-management
     hostname: rabbitmq
     container_name: rabbitmq
     restart: always
@@ -63,7 +63,7 @@ services:
       - secms
 
   redis:
-    image: redis:6.2-alpine
+    image: redis:8.2.1-alpine
     hostname: redis
     container_name: redis
     restart: always
@@ -82,7 +82,7 @@ services:
 
   selenium:
     # image: selenium/standalone-chrome
-    image: seleniarm/standalone-chromium
+    image: seleniarm/standalone-chromium:124.0
     hostname: selenium
     container_name: selenium
     restart: always
@@ -104,7 +104,7 @@ services:
 # Monitoring
 ###################
   flower:
-    image: mher/flower
+    image: mher/flower:master
     hostname: flower
     container_name: flower
     restart: always

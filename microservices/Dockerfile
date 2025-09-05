@@ -119,10 +119,10 @@ COPY --from=constant-files-development --chown=svc:svc /home/svc/microservices /
 #######################################################################
 # apollo stage
 #######################################################################
-FROM node:19-slim AS apollo-production
+FROM node:24.7.0-slim AS apollo-production
 
 # Default environment
-ENV PATH "$PATH:/home/svc/.local/bin"
+ENV PATH="$PATH:/home/svc/.local/bin"
 ENV NODE_ENV='production'
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
@@ -135,11 +135,9 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 
 WORKDIR /home/svc/apollo
 
-COPY ./apps/apollo/package*.json /home/svc/apollo
-RUN --mount=type=cache,target=/root/.npm \
-    npm install npm@latest --production
-RUN --mount=type=cache,target=/root/.npm \
-    npm install
+COPY ./apps/apollo/package.json ./yarn.lock /home/svc/apollo/
+RUN --mount=type=cache,target=/usr/local/share/.cache/yarn \
+    yarn install --frozen-lockfile --production
 
 ARG CACHEBUST=1
 COPY ./apps/apollo /home/svc/apollo
@@ -148,7 +146,7 @@ COPY ./apps/apollo /home/svc/apollo
 #######################################################################
 # nginx stage
 #######################################################################
-FROM nginx:stable-alpine AS nginx-production
+FROM nginx:1.29.1-alpine3.22-slim AS nginx-production
 
 COPY apps/nginx/conf/nginx.conf /etc/nginx/nginx.conf
 COPY apps/nginx/conf /etc/nginx
@@ -159,7 +157,7 @@ ENTRYPOINT ["nginx", "-g", "daemon off;"]
 #######################################################################
 # Node base stage for theater builds
 #######################################################################
-FROM node:19-alpine AS node-base
+FROM node:24.7.0-slim AS node-base
 
 # #######################################################################
 # # Main build for theater-production

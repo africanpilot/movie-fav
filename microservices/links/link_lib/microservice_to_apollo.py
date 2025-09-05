@@ -65,7 +65,6 @@ class DevelopmentApplication(GenericLinkModel):
             host=self.host,
             port=int(self.port),
             reload=True,
-            debug=True,
             reload_dirs=[
                 "../../src/",
                 "../../../../links/"

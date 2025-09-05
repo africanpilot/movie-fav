@@ -1,4 +1,5 @@
-const { ApolloServer } = require('apollo-server');
+const { ApolloServer } = require('@apollo/server');
+const { startStandaloneServer } = require('@apollo/server/standalone');
 const { ApolloGateway, RemoteGraphQLDataSource, IntrospectAndCompose } = require("@apollo/gateway");
 require('dotenv').config()
 
@@ -44,52 +45,41 @@ const privateGateway = new ApolloGateway({
 
 const publicServer = new ApolloServer({
   gateway: publicGateway,
-  subscriptions: false,
-  playground: true,
   introspection: true,
-  persistedQueries: false,
-  cors: {
-		origin: '*',			// <- allow request from all domains
-		credentials: true, 	// <- enable CORS response for requests with credentials (cookies, http authentication)
-  },
-  context: ({ req }) => {
-    // Get the user token from the headers.
-    const token = req.headers.authorization || '';
-    const serviceName = req.headers["service"]|| '';
-    const userIP = req.header('x-forwarded-for') || req.connection.remoteAddress;
-
-   // this will pass along the additional header info in the request to the context
-   return { token, serviceName, userIP };
-  }
 });
 
 const privateServer = new ApolloServer({
   gateway: privateGateway,
-  subscriptions: false,
-  playground: true,
   introspection: true,
-  persistedQueries: false,
-  cors: {
-		origin: '*',			// <- allow request from all domains
-		credentials: true, 	// <- enable CORS response for requests with credentials (cookies, http authentication)
-  },
-  context: ({ req }) => {
-    // Get the user token from the headers.
-    const token = req.headers.authorization || '';
-    const serviceName = req.headers["service"]|| '';
-    const userIP = req.header('x-forwarded-for') || req.connection.remoteAddress;
-
-   // this will pass along the additional header info in the request to the context
-   return { token, serviceName, userIP };
-  }
 });
 
 
-publicServer.listen({port:4000}).then(({ url }) => {
-  console.log(`🚀 Public Server ready at ${url}`);
-});
+(async () => {
+  const { url: publicUrl } = await startStandaloneServer(publicServer, {
+    listen: { port: 4000 },
+    context: async ({ req }) => {
+      // Get the user token from the headers.
+      const token = req.headers.authorization || '';
+      const serviceName = req.headers["service"] || '';
+      const userIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
+      // this will pass along the additional header info in the request to the context
+      return { token, serviceName, userIP };
+    }
+  });
+  console.log(`🚀 Public Server ready at ${publicUrl}`);
 
-privateServer.listen({port:4001}).then(({ url }) => {
-  console.log(`🚀 Private Server ready at ${url}`);
-});
+  const { url: privateUrl } = await startStandaloneServer(privateServer, {
+    listen: { port: 4001 },
+    context: async ({ req }) => {
+      // Get the user token from the headers.
+      const token = req.headers.authorization || '';
+      const serviceName = req.headers["service"] || '';
+      const userIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+
+      // this will pass along the additional header info in the request to the context
+      return { token, serviceName, userIP };
+    }
+  });
+  console.log(`🚀 Private Server ready at ${privateUrl}`);
+})();
