@@ -16,7 +16,7 @@ class ShowsEpisodeBaseResponse(ShowsEpisodeBase):
   pass
 
 class ShowsEpisodeResponse(BaseResponse):
-  result: list[ShowsEpisodeBaseResponse] = None
+  result: Optional[list[ShowsEpisodeBaseResponse]] = None
 
 class ShowsEpisodeResponses(LinkRequest):
   def __init__(self, **kwargs):

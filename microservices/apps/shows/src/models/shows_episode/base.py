@@ -12,7 +12,7 @@ from link_models.enums import ShowsEpisodeSortByEnum
 
 
 class ShowsEpisodeBase(SQLModel):
-    id: Optional[int] = Field(primary_key=True)
+    id: Optional[int] = Field(default=None, nullable=False, primary_key=True)
     shows_info_id: Optional[int] = Field(
         sa_column=Column(Integer, ForeignKey("shows.shows_info.id", ondelete="CASCADE"))
     )
@@ -22,7 +22,7 @@ class ShowsEpisodeBase(SQLModel):
     shows_imdb_id: Optional[str] = Field(
         sa_column=Column(VARCHAR, ForeignKey("shows.shows_info.imdb_id", ondelete="CASCADE"))
     )
-    imdb_id: Optional[str] = Field(unique=True, max_length=100)
+    imdb_id: Optional[str] = Field(default=None, nullable=False,unique=True, max_length=100)
     title: Optional[str] = Field(default=None)
     year: Optional[int] = Field(default=None)
     plot: Optional[str] = Field(default=None)

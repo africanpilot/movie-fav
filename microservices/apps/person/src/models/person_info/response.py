@@ -1,7 +1,7 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
-from typing import Union
+from typing import Optional, Union
 from graphql import GraphQLResolveInfo
 from link_lib.microservice_request import LinkRequest
 from link_models.base import BaseResponse, PageInfoInput
@@ -13,7 +13,7 @@ class PersonInfoBaseResponse(PersonInfoBase):
   pass
 
 class PersonInfoResponse(BaseResponse):
-  result: list[PersonInfoBaseResponse] = None
+  result: Optional[list[PersonInfoBaseResponse]] = None
 
 class PersonInfoResponses(LinkRequest):
   def __init__(self, **kwargs):

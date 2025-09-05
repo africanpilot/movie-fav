@@ -26,12 +26,7 @@ class ShowsEpisodeUpdate(LinkGeneral):
       db.execute(sql_query)
     return sql_query
   
-  def shows_episode_update_imdb(self, db: Optional[Connection], imdbId: str, commit: bool = True, season: int = None, episode: int = None, **fields_to_update) -> Optional[Insert]:
-    # sql_query = (
-    #   insert(ShowsEpisode)
-    #   .values(**ShowsEpisode(shows_imdb_id=imdbId, **fields_to_update).dict(exclude_unset=True))
-    # ).on_conflict_do_update(constraint='shows_episode_imdb_id_key', set_=dict(**fields_to_update))
-
+  def shows_episode_update_imdb(self, db: Optional[Connection], imdbId: str, commit: bool = True, season: int = None, episode: int = None, **fields_to_update) -> Optional[Update]:
     sql_query = (
       update(ShowsEpisode)
       .where(

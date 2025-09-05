@@ -40,8 +40,6 @@ def test_shows_info_popular_mutation(benchmark, test_database: Session, flush_re
 
   response = result["data"][QUERY_NAME]
   
-  link_shows_lib.log.debug(f"response: {response}")
-  
   assert success == True
   assert response["response"] == dict(
     success=True, code=200, message="Success", version="1.0",

@@ -12,8 +12,8 @@ from pydantic import BaseModel
 
 
 class MovieInfoBase(SQLModel):
-    id: Optional[int] = Field(primary_key=True)
-    imdb_id: Optional[str] = Field(unique=True, max_length=100)
+    id: Optional[int] = Field(default=None, nullable=False, primary_key=True)
+    imdb_id: Optional[str] = Field(default=None, nullable=False, unique=True, max_length=100)
     title: Optional[str] = Field(default=None)
     cast: Optional[Set[str]] = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
     year: Optional[int] = Field(default=None)

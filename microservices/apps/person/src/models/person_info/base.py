@@ -11,8 +11,8 @@ from sqlalchemy.dialects import postgresql
 
 
 class PersonInfoBase(SQLModel):
-    id: Optional[int] = Field(primary_key=True)
-    imdb_id: Optional[str] = Field(unique=True, max_length=100)
+    id: Optional[int] = Field(default=None, nullable=False, primary_key=True)
+    imdb_id: Optional[str] = Field(default=None, nullable=False, unique=True, max_length=100)
     name: Optional[str] = Field(default=None)
     birth_place: Optional[str] = Field(default=None)
     akas: Optional[Set[str]] = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))

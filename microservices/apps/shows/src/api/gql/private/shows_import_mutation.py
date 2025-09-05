@@ -39,7 +39,7 @@ class ShowsImportMutation(GraphQLModel, ShowsLib):
                 
                 for saga_state in all_import:
                     
-                    self.load_to_redis(self.shows_redis_engine, f"get_saga_state_by_id:{saga_state.id}", dict(saga_state))
+                    self.load_to_redis(self.shows_redis_engine, f"get_saga_state_by_id:{saga_state.id}", saga_state.dict())
                     
                     try:
                         ShowsImportSaga(

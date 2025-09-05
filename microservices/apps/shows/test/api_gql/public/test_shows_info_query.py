@@ -5,9 +5,7 @@ import pytest
 
 from link_lib.microservice_general import LinkGeneral
 from ariadne import gql, graphql_sync
-from shows.src.controller import private_schema
 from shows.test.fixtures.models import SHOWS_RESPONSE_FRAGMENT
-from link_models.enums import AccountRegistrationEnum
 from link_test.fixtures import GeneralShowsLib
 
 
@@ -27,7 +25,7 @@ GENERAL_PYTEST_MARK = LinkGeneral().compose_decos([pytest.mark.shows_info_query,
 
 @GENERAL_PYTEST_MARK
 @pytest.mark.shows_bench
-def test_shows_info_query(benchmark, test_database, flush_redis_db, create_account, create_shows_info, link_shows_lib: GeneralShowsLib):
+def test_shows_info_query(benchmark, test_database, flush_redis_db, create_account, create_shows_info, private_schema, link_shows_lib: GeneralShowsLib):
   flush_redis_db()
   
   _, auth_1 = create_account(test_database)

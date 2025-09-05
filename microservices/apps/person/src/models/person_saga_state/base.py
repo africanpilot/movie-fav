@@ -7,13 +7,13 @@ from sqlmodel import Field, SQLModel
 
 
 class PersonSagaStateBase(SQLModel):
-  id: Optional[int] = Field(primary_key=True)
-  last_message_id: str = Field(default=None)
-  status: str = Field(default=None)
-  failed_step: str = Field(default=None)
-  failed_at: datetime = Field(default=None)
-  failure_details: str = Field(default=None)
-  person_info_imdb_id: Optional[str] = Field(unique=True, max_length=100)
+  id: Optional[int] = Field(default=None, nullable=False, primary_key=True)
+  last_message_id: Optional[str] = Field(default=None)
+  status: Optional[str] = Field(default=None)
+  failed_step: Optional[str] = Field(default=None)
+  failed_at: Optional[datetime] = Field(default=None)
+  failure_details: Optional[str] = Field(default=None)
+  person_info_imdb_id: Optional[str] = Field(default=None, nullable=False, unique=True, max_length=100)
 
 
 class PersonSagaState(PersonSagaStateBase, table=True):

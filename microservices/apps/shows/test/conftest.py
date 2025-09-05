@@ -6,6 +6,6 @@ import test_app_lib.link  # noqa: F401
 
 
 pytest_plugins = [
-  "fixtures.models",
+  "shows.test.fixtures.models",
   "link_test.fixtures",
 ]

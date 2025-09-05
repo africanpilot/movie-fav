@@ -13,13 +13,13 @@ from sqlalchemy import text, select
 from sqlmodel import Session, func
 
 class ShowSeasonBaseResponse(ShowsSeasonBase):
-  shows_episode: list[ShowsEpisodeBase] = None
+  shows_episode: Optional[list[ShowsEpisodeBase]] = None
 
 class ShowInfoBaseResponse(ShowsInfoBase):
-  shows_season: list[ShowSeasonBaseResponse] = None
+  shows_season: Optional[list[ShowSeasonBaseResponse]] = None
 
 class ShowsInfoResponse(BaseResponse):
-  result: list[ShowInfoBaseResponse] = None
+  result: Optional[list[ShowInfoBaseResponse]] = None
 
 class ShowsInfoResponses(LinkRequest):
   def __init__(self, **kwargs):
