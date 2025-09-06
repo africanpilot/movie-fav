@@ -48,14 +48,13 @@ class MovieInfoPopulateMutation(GraphQLModel, MovieLib):
             
             self.log.info(f"all_popular_ids: {len(all_popular_ids)}")
 
-            with self.get_connection("psqldb_movie") as db:
-                
+            with self.get_session("psqldb_movie") as db:
+
                 if DownloadLocationEnum.DATABASE in location:
-                    no_movie_info = [r.imdb_id for r in self.get_no_movie_info(db)]
-                    no_download_urls = [r.imdb_id for r in self.get_no_download_urls(db)]
-                    all_popular_ids = no_movie_info + no_download_urls + all_popular_ids
-                    self.log.info(f"no_movie_info={len(no_movie_info)}, no_download_urls={len(no_download_urls)}, all_popular_ids={len(all_popular_ids)}")
-                
+                    no_movie_info = [m.movie_info_imdb_id for m in self.get_no_movie_saga_payload(db)]
+                    all_popular_ids = no_movie_info + all_popular_ids
+                    self.log.info(f"no_movie_info={len(no_movie_info)}, all_popular_ids={len(all_popular_ids)}")
+
                 all_popular_ids = set(all_popular_ids)
                 
                 movie_saga_added = [
@@ -63,13 +62,12 @@ class MovieInfoPopulateMutation(GraphQLModel, MovieLib):
                 ]
                 
                 movie_popular_todo = list(filter(lambda x: x not in set(movie_saga_added), all_popular_ids))[:pageInfo.first]
-                
+
                 all_create = self.movie_saga_state_create(db, movie_popular_todo)
-                
+
                 self.log.info(f"movie_saga_added={len(movie_saga_added)}, movie_popular_todo={len(movie_popular_todo)}, all_create={len(all_create)}")
 
                 for saga_state in all_create:
-                    
                     self.load_to_redis(self.movie_redis_engine, f"get_saga_state_by_id:{saga_state.id}", dict(saga_state))
                     
                     try:

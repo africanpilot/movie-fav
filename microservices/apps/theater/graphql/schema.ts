@@ -422,43 +422,6 @@ export enum AuthenticationTokenTypeEnum {
   RefreshToken = 'REFRESH_TOKEN'
 }
 
-export type CartEvent = {
-  __typename?: 'CartEvent';
-  id?: Maybe<Scalars['Int']>;
-};
-
-export enum CartEventSortByEnum {
-  Id = 'ID'
-}
-
-export type CartProduct = {
-  __typename?: 'CartProduct';
-  id?: Maybe<Scalars['Int']>;
-};
-
-export enum CartProductSortByEnum {
-  Id = 'ID'
-}
-
-export type CartWishlist = {
-  __typename?: 'CartWishlist';
-  id?: Maybe<Scalars['Int']>;
-};
-
-export enum CartWishlistSortByEnum {
-  Id = 'ID'
-}
-
-export type CollectionInfo = {
-  __typename?: 'CollectionInfo';
-  id?: Maybe<Scalars['Int']>;
-};
-
-export enum CollectionInfoSortByEnum {
-  Id = 'ID',
-  Name = 'NAME'
-}
-
 export enum DownloadLocationEnum {
   Database = 'DATABASE',
   Imdb = 'IMDB',
@@ -470,36 +433,6 @@ export enum DownloadTypeEnum {
   Download_480p = 'DOWNLOAD_480p',
   Download_720p = 'DOWNLOAD_720p',
   Download_1080p = 'DOWNLOAD_1080p'
-}
-
-export type EventInfo = {
-  __typename?: 'EventInfo';
-  id?: Maybe<Scalars['Int']>;
-};
-
-export enum EventInfoSortByEnum {
-  Id = 'ID',
-  Name = 'NAME'
-}
-
-export type EventSchedule = {
-  __typename?: 'EventSchedule';
-  id?: Maybe<Scalars['Int']>;
-};
-
-export enum EventScheduleSortByEnum {
-  Id = 'ID',
-  Name = 'NAME'
-}
-
-export type EventTicket = {
-  __typename?: 'EventTicket';
-  id?: Maybe<Scalars['Int']>;
-};
-
-export enum EventTicketSortByEnum {
-  Id = 'ID',
-  Name = 'NAME'
 }
 
 export type GeneralResponse = {
@@ -580,7 +513,6 @@ export enum MovieStatusEnum {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  accountAuthenticationAuthZeroLogin?: Maybe<AccountAuthenticationResponse>;
   accountAuthenticationLogin?: Maybe<AccountAuthenticationResponse>;
   accountAuthenticationLogout?: Maybe<AccountAuthenticationResponse>;
   accountCompanyCreate?: Maybe<AccountCompanyResponse>;
@@ -606,14 +538,6 @@ export type Mutation = {
   movieUpdate?: Maybe<MovieInfoResponse>;
   showsDownload?: Maybe<ShowsInfoResponse>;
   showsEpisodeUpdate?: Maybe<ShowsEpisodeResponse>;
-  trackerMovieCreate?: Maybe<TrackerMovieResponse>;
-  trackerMovieUpdate?: Maybe<TrackerMovieResponse>;
-  trackerShowsCreate?: Maybe<TrackerShowsInfoResponse>;
-  trackerShowsEpisodeCreate?: Maybe<TrackerShowsInfoResponse>;
-  trackerShowsEpisodeUpdate?: Maybe<TrackerShowsInfoResponse>;
-  trackerShowsSeasonCreate?: Maybe<TrackerShowsInfoResponse>;
-  trackerShowsSeasonUpdate?: Maybe<TrackerShowsInfoResponse>;
-  trackerShowsUpdate?: Maybe<TrackerShowsInfoResponse>;
 };
 
 
@@ -729,46 +653,6 @@ export type MutationShowsEpisodeUpdateArgs = {
   shows_episode_id: Scalars['Int'];
 };
 
-
-export type MutationTrackerMovieCreateArgs = {
-  trackerMovieCreateInput: TrackerMovieCreateInput;
-};
-
-
-export type MutationTrackerMovieUpdateArgs = {
-  trackerMovieUpdateInput: TrackerMovieUpdateInput;
-};
-
-
-export type MutationTrackerShowsCreateArgs = {
-  createInput: TrackerShowsCreateInput;
-};
-
-
-export type MutationTrackerShowsEpisodeCreateArgs = {
-  createInput: TrackerShowsEpisodeCreateInput;
-};
-
-
-export type MutationTrackerShowsEpisodeUpdateArgs = {
-  updateInput: TrackerShowsEpisodeUpdateInput;
-};
-
-
-export type MutationTrackerShowsSeasonCreateArgs = {
-  createInput: TrackerShowsSeasonCreateInput;
-};
-
-
-export type MutationTrackerShowsSeasonUpdateArgs = {
-  updateInput: TrackerShowsSeasonUpdateInput;
-};
-
-
-export type MutationTrackerShowsUpdateArgs = {
-  updateInput: TrackerShowsUpdateInput;
-};
-
 export type NotificationsSagaState = {
   __typename?: 'NotificationsSagaState';
   id?: Maybe<Scalars['Int']>;
@@ -797,27 +681,6 @@ export enum NotifyTemplateEnum {
 export enum OrderByEnum {
   Asc = 'ASC',
   Desc = 'DESC'
-}
-
-export type OrdersInfo = {
-  __typename?: 'OrdersInfo';
-  id?: Maybe<Scalars['Int']>;
-};
-
-export enum OrdersInfoSortByEnum {
-  Id = 'ID'
-}
-
-export enum OrdersInfoStatusEnum {
-  Canceled = 'CANCELED',
-  Error = 'ERROR',
-  Pending = 'PENDING',
-  Success = 'SUCCESS'
-}
-
-export enum OrdersTypeEnum {
-  Event = 'EVENT',
-  Product = 'PRODUCT'
 }
 
 export type PageInfo = {
@@ -873,94 +736,6 @@ export enum PersonInfoSortByEnum {
   Id = 'ID'
 }
 
-export enum ProductBrandEnum {
-  AdriannaPapell = 'ADRIANNA_PAPELL',
-  AmeliaCouture = 'AMELIA_COUTURE',
-  AshleyLauren = 'ASHLEY_LAUREN',
-  Clarisse = 'CLARISSE',
-  ColorsDress = 'COLORS_DRESS',
-  EllieWild = 'ELLIE_WILD',
-  JaszCouture = 'JASZ_COUTURE',
-  JessicaAngel = 'JESSICA_ANGEL',
-  Jovani = 'JOVANI',
-  LaDivine = 'LA_DIVINE',
-  MnmCouture = 'MNM_COUTURE',
-  NoxAnabel = 'NOX_ANABEL',
-  Other = 'OTHER',
-  PortiaAndScarlett = 'PORTIA_AND_SCARLETT',
-  PrimaveraCouture = 'PRIMAVERA_COUTURE',
-  Scala = 'SCALA',
-  SherriHill = 'SHERRI_HILL',
-  SophiaThomas = 'SOPHIA_THOMAS',
-  StellaCouture = 'STELLA_COUTURE',
-  SydneysCloset = 'SYDNEYS_CLOSET',
-  Walmart = 'WALMART'
-}
-
-export type ProductCategory = {
-  __typename?: 'ProductCategory';
-  id?: Maybe<Scalars['Int']>;
-};
-
-export enum ProductCategorySortByEnum {
-  Id = 'ID',
-  Name = 'NAME'
-}
-
-export type ProductColor = {
-  __typename?: 'ProductColor';
-  id?: Maybe<Scalars['Int']>;
-};
-
-export enum ProductColorSortByEnum {
-  Id = 'ID',
-  Name = 'NAME'
-}
-
-export type ProductInfo = {
-  __typename?: 'ProductInfo';
-  id?: Maybe<Scalars['Int']>;
-};
-
-export enum ProductInfoSortByEnum {
-  Id = 'ID',
-  MsrpPrice = 'MSRP_PRICE',
-  Name = 'NAME'
-}
-
-export enum ProductIngestEnum {
-  AdriannaPapell = 'ADRIANNA_PAPELL',
-  AmeliaCouture = 'AMELIA_COUTURE',
-  AshleyLauren = 'ASHLEY_LAUREN',
-  Clarisse = 'CLARISSE',
-  ColorsDress = 'COLORS_DRESS',
-  EllieWild = 'ELLIE_WILD',
-  JaszCouture = 'JASZ_COUTURE',
-  JessicaAngel = 'JESSICA_ANGEL',
-  Jovani = 'JOVANI',
-  LaDivine = 'LA_DIVINE',
-  Manual = 'MANUAL',
-  MnmCouture = 'MNM_COUTURE',
-  NoxAnabel = 'NOX_ANABEL',
-  PortiaAndScarlett = 'PORTIA_AND_SCARLETT',
-  PrimaveraCouture = 'PRIMAVERA_COUTURE',
-  Scala = 'SCALA',
-  SherriHill = 'SHERRI_HILL',
-  SophiaThomas = 'SOPHIA_THOMAS',
-  StellaCouture = 'STELLA_COUTURE',
-  SydneysCloset = 'SYDNEYS_CLOSET'
-}
-
-export type ProductVariant = {
-  __typename?: 'ProductVariant';
-  id?: Maybe<Scalars['Int']>;
-};
-
-export enum ProductVariantSortByEnum {
-  Id = 'ID',
-  Name = 'NAME'
-}
-
 export enum ProviderTypeEnum {
   Amazon = 'AMAZON',
   Appletv = 'APPLETV',
@@ -980,8 +755,6 @@ export type Query = {
   personInfo?: Maybe<PersonInfoResponse>;
   showsEpisode?: Maybe<ShowsEpisodeResponse>;
   showsInfo?: Maybe<ShowsInfoResponse>;
-  trackerMovieMe?: Maybe<TrackerMovieResponse>;
-  trackerShowsMe?: Maybe<TrackerShowsInfoResponse>;
 };
 
 
@@ -1026,46 +799,13 @@ export type QueryShowsInfoArgs = {
   pageInfo?: InputMaybe<ShowsInfoPageInfoInput>;
 };
 
-
-export type QueryTrackerMovieMeArgs = {
-  filterInput?: InputMaybe<TrackerMovieFilterInput>;
-  pageInfo?: InputMaybe<TrackerMoviePageInfoInput>;
-};
-
-
-export type QueryTrackerShowsMeArgs = {
-  filterInput?: InputMaybe<TrackerShowsFilterInput>;
-  pageInfo?: InputMaybe<TrackerShowsPageInfoInput>;
-};
-
-export enum ReactionEmojiEnum {
-  Amused = 'AMUSED',
-  Bored = 'BORED',
-  Confused = 'CONFUSED',
-  Frustrated = 'FRUSTRATED',
-  Reflective = 'REFLECTIVE',
-  Sad = 'SAD',
-  Scared = 'SCARED',
-  Shocked = 'SHOCKED',
-  Tense = 'TENSE',
-  Thrilled = 'THRILLED',
-  Touched = 'TOUCHED',
-  Understood = 'UNDERSTOOD'
-}
-
 export enum RedisDatabaseEnum {
   Account = 'ACCOUNT',
-  Cart = 'CART',
-  Collection = 'COLLECTION',
   Default = 'DEFAULT',
-  Event = 'EVENT',
   Movie = 'MOVIE',
   Notifications = 'NOTIFICATIONS',
-  Orders = 'ORDERS',
   Person = 'PERSON',
-  Product = 'PRODUCT',
-  Shows = 'SHOWS',
-  Trackstar = 'TRACKSTAR'
+  Shows = 'SHOWS'
 }
 
 export type ShowsDownloadInput = {
@@ -1198,245 +938,6 @@ export type ShowsSeason = {
 export enum ShowsSeasonSortByEnum {
   Id = 'ID'
 }
-
-export enum SubscriptionGroupsEnum {
-  Developer = 'DEVELOPER',
-  Executive = 'EXECUTIVE',
-  General = 'GENERAL',
-  Youth = 'YOUTH'
-}
-
-export enum SubscriptionStatusEnum {
-  Active = 'ACTIVE',
-  Canceled = 'CANCELED',
-  Suspended = 'SUSPENDED'
-}
-
-export enum SubscriptionTypeEnum {
-  Free = 'FREE',
-  MacausMember = 'MACAUS_MEMBER'
-}
-
-export type Subscriptions = {
-  __typename?: 'Subscriptions';
-  id?: Maybe<Scalars['Int']>;
-};
-
-export type TrackerMovie = {
-  __typename?: 'TrackerMovie';
-  account_info_id?: Maybe<Scalars['Int']>;
-  completed?: Maybe<Scalars['Boolean']>;
-  completed_date?: Maybe<Scalars['String']>;
-  favorite?: Maybe<Scalars['Boolean']>;
-  id?: Maybe<Scalars['Int']>;
-  movie_info?: Maybe<MovieInfo>;
-  movie_info_id?: Maybe<Scalars['Int']>;
-  rating?: Maybe<Scalars['Float']>;
-  reaction_emoji?: Maybe<Array<Maybe<ReactionEmojiEnum>>>;
-  watch_location?: Maybe<WatchLocationEnum>;
-};
-
-export type TrackerMovieCreateInput = {
-  completed?: InputMaybe<Scalars['Boolean']>;
-  movie_info_id: Scalars['Int'];
-  rating?: InputMaybe<Scalars['Float']>;
-  reaction_emoji?: InputMaybe<Array<InputMaybe<ReactionEmojiEnum>>>;
-  watch_location?: InputMaybe<WatchLocationEnum>;
-};
-
-export type TrackerMovieFilterInput = {
-  completed?: InputMaybe<Scalars['Boolean']>;
-  id?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-};
-
-export type TrackerMoviePageInfoInput = {
-  first?: InputMaybe<Scalars['Int']>;
-  maxId?: InputMaybe<Scalars['Int']>;
-  minId?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<OrderByEnum>;
-  pageNumber?: InputMaybe<Scalars['Int']>;
-  sortBy?: InputMaybe<Array<InputMaybe<TrackerMovieSortByEnum>>>;
-};
-
-export type TrackerMovieResponse = {
-  __typename?: 'TrackerMovieResponse';
-  pageInfo?: Maybe<PageInfo>;
-  response: GeneralResponse;
-  result?: Maybe<Array<Maybe<TrackerMovie>>>;
-};
-
-export enum TrackerMovieSortByEnum {
-  Completed = 'COMPLETED',
-  Id = 'ID',
-  Rating = 'RATING'
-}
-
-export type TrackerMovieUpdateInput = {
-  completed?: InputMaybe<Scalars['Boolean']>;
-  id: Scalars['Int'];
-  rating?: InputMaybe<Scalars['Float']>;
-  reaction_emoji?: InputMaybe<Array<InputMaybe<ReactionEmojiEnum>>>;
-  watch_location?: InputMaybe<WatchLocationEnum>;
-};
-
-export type TrackerShows = {
-  __typename?: 'TrackerShows';
-  account_info_id?: Maybe<Scalars['Int']>;
-  completed?: Maybe<Scalars['Boolean']>;
-  completed_date?: Maybe<Scalars['String']>;
-  favorite?: Maybe<Scalars['Boolean']>;
-  id?: Maybe<Scalars['Int']>;
-  rating?: Maybe<Scalars['Float']>;
-  reaction_emoji?: Maybe<Array<Maybe<ReactionEmojiEnum>>>;
-  shows_info?: Maybe<ShowsInfo>;
-  shows_info_id?: Maybe<Scalars['Int']>;
-  status?: Maybe<TrackerShowsStatusEnum>;
-  tracker_shows_season?: Maybe<Array<Maybe<TrackerShowsSeason>>>;
-  watch_location?: Maybe<WatchLocationEnum>;
-};
-
-export type TrackerShowsCreateInput = {
-  rating?: InputMaybe<Scalars['Float']>;
-  reaction_emoji?: InputMaybe<Array<InputMaybe<ReactionEmojiEnum>>>;
-  shows_info_id: Scalars['Int'];
-  status?: InputMaybe<TrackerShowsStatusEnum>;
-  watch_location?: InputMaybe<WatchLocationEnum>;
-};
-
-export type TrackerShowsEpisode = {
-  __typename?: 'TrackerShowsEpisode';
-  account_info_id?: Maybe<Scalars['Int']>;
-  completed?: Maybe<Scalars['Boolean']>;
-  completed_date?: Maybe<Scalars['String']>;
-  id?: Maybe<Scalars['Int']>;
-  rating?: Maybe<Scalars['Float']>;
-  reaction_emoji?: Maybe<Array<Maybe<ReactionEmojiEnum>>>;
-  shows_episode_id?: Maybe<Scalars['Int']>;
-  shows_info_id?: Maybe<Scalars['Int']>;
-  shows_season_id?: Maybe<Scalars['Int']>;
-  tracker_shows_id?: Maybe<Scalars['Int']>;
-  tracker_shows_season_id?: Maybe<Scalars['Int']>;
-};
-
-export type TrackerShowsEpisodeCreateInput = {
-  rating?: InputMaybe<Scalars['Float']>;
-  reaction_emoji?: InputMaybe<Array<InputMaybe<ReactionEmojiEnum>>>;
-  shows_episode_id: Scalars['Int'];
-  shows_info_id: Scalars['Int'];
-  shows_season_id: Scalars['Int'];
-};
-
-export enum TrackerShowsEpisodeSortByEnum {
-  Id = 'ID'
-}
-
-export type TrackerShowsEpisodeUpdateInput = {
-  completed?: InputMaybe<Scalars['Boolean']>;
-  id: Scalars['Int'];
-  rating?: InputMaybe<Scalars['Float']>;
-  reaction_emoji?: InputMaybe<Array<InputMaybe<ReactionEmojiEnum>>>;
-  up_to_date?: InputMaybe<Scalars['Boolean']>;
-};
-
-export type TrackerShowsFilterInput = {
-  completed?: InputMaybe<Scalars['Boolean']>;
-  id?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  rating?: InputMaybe<Array<InputMaybe<Scalars['Float']>>>;
-  reaction_emoji?: InputMaybe<Array<InputMaybe<ReactionEmojiEnum>>>;
-  status?: InputMaybe<Array<InputMaybe<TrackerShowsStatusEnum>>>;
-  watch_location?: InputMaybe<Array<InputMaybe<WatchLocationEnum>>>;
-};
-
-export type TrackerShowsInfoResponse = {
-  __typename?: 'TrackerShowsInfoResponse';
-  pageInfo?: Maybe<PageInfo>;
-  response: GeneralResponse;
-  result?: Maybe<Array<Maybe<TrackerShows>>>;
-};
-
-export type TrackerShowsPageInfoInput = {
-  first?: InputMaybe<Scalars['Int']>;
-  maxId?: InputMaybe<Scalars['Int']>;
-  minId?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<OrderByEnum>;
-  pageNumber?: InputMaybe<Scalars['Int']>;
-  sortBy?: InputMaybe<Array<InputMaybe<TrackerShowsSortByEnum>>>;
-};
-
-export type TrackerShowsSeason = {
-  __typename?: 'TrackerShowsSeason';
-  account_info_id?: Maybe<Scalars['Int']>;
-  completed?: Maybe<Scalars['Boolean']>;
-  completed_date?: Maybe<Scalars['String']>;
-  id?: Maybe<Scalars['Int']>;
-  rating?: Maybe<Scalars['Float']>;
-  reaction_emoji?: Maybe<Array<Maybe<ReactionEmojiEnum>>>;
-  shows_info_id?: Maybe<Scalars['Int']>;
-  shows_season_id?: Maybe<Scalars['Int']>;
-  tracker_shows_episode?: Maybe<Array<Maybe<TrackerShowsEpisode>>>;
-  tracker_shows_id?: Maybe<Scalars['Int']>;
-};
-
-export type TrackerShowsSeasonCreateInput = {
-  rating?: InputMaybe<Scalars['Float']>;
-  reaction_emoji?: InputMaybe<Array<InputMaybe<ReactionEmojiEnum>>>;
-  shows_info_id: Scalars['Int'];
-  shows_season_id: Scalars['Int'];
-};
-
-export enum TrackerShowsSeasonSortByEnum {
-  Id = 'ID'
-}
-
-export type TrackerShowsSeasonUpdateInput = {
-  completed?: InputMaybe<Scalars['Boolean']>;
-  id: Scalars['Int'];
-  rating?: InputMaybe<Scalars['Float']>;
-  reaction_emoji?: InputMaybe<Array<InputMaybe<ReactionEmojiEnum>>>;
-  up_to_date?: InputMaybe<Scalars['Boolean']>;
-};
-
-export enum TrackerShowsSortByEnum {
-  Id = 'ID'
-}
-
-export enum TrackerShowsStatusEnum {
-  Completed = 'COMPLETED',
-  Removed = 'REMOVED',
-  StopWatching = 'STOP_WATCHING',
-  UpToDate = 'UP_TO_DATE',
-  Watching = 'WATCHING',
-  WatchLater = 'WATCH_LATER'
-}
-
-export type TrackerShowsUpdateInput = {
-  completed?: InputMaybe<Scalars['Boolean']>;
-  id: Scalars['Int'];
-  rating?: InputMaybe<Scalars['Float']>;
-  reaction_emoji?: InputMaybe<Array<InputMaybe<ReactionEmojiEnum>>>;
-  status?: InputMaybe<TrackerShowsStatusEnum>;
-  watch_location?: InputMaybe<WatchLocationEnum>;
-};
-
-export enum TrackerTypeEnum {
-  Movie = 'MOVIE',
-  Show = 'SHOW'
-}
-
-export enum WatchLocationEnum {
-  Computer = 'COMPUTER',
-  Other = 'OTHER',
-  Phone = 'PHONE',
-  Tablet = 'TABLET',
-  Television = 'TELEVISION',
-  Theater = 'THEATER',
-  Unofficial = 'UNOFFICIAL'
-}
-
-export type AccountAuthenticationAuthZeroLoginMutationVariables = Exact<{ [key: string]: never; }>;
-
-
-export type AccountAuthenticationAuthZeroLoginMutation = { __typename?: 'Mutation', accountAuthenticationAuthZeroLogin?: { __typename?: 'AccountAuthenticationResponse', response: { __typename?: 'GeneralResponse', code: number, success?: boolean | null, message?: string | null, version?: string | null }, pageInfo?: { __typename?: 'PageInfo', page_info_count?: number | null } | null, result?: { __typename?: 'AccountAuthentication', authenticationToken?: string | null, authenticationTokenType?: AuthenticationTokenTypeEnum | null, registrationStatus?: AccountRegistrationEnum | null, account_info?: Array<{ __typename?: 'AccountInfo', id?: number | null, email?: string | null, status?: AccountStatusEnum | null, registration_status?: AccountRegistrationEnum | null, profile_image?: string | null } | null> | null } | null } | null };
 
 export type AccountAuthenticationLoginMutationVariables = Exact<{
   accountLoginInput: AccountLoginInput;
@@ -1590,58 +1091,6 @@ export const GeneralResponseFragmentDoc = gql`
   version
 }
     `;
-export const AccountAuthenticationAuthZeroLoginDocument = gql`
-    mutation AccountAuthenticationAuthZeroLogin {
-  accountAuthenticationAuthZeroLogin {
-    response {
-      code
-      success
-      message
-      version
-    }
-    pageInfo {
-      ...PageInfo
-    }
-    result {
-      authenticationToken
-      authenticationTokenType
-      registrationStatus
-      account_info {
-        id
-        email
-        status
-        registration_status
-        profile_image
-      }
-    }
-  }
-}
-    ${PageInfoFragmentDoc}`;
-export type AccountAuthenticationAuthZeroLoginMutationFn = Apollo.MutationFunction<AccountAuthenticationAuthZeroLoginMutation, AccountAuthenticationAuthZeroLoginMutationVariables>;
-
-/**
- * __useAccountAuthenticationAuthZeroLoginMutation__
- *
- * To run a mutation, you first call `useAccountAuthenticationAuthZeroLoginMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useAccountAuthenticationAuthZeroLoginMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [accountAuthenticationAuthZeroLoginMutation, { data, loading, error }] = useAccountAuthenticationAuthZeroLoginMutation({
- *   variables: {
- *   },
- * });
- */
-export function useAccountAuthenticationAuthZeroLoginMutation(baseOptions?: Apollo.MutationHookOptions<AccountAuthenticationAuthZeroLoginMutation, AccountAuthenticationAuthZeroLoginMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<AccountAuthenticationAuthZeroLoginMutation, AccountAuthenticationAuthZeroLoginMutationVariables>(AccountAuthenticationAuthZeroLoginDocument, options);
-      }
-export type AccountAuthenticationAuthZeroLoginMutationHookResult = ReturnType<typeof useAccountAuthenticationAuthZeroLoginMutation>;
-export type AccountAuthenticationAuthZeroLoginMutationResult = Apollo.MutationResult<AccountAuthenticationAuthZeroLoginMutation>;
-export type AccountAuthenticationAuthZeroLoginMutationOptions = Apollo.BaseMutationOptions<AccountAuthenticationAuthZeroLoginMutation, AccountAuthenticationAuthZeroLoginMutationVariables>;
 export const AccountAuthenticationLoginDocument = gql`
     mutation AccountAuthenticationLogin($accountLoginInput: AccountLoginInput!) {
   accountAuthenticationLogin(accountLoginInput: $accountLoginInput) {

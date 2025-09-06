@@ -47,8 +47,9 @@ class MovieInfoUpdateMutation(GraphQLModel, MovieLib):
                     all_update = self.get_saga_to_update(db, imdb_ids)
                     
                     imdbs_todo = list(filter(lambda x: x not in set([sg.movie_info_imdb_id for sg in all_update]), imdb_ids))
-                    
-                    all_create = self.movie_saga_state_create(db, imdbs_todo)
+
+                    with self.get_session("psqldb_movie") as session_db:
+                        all_create = self.movie_saga_state_create(session_db, imdbs_todo)
                     
                     all_sage = all_update + all_create
 

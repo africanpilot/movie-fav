@@ -19,21 +19,16 @@ def create_movie_task(self: Task, saga_id: int, payload: dict) -> Union[dict, No
     try:
         movie_search_info = lib.get_movie_by_id(imdbId=request_data.imdb_id)
         movie_payload = lib.get_movie_info(request_data.imdb_id, movie_search_info)
-        lib.log.info(f"Adding {request_data.imdb_id}")
     except Exception as e:
         raise lib.http_400_bad_request_response(
             f"Failed to get movie info imdbId {request_data.imdb_id} for saga id {saga_id} -- {e}"
         )
     else:
         try:
-            lib.load_to_redis(lib.movie_redis_engine, f"create_movie_task:{saga_id}:{request_data.imdb_id}", movie_payload)
-        except IntegrityError:
-            raise lib.http_400_bad_request_response(
-                f"movie already exists {request_data.imdb_id}"
-            )
+            lib.update(saga_id, payload=movie_payload)
         except Exception as e:
-            raise lib.http_404_not_found_response(
-                f"Failed to add movie info imdbId {request_data.imdb_id} for saga id {saga_id} -- {e}"
+            raise lib.http_500_internal_server_error(
+                f"Failed to update movie info saga imdbId {request_data.imdb_id} for saga id {saga_id} -- {e}"
             )
-            
+
     return None

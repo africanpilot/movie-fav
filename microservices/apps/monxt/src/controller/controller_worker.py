@@ -11,7 +11,6 @@ from link_models.messaging import (
   CREATE_ACCOUNT_SAGA_RESPONSE_QUEUE,
   FORGOT_PASSWORD_SAGA_RESPONSE_QUEUE,
   CREATE_MOVIE_SAGA_RESPONSE_QUEUE,
-  MOVIE_IMPORT_SAGA_RESPONSE_QUEUE,
   MOVIE_COMMANDS_QUEUE,
   NOTIFICATIONS_COMMANDS_QUEUE,
   CREATE_PERSON_SAGA_RESPONSE_QUEUE,
@@ -24,7 +23,7 @@ from account.src.models.account_saga_state import AccountSagaStateUpdate
 from account.src.domain.orchestrator import CreateAccountSaga, ForgotPasswordSaga
 
 from movie.src.models.movie_saga_state import MovieSagaStateUpdate
-from movie.src.domain.orchestrator import CreateMovieSaga, MovieImportSaga
+from movie.src.domain.orchestrator import CreateMovieSaga
 
 from notifications.src.models.notifications_saga_state import NotificationsSagaStateUpdate
 from notifications.src.domain.orchestrator import CreateNotifySaga
@@ -50,7 +49,6 @@ worker_queues = (
   Queue(CREATE_ACCOUNT_SAGA_RESPONSE_QUEUE),
   Queue(FORGOT_PASSWORD_SAGA_RESPONSE_QUEUE),
   Queue(CREATE_MOVIE_SAGA_RESPONSE_QUEUE),
-  Queue(MOVIE_IMPORT_SAGA_RESPONSE_QUEUE),
   Queue(MOVIE_COMMANDS_QUEUE),
   Queue(NOTIFICATIONS_COMMANDS_QUEUE),
   Queue(CREATE_PERSON_SAGA_RESPONSE_QUEUE),
@@ -76,7 +74,6 @@ class WorkerController:
     ForgotPasswordSaga.register_async_step_handlers(AccountSagaStateUpdate(), worker)
     CreateNotifySaga.register_async_step_handlers(NotificationsSagaStateUpdate(), worker)
     CreateMovieSaga.register_async_step_handlers(MovieSagaStateUpdate(), worker)
-    MovieImportSaga.register_async_step_handlers(MovieSagaStateUpdate(), worker)
     CreatePersonSaga.register_async_step_handlers(PersonSagaStateUpdate(), worker)
     CreateShowsSaga.register_async_step_handlers(ShowsSagaStateUpdate(), worker)
     ShowsImportSaga.register_async_step_handlers(ShowsSagaStateUpdate(), worker)

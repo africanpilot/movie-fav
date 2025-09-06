@@ -5,7 +5,7 @@ import {
   useAccountForgotPasswordMutation, useAccountForgotPasswordConfirmEmailMutation,
   useAccountUpdatePasswordMutation, AccountInfoUpdatePasswordInput,
   useAccountAuthenticationLogoutMutation, useAccountGuestLoginMutation,
-  useAccountAuthenticationAuthZeroLoginMutation
+  // useAccountAuthenticationAuthZeroLoginMutation
 } from "./schema";
 
 
@@ -20,7 +20,7 @@ export const useAccount = () => {
   const [forgotPassword, { loading: isForgotPassword }] = useAccountForgotPasswordMutation();
   const [forgotPasswordConfirm, { loading: isForgotPasswordConfirm }] = useAccountForgotPasswordConfirmEmailMutation();
   const [updatePassword, { loading: isUpdatePassword }] = useAccountUpdatePasswordMutation();
-  const [accountAuthZeroLogin, { loading: isAccountAuthZeroLogin }] = useAccountAuthenticationAuthZeroLoginMutation();
+  // const [accountAuthZeroLogin, { loading: isAccountAuthZeroLogin }] = useAccountAuthenticationAuthZeroLoginMutation();
 
   const handleCreateAccount = async (createInput: AccountInfoCreateInput) => {
     try {
@@ -104,18 +104,18 @@ export const useAccount = () => {
     }
   };
 
-  const handleAccountAuthZeroLogin = async () => {
-    try {
-      const { data } = await accountAuthZeroLogin();
-      return data?.accountAuthenticationAuthZeroLogin;
-    } catch (error: any) {
-      try { return JSON.parse(error.message) } catch (error: any) { throw error;};
-    }
-  };
+  // const handleAccountAuthZeroLogin = async () => {
+  //   try {
+  //     const { data } = await accountAuthZeroLogin();
+  //     return data?.accountAuthenticationAuthZeroLogin;
+  //   } catch (error: any) {
+  //     try { return JSON.parse(error.message) } catch (error: any) { throw error;};
+  //   }
+  // };
 
   const isSaving = (isCreateAccount || isSignIn || isResendEmail || isConfirmEmail 
     || isForgotPassword || isForgotPasswordConfirm || isUpdatePassword 
-    || isAccountAuthenticationLogout || isGuestLogin || isAccountAuthZeroLogin
+    || isAccountAuthenticationLogout || isGuestLogin
   );
 
   return {
@@ -128,7 +128,7 @@ export const useAccount = () => {
     updatePassword: handleUpdatePassword,
     accountAuthenticationLogout: handleLogout,
     accountGuestLogin: handleGuestLogin,
-    accountAuthZeroLogin: handleAccountAuthZeroLogin,
+    // accountAuthZeroLogin: handleAccountAuthZeroLogin,
     isSaving
   };
 };

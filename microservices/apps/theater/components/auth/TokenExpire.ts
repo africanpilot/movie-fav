@@ -9,7 +9,7 @@ import { ErrorState } from "@/types/error";
 const TokenExpire = () => {
   const router = useRouter();
   const [errorState, setErrorState] = useState<ErrorState>({} as ErrorState);
-	const { accountAuthZeroLogin, isSaving } = useAccount();
+	// const { accountAuthZeroLogin, isSaving } = useAccount();
   const pathname = usePathname();
   const returnLink = `/api/auth/login?returnTo=${encodeURIComponent('/portal')}`;
 

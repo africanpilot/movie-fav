@@ -55,7 +55,6 @@ class APIController(ControllerToApollo):
       # movie
       "MovieInfoPopulateMutation",
       "MovieResetPopularMutation",
-      "MovieRedisSyncMutation",
       "MovieImportMutation",
       "MovieInfoUpdateMutation",
       

@@ -4,6 +4,8 @@
 from link_lib.microservice_response import LinkResponse
 from sqlalchemy.engine.base import Connection
 from movie.src.models.movie_saga_state.base import MovieSagaState
+from movie.src.models.movie_info.base import MovieInfo
+from sqlmodel import Session, select
 
 
 class MovieSagaStateRead(LinkResponse):
@@ -29,6 +31,8 @@ class MovieSagaStateRead(LinkResponse):
     sql_query = self.query_cols([MovieSagaState.movie_info_imdb_id])
     sql_query = self.query_filter(sql_query, [
       MovieSagaState.movie_info_imdb_id.in_(imdb_ids),
+      MovieSagaState.payload != None,
+      MovieSagaState.failed_at == None,
     ])
     return db.execute(sql_query).all()
 
@@ -47,3 +51,23 @@ class MovieSagaStateRead(LinkResponse):
       MovieSagaState.movie_info_imdb_id.in_(imdb_ids),
     ])
     return db.execute(sql_query).all()
+  
+  def get_no_movie_saga_payload(self, db: Session) -> list[MovieSagaState]:
+    return db.exec(
+      select(MovieSagaState).where(
+        MovieSagaState.payload == None,
+        MovieSagaState.failed_at == None,
+    )).all()
+
+  def get_remaining_movie_sagas_to_ingest(self, db: Session, limit: int = 5) -> list[MovieSagaState]:
+    return db.exec(
+      select(MovieSagaState)
+      .select_from(MovieSagaState)
+      .outerjoin(MovieInfo, MovieSagaState.movie_info_imdb_id == MovieInfo.imdb_id)
+      .where(
+        MovieSagaState.status == "succeeded",
+        MovieSagaState.payload != None,
+        MovieInfo.imdb_id == None
+      )
+      .limit(limit)
+    ).all()

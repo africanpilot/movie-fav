@@ -11,7 +11,6 @@ MONXT_COMMANDS_QUEUE = 'monxt.commands'
 
 # Movie
 CREATE_MOVIE_SAGA_RESPONSE_QUEUE = 'create_movie_saga_responses'
-MOVIE_IMPORT_SAGA_RESPONSE_QUEUE = 'movie_import_saga_responses'
 MOVIE_COMMANDS_QUEUE = 'movie.commands'
 
 # Notifications

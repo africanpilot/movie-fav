@@ -17,6 +17,9 @@ class MovieSagaStateBase(SQLModel):
   failure_details: Optional[str] = Field(default=None)
   movie_info_imdb_id: Optional[str] = Field(default=None, nullable=False, unique=True, max_length=100)
   body: Optional[dict] = Field(default=None, sa_column=Column(postgresql.JSONB))
+  payload: Optional[dict] = Field(default=None, sa_column=Column(postgresql.JSONB))
+  created: Optional[datetime] = Field(default=datetime.now())
+  updated: Optional[datetime] = Field(default=datetime.now())
 
 class MovieSagaState(MovieSagaStateBase, table=True):
   """_summary_

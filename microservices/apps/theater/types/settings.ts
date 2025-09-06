@@ -44,7 +44,7 @@ export interface SumexusSettingsInterfaceProps {
 }
 
 export const MapData = {
-    name: 'Sumexus',
+    name: 'MovieFav',
     email: 'info@theater.com',
     phoneSingle: '817-997-4733',
     phoneArea: '(817) 997-4733',

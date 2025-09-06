@@ -20,7 +20,6 @@ class APIController(ControllerToApollo):
     private_models_to_load = [
         "MovieInfoPopulateMutation",
         "MovieResetPopularMutation",
-        "MovieRedisSyncMutation",
         "MovieImportMutation",
         "MovieInfoUpdateMutation",
     ]

@@ -13,19 +13,36 @@ class MovieSagaStateUpdate(AbstractSagaStateRepository, LinkRedis):
     return self.load_to_object(MovieSagaState, self.movie_redis_engine.get(f"get_saga_state_by_id:{saga_id}"))
 
   def update_status(self, saga_id: int, status: str) -> None:
-    self.load_to_redis(self.movie_redis_engine, f"movie_saga_state:update_status:{saga_id}", dict(status=status))
+    with self.get_session("psqldb_movie") as db:
+      db.execute(update(MovieSagaState)
+        .where(MovieSagaState.id == saga_id)
+        .values(status=status, updated=datetime.now())
+      )
+      db.commit()
 
   def update(self, saga_id: int, **fields_to_update) -> None:
-    self.load_to_redis(self.movie_redis_engine, f"movie_saga_state:update:{saga_id}", dict(**fields_to_update))
+    with self.get_session("psqldb_movie") as db:
+      db.execute(update(MovieSagaState)
+        .where(MovieSagaState.id == saga_id)
+        .values(**fields_to_update, updated=datetime.now())
+      )
+      db.commit()
 
   def on_step_failure(self, saga_id: int, failed_step: BaseStep, initial_failure_payload: dict) -> None:
-    self.load_to_redis(self.movie_redis_engine, f"movie_saga_state:on_set_failure:{saga_id}",
-      dict(failed_step=failed_step.name, failed_at=datetime.now(), failure_details=initial_failure_payload['message']
-    ))
+    with self.get_session("psqldb_movie") as db:
+      db.execute(update(MovieSagaState)
+        .where(MovieSagaState.id == saga_id)
+        .values(
+          failed_step=failed_step.name,
+          failed_at=datetime.now(),
+          failure_details=initial_failure_payload['message']
+        )
+      )
+      db.commit()
   
   def movie_state_saga_update(self, saga_id: int, **other_fields):
     return (
       update(MovieSagaState)
       .where(MovieSagaState.id == saga_id)
-      .values(**other_fields)
+      .values(**other_fields, updated=datetime.now())
     )

@@ -1,6 +1,7 @@
 __all__ = ['AbstractSagaStateRepository', 'StatefulSaga']
 
 import abc
+from datetime import datetime
 
 from celery import Celery, Task
 
@@ -35,7 +36,7 @@ class StatefulSaga(AsyncSaga, abc.ABC):
     saga_state_repository: AbstractSagaStateRepository = None
     _saga_state = None  # cached SQLAlchemy instance
 
-    def __init__(self, saga_state_repository: AbstractSagaStateRepository, celery_app: Celery, saga_id: int, body: dict = None, modified_body: dict = None):
+    def __init__(self, saga_state_repository: AbstractSagaStateRepository, celery_app: Celery, saga_id: int, body: dict = None, modified_body: dict = None, payload: dict = None, created: datetime = None, updated: datetime = None):
         self.saga_state_repository = saga_state_repository
         super().__init__(celery_app, saga_id)
 
