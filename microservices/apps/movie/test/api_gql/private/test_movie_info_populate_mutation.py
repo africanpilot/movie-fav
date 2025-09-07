@@ -7,8 +7,7 @@ from link_lib.microservice_general import LinkGeneral
 from ariadne import gql, graphql_sync
 from movie.src.models.movie_info import MovieInfo
 from movie.test.fixtures.models import MOVIE_INFO_RESPONSE_FRAGMENT
-from link_models.enums import AccountRegistrationEnum, DownloadLocationEnum
-from link_test.fixtures import GeneralMovieLib
+from link_models.enums import DownloadLocationEnum
 from sqlmodel import Session
 # from pytest_httpx import HTTPXMock
 
@@ -28,7 +27,7 @@ GENERAL_PYTEST_MARK = LinkGeneral().compose_decos([pytest.mark.movie_info_popula
 
 @GENERAL_PYTEST_MARK
 @pytest.mark.movie_bench
-def test_movie_info_popular_mutation(benchmark, test_database: Session, flush_redis_db, create_account, private_schema, requests_mock, create_movie_info, link_movie_lib: GeneralMovieLib):
+def test_movie_info_popular_mutation(benchmark, test_database: Session, flush_redis_db, create_account, private_schema, requests_mock, create_movie_info):
   flush_redis_db()
   
   _, auth_1 = create_account(test_database)
@@ -50,8 +49,6 @@ def test_movie_info_popular_mutation(benchmark, test_database: Session, flush_re
   success, result = graphql_sync(private_schema, {"query": qgl_query, "variables": variables}, context_value=auth_1["context_value"])
 
   response = result["data"][QUERY_NAME]
-  
-  link_movie_lib.log.debug(f"response: {response}")
   
   assert success == True
   assert response["response"] == dict(

@@ -4,7 +4,7 @@
 from datetime import datetime
 from sqlalchemy.dialects.postgresql import insert
 from movie.src.models.movie_info.base import MovieInfo
-from sqlmodel import Session, select
+from sqlmodel import Session
 
 class MovieInfoCreate:
   def __init__(self, **kwargs):

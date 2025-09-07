@@ -1,7 +1,7 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
-from typing import Optional, Union
+from typing import Optional
 from graphql import GraphQLResolveInfo
 from link_lib.microservice_request import LinkRequest
 from link_models.base import PageInfoInput

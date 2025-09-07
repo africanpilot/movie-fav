@@ -14,7 +14,7 @@ class MovieSagaStateUpdate(AbstractSagaStateRepository, LinkRedis):
 
   def update_status(self, saga_id: int, status: str) -> None:
     with self.get_session("psqldb_movie") as db:
-      db.execute(update(MovieSagaState)
+      db.exec(update(MovieSagaState)
         .where(MovieSagaState.id == saga_id)
         .values(status=status, updated=datetime.now())
       )
@@ -22,7 +22,7 @@ class MovieSagaStateUpdate(AbstractSagaStateRepository, LinkRedis):
 
   def update(self, saga_id: int, **fields_to_update) -> None:
     with self.get_session("psqldb_movie") as db:
-      db.execute(update(MovieSagaState)
+      db.exec(update(MovieSagaState)
         .where(MovieSagaState.id == saga_id)
         .values(**fields_to_update, updated=datetime.now())
       )
@@ -30,7 +30,7 @@ class MovieSagaStateUpdate(AbstractSagaStateRepository, LinkRedis):
 
   def on_step_failure(self, saga_id: int, failed_step: BaseStep, initial_failure_payload: dict) -> None:
     with self.get_session("psqldb_movie") as db:
-      db.execute(update(MovieSagaState)
+      db.exec(update(MovieSagaState)
         .where(MovieSagaState.id == saga_id)
         .values(
           failed_step=failed_step.name,

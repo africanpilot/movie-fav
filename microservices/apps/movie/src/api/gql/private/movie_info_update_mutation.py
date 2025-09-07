@@ -2,9 +2,8 @@
 # All Rights Reserved. Proprietary and confidential.
 
 from graphql import GraphQLResolveInfo
-from link_lib.microservice_controller import ApolloTypes
+from link_lib.microservice_controller import apollo_types_mutation
 from link_lib.microservice_graphql_model import GraphQLModel
-from link_models.enums import DownloadLocationEnum
 from movie.src.domain.lib import MovieLib
 from movie.src.models.movie_info import MovieInfoPageInfoInput, MovieInfoUpdateFilterInput, MovieInfoResponse
 from movie.src.controller.controller_worker import worker
@@ -17,9 +16,7 @@ class MovieInfoUpdateMutation(GraphQLModel, MovieLib):
         super().__init__(**kwargs)
         
     def load_defs(self):
-        mutation = ApolloTypes.get("Mutation")
-
-        @mutation.field("movieInfoUpdate")
+        @apollo_types_mutation.field("movieInfoUpdate")
         def resolve_movie_info_update(
             _, info: GraphQLResolveInfo, pageInfo: MovieInfoPageInfoInput = None, updateFilterInput: MovieInfoUpdateFilterInput = None
         ) -> MovieInfoResponse:
@@ -38,13 +35,13 @@ class MovieInfoUpdateMutation(GraphQLModel, MovieLib):
                     updateFilterInput = MovieInfoUpdateFilterInput(**updateFilterInput)
                     
                     if updateFilterInput.download_1080p_url or updateFilterInput.download_720p_url or updateFilterInput.download_480p_url:
-                        imdb_ids = set([movie.imdb_id for movie in self.get_all_movies_to_update(db, pageInfo)])
-                        
+                        imdb_ids = set([movie.imdb_id for movie in self.movie_info_read.get_all_movies_to_update(db, pageInfo)])
+
                 else:
-                    imdb_ids = [r.imdb_id for r in self.get_all_movie_info_to_update(db, pageInfo.first)]
+                    imdb_ids = [r.imdb_id for r in self.movie_info_read.get_all_movie_info_to_update(db, pageInfo.first)]
 
                 if imdb_ids:
-                    all_update = self.get_saga_to_update(db, imdb_ids)
+                    all_update = self.movie_saga_state_read.get_saga_to_update(db, imdb_ids)
                     
                     imdbs_todo = list(filter(lambda x: x not in set([sg.movie_info_imdb_id for sg in all_update]), imdb_ids))
 

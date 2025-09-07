@@ -13,7 +13,7 @@ class GetMovieDownloadsQuery(MovieLib):
 
   def execute(self):
     with self.get_connection("psqldb_movie") as db:
-      results = self.get_download_urls(db, self.body.get("imdb_ids"))
+      results = self.movie_info_read.get_download_urls(db, self.body.get("imdb_ids"))
 
     return dict(
       message=json.dumps(dict(result=[dict(r) for r in results]), cls=GeneralJSONEncoder),

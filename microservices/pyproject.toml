@@ -48,6 +48,7 @@ geopy = "2.4.1"
 parsel = "1.10.0"
 loguru = "0.7.3"
 cinemagoerng = "0.4"
+graphql-core = "3.2.5"
 
 
 [tool.poetry.group.dev.dependencies]

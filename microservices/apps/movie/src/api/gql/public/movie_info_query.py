@@ -4,7 +4,7 @@
 import json
 
 from graphql import GraphQLResolveInfo
-from link_lib.microservice_controller import ApolloTypes
+from link_lib.microservice_controller import apollo_types_query
 from link_lib.microservice_graphql_model import GraphQLModel
 from link_lib.microservice_general import GeneralJSONEncoder
 from movie.src.domain.lib import MovieLib
@@ -16,9 +16,7 @@ class MovieInfoQuery(GraphQLModel, MovieLib):
         super().__init__(**kwargs)
         
     def load_defs(self):
-        query = ApolloTypes.get("Query")
-
-        @query.field("movieInfo")
+        @apollo_types_query.field("movieInfo")
         def resolve_movie_info(
             _, info: GraphQLResolveInfo, pageInfo: MovieInfoPageInfoInput = None, filterInput: MovieInfoFilterInput = None 
         ) -> MovieInfoResponse:
@@ -41,7 +39,7 @@ class MovieInfoQuery(GraphQLModel, MovieLib):
                     return redis_response
 
             with self.get_connection("psqldb_movie") as db:
-                response = self.movie_info_response(
+                response = self.movie_info_response.movie_info_response(
                     info=info,
                     db=db,
                     pageInfo=pageInfo,

@@ -1,12 +1,12 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
-from link_domain.imdb_ng import ImdbNg
-from link_lib.microservice_request import LinkRequest
+from link_domain.base import LinkDomain
+from movie.src.models import MovieModels
 from movie.src.models.movie_info import MovieInfoResponse
 
 
-class MovieLib(LinkRequest):
+class MovieLib(LinkDomain, MovieModels):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -26,6 +26,5 @@ class MovieLib(LinkRequest):
         self.redis_delete_keys_pipe(self.movie_redis_engine, [f"movie_info_query:*"]).execute()
 
     def process_movie_info(self, imdb_id: str) -> dict:
-        ia = ImdbNg()
-        movie_info = ia.get_movie_by_id(imdb_id)
-        return ia.get_movie_info(imdb_id, movie_info)
+        movie_info = self.imdb_ng_helper.get_movie_by_id(imdb_id)
+        return self.imdb_ng_helper.get_movie_info(imdb_id, movie_info)

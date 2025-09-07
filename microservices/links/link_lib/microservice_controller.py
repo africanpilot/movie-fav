@@ -236,3 +236,6 @@ class ControllerToFastApi(GenericLinkModel):
                 ] + [f"../../../{ms}/src/api/rest/private/" for ms in self.enabled_microservices], route).execute())
 
         return app
+
+apollo_types_mutation = ApolloTypes.get("Mutation")
+apollo_types_query = ApolloTypes.get("Query")

@@ -42,12 +42,6 @@ class MovieInfoUpdate(LinkGeneral):
       .values(**MovieInfo(imdb_id=imdbId, **fields_to_update, updated=datetime.now()).dict(exclude_unset=True))
     ).on_conflict_do_update(constraint='movie_info_imdb_id_key', set_=dict(**fields_to_update, updated=datetime.now()))
 
-    # sql_query = (
-    #   update(MovieInfo)
-    #   .where(MovieInfo.imdb_id == imdbId)
-    #   .values(**fields_to_update)
-    # )
-
     if commit:
       db.execute(sql_query)
     return sql_query

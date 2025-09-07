@@ -12,7 +12,7 @@ class GetRemainingMovieCastQuery(MovieLib):
 
   def execute(self):
     with self.get_connection("psqldb_movie") as db:
-      result = self.get_all_movie_cast(db)
+      result = self.movie_info_read.get_all_movie_cast(db)
   
     return dict(
       message=json.dumps(dict(result), cls=GeneralJSONEncoder),
