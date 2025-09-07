@@ -4,12 +4,16 @@
 from datetime import datetime
 import pytest
 
-from link_test.fixtures.lib import GeneralMovieLib
 from movie.src.models.movie_info import MovieInfo
+from movie.src.domain.lib import MovieLib
 
 
 @pytest.fixture
-def create_movie_info(link_movie_lib: GeneralMovieLib) -> MovieInfo:
+def link_movie_lib() -> MovieLib:
+  return MovieLib()
+
+@pytest.fixture
+def create_movie_info(link_movie_lib: MovieLib) -> MovieInfo:
   def create(db) -> MovieInfo:
     return link_movie_lib.movie_info_create(db,
       imdb_id="0133093",

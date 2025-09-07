@@ -5,9 +5,11 @@ from functools import cached_property
 import requests
 import pandas as pd
 import json
-import time
-import re
+from dateutil import parser
+from datetime import datetime
+from typing import Optional
 from bs4 import BeautifulSoup
+from link_domain.pyratebay import PyratebayLib
 from sqlmodel import Session
 from os import path
 from imdb import Cinemagoer
@@ -25,6 +27,10 @@ ia = Cinemagoer()
 class ImdbHelper(LinkRequest):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        
+    @cached_property
+    def pyratebay_helper(self):
+        return PyratebayLib()
 
     @cached_property
     def rating_download_url(self) -> str:
@@ -63,17 +69,8 @@ class ImdbHelper(LinkRequest):
 
     @cached_property
     def driver(self):
-        driver = webdriver.Remote(command_executor=self.selenium_url, options=self.options)
+        return webdriver.Remote(command_executor=self.selenium_url, options=self.options)
 
-        # if self.session_id:
-        #     driver.close()  # this prevents the dummy browser
-        #     driver.session_id = self.session_id
-
-        # self.log.info(f" Current session: {driver.session_id}")
-        # self.load_to_redis(self.rarbg_redis_engine, f"chrome_driver_session", dict(session_id=driver.session_id))
-        
-        return driver
-    
     def get_movie_info_set(self) -> list:
         return ia.get_movie_infoset()
     
@@ -90,6 +87,7 @@ class ImdbHelper(LinkRequest):
         return ia.get_movie(imdbId)
 
     def url_clean(self, url: str) -> str:
+        self.log.info(f"Cleaning URL: {url}")
         if url:
             _, ext = path.splitext(url)
             url_filter = url.split("@")[0] + "@" * url.count("@")
@@ -122,6 +120,46 @@ class ImdbHelper(LinkRequest):
         df_sort_votes = df.sort_values(by=['numVotes'], ascending=False).head(limit)
         df_sort_rating = df.sort_values(by=['averageRating'], ascending=False).head(limit)
         return list({i.replace("tt", "") for i in list(df_sort_votes["tconst"].tolist() + df_sort_rating["tconst"].tolist())})
+    
+    def convert_imdb_date(self, val: str) -> Optional[datetime]:
+        if not val:
+            return None
+        
+        try:
+            date = parser.parse(val)
+            return date
+        except Exception:
+            pass
+        
+        try:
+            date = datetime.strptime(val.split(" (")[0].replace(".",""), '%d %b %Y')
+            return date
+        except Exception:
+            self.log.info(f"Unable to parse date: {val}")
+            return None
+    
+    def get_movie_info(self, imdbId: str, data: dict) -> dict:
+        return dict(
+            imdb_id=imdbId,
+            title=data.get("title"),
+            cast=[item.getID() for item in data.get("cast")] if data.get("cast") else [],
+            year=data.get("year"),
+            directors=[item["name"] for item in data.get("directors")] if data.get("directors") else [],
+            genres=data.get("genres"),
+            countries=data.get("countries"),
+            plot=data.get("plot")[0] if data.get("plot") else "",
+            cover=self.url_clean(data.get("cover")),
+            rating=data.get("rating"),
+            votes=data.get("votes"),
+            run_times=data.get("runtimes"),
+            creators=[item.getID() for item in data.get("creators")] if data.get("creators") else [],
+            full_cover=data.get("full-size cover url"),
+            release_date=self.convert_imdb_date(data.get("original air date")),
+            videos=self.get_videos(imdbId),
+            download_1080p_url=self.pyratebay_helper.get_magnet_url(data.get("title"), "1080p"),
+            download_720p_url=self.pyratebay_helper.get_magnet_url(data.get("title"), "720p"),
+            download_480p_url=self.pyratebay_helper.get_magnet_url(data.get("title"), "480p"),
+        )
 
     def get_popular_movie_page(self, chart_type: str = "moviemeter") -> BeautifulSoup:
         URL = f"https://m.imdb.com/chart/{chart_type}/"

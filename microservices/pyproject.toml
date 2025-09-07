@@ -47,6 +47,7 @@ numpy = "2.3.2"
 geopy = "2.4.1"
 parsel = "1.10.0"
 loguru = "0.7.3"
+cinemagoerng = "0.4"
 
 
 [tool.poetry.group.dev.dependencies]

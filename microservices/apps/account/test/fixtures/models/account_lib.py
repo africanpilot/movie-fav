@@ -7,13 +7,10 @@ from account.src.domain.lib import AccountLib
 from link_models.enums import SchemaTypeEnum
 from account.src.controller.controller_api import APIController
 
-class GeneralAccountLib(AccountLib):
-  def __init__(self, **kwargs):
-    super().__init__(**kwargs)
 
 @pytest.fixture
-def link_account_lib() -> GeneralAccountLib:
-  return GeneralAccountLib()
+def link_account_lib() -> AccountLib:
+  return AccountLib()
 
 @pytest.fixture
 def private_schema():

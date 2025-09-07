@@ -158,51 +158,55 @@ class PyratebayLib(LinkRequest):
 
 
 	def get_magnet_url(self, title: str, download_type: str, season: int = None, episode: int = None) -> Optional[str]:
-		name = f"{title} {download_type}".replace("'", "")
-		torrents = self.search(name, cats=['video']) or []
-		
-		# order by seeders
-		match_torrents: list[Torrent] = sorted(torrents, key=lambda x: x.seeders, reverse=True)
-		
-		# filter for the correct season
-		if season:
-			has_season = [
-				torrent
-				for torrent in match_torrents
-				if f"S{season:02d}" in torrent.name
-			]
-			if has_season:
-				match_torrents = has_season
+		try:
+			name = f"{title} {download_type}".replace("'", "")
+			torrents = self.search(name, cats=['video']) or []
+			
+			# order by seeders
+			match_torrents: list[Torrent] = sorted(torrents, key=lambda x: x.seeders, reverse=True)
+			
+			# filter for the correct season
+			if season:
+				has_season = [
+					torrent
+					for torrent in match_torrents
+					if f"S{season:02d}" in torrent.name
+				]
+				if has_season:
+					match_torrents = has_season
 
-		# filter for the correct episode
-		if episode:
-			has_episode = [
+			# filter for the correct episode
+			if episode:
+				has_episode = [
+					torrent
+					for torrent in match_torrents
+					if f"S{season:02d}E{episode:02d}" in torrent.name
+				]
+				if has_episode:
+					match_torrents = has_episode
+			
+			# check if torrent has a known provider
+			has_provider = [
 				torrent
 				for torrent in match_torrents
-				if f"S{season:02d}E{episode:02d}" in torrent.name
+				if any(x in torrent.name for x in ImportProviderTypeEnum.list())
 			]
-			if has_episode:
-				match_torrents = has_episode
-		
-		# check if torrent has a known provider
-		has_provider = [
-			torrent
-			for torrent in match_torrents
-			if any(x in torrent.name for x in ImportProviderTypeEnum.list())
-		]
-		if has_provider:
-			match_torrents = has_provider
-		
-		# filter for best sound quality
-		has_best_sound = [
-			torrent
-			for torrent in match_torrents
-			if any(x in torrent.name for x in ["DDP5.1", "Atmos"])
-		]
-		if has_best_sound:
-			match_torrents = has_best_sound
-		
-		if match_torrents:
-			return match_torrents[0].magnet()
-		
-		return None
+			if has_provider:
+				match_torrents = has_provider
+			
+			# filter for best sound quality
+			has_best_sound = [
+				torrent
+				for torrent in match_torrents
+				if any(x in torrent.name for x in ["DDP5.1", "Atmos"])
+			]
+			if has_best_sound:
+				match_torrents = has_best_sound
+			
+			if match_torrents:
+				return match_torrents[0].magnet()
+			
+			return None
+		except Exception as e:
+			self.log.error(f"Error getting magnet url for {title} {download_type} - {e}")
+			return None

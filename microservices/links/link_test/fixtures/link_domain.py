@@ -2,7 +2,7 @@
 # All Rights Reserved. Proprietary and confidential.
 
 import pytest
-from link_domain.imdb.base import ImdbHelper
+from link_domain.imdb_helper.base import ImdbHelper
 
 from link_lib.microservice_generic_model import GenericLinkModel
 from link_lib.microservice_general import LinkGeneral

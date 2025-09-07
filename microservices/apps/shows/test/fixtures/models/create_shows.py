@@ -4,12 +4,16 @@
 from datetime import datetime
 import pytest
 
-from link_test.fixtures.lib import GeneralShowsLib
 from shows.src.models.shows_info import ShowsInfo
+from shows.src.domain.lib import ShowsLib
 
 
 @pytest.fixture
-def create_shows_info(link_shows_lib: GeneralShowsLib) -> ShowsInfo:
+def link_shows_lib() -> ShowsLib:
+  return ShowsLib()
+
+@pytest.fixture
+def create_shows_info(link_shows_lib: ShowsLib) -> ShowsInfo:
   def create(db) -> ShowsInfo:
     val = "21 Oct 2022 (USA)".strip(" (USA)")
     date = datetime.strptime(val, '%d %b %Y')

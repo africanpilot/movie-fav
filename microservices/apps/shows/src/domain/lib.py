@@ -6,7 +6,7 @@ import json
 from typing import Optional
 from datetime import datetime
 from sqlalchemy.engine.base import Connection
-from link_domain.imdb import ImdbHelper
+from link_domain.imdb_helper import ImdbHelper
 from link_lib.microservice_request import LinkRequest
 from shows.src.models.shows_info import ShowsInfoRead, ShowsInfoUpdate, ShowsInfoCreate, ShowsInfoResponses, ShowsInfoResponse
 from shows.src.models.shows_season import ShowsSeasonRead

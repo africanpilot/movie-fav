@@ -4,7 +4,7 @@
 from datetime import datetime
 import json
 from typing import Optional
-from link_domain.imdb.base import ImdbHelper
+from link_domain.imdb_helper.base import ImdbHelper
 from sqlalchemy.engine.base import Connection
 from person.src.models.person_info import (
     PersonInfoCreate,
