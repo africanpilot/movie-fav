@@ -2,7 +2,7 @@
 # All Rights Reserved. Proprietary and confidential.
 
 from graphql import GraphQLResolveInfo
-from link_lib.microservice_controller import apollo_types_mutation
+from link_lib.microservice_controller import ApolloTypes
 from link_lib.microservice_graphql_model import GraphQLModel
 from movie.src.domain.lib import MovieLib
 from movie.src.models.movie_info import MovieInfoPageInfoInput, MovieInfoUpdateFilterInput, MovieInfoResponse
@@ -16,7 +16,8 @@ class MovieInfoUpdateMutation(GraphQLModel, MovieLib):
         super().__init__(**kwargs)
         
     def load_defs(self):
-        @apollo_types_mutation.field("movieInfoUpdate")
+        mutation = ApolloTypes.get("Mutation")
+        @mutation.field("movieInfoUpdate")
         def resolve_movie_info_update(
             _, info: GraphQLResolveInfo, pageInfo: MovieInfoPageInfoInput = None, updateFilterInput: MovieInfoUpdateFilterInput = None
         ) -> MovieInfoResponse:

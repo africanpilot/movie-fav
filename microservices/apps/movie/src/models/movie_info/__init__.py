@@ -9,7 +9,7 @@ from movie.src.models.movie_info.base import (
   MovieInfoUpdateFilterInput,
   MovieInfoDownloadInput,
 )
-from movie.src.models.movie_info.create import MovieInfoCreate
+from movie.src.models.movie_info.create import MovieInfoCreate, MovieInfoCreateInput
 from movie.src.models.movie_info.delete import MovieInfoDelete
 from movie.src.models.movie_info.read import MovieInfoRead
 from movie.src.models.movie_info.update import MovieInfoUpdate
@@ -34,4 +34,5 @@ __all__ = (
   "MovieInfoResponse",
   "MovieInfoResponses",
   "MovieInfoDownloadInput",
+  "MovieInfoCreateInput",
 )

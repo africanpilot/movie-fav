@@ -16,10 +16,11 @@ from link_config.config import APP_REDIS_EXPIRE
 
 
 @pytest.fixture
-def create_account(link_account_lib: AccountLib, create_auth_info) -> tuple[AccountInfo, dict]:
+def create_account() -> tuple[AccountInfo, dict]:
   def create(db, accountInput: dict = None, approved: bool = True, jwt_data: dict = dict(reg=AccountRegistrationEnum.APPROVED), **other_fields) -> tuple[AccountInfo, dict]:
     
     total_fields = accountInput or {}
+    account_lib = AccountLib()
     
     if not accountInput:
       rand_login = GeneralBase().rand_word_gen_range(start=10, end=15) + "@gmail.com"
@@ -71,7 +72,7 @@ def create_account(link_account_lib: AccountLib, create_auth_info) -> tuple[Acco
     default_header = {b"authorization": auth_token, b"service": service_name}
     context_value = {"request": {"headers": default_header}}
     
-    link_account_lib.account_me_token_redis_dump(account.id, token)
+    account_lib.account_me_token_redis_dump(account.id, token)
   
     auth = dict(      
       service=service,

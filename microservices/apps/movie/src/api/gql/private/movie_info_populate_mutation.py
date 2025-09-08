@@ -2,7 +2,7 @@
 # All Rights Reserved. Proprietary and confidential.
 
 from graphql import GraphQLResolveInfo
-from link_lib.microservice_controller import apollo_types_mutation
+from link_lib.microservice_controller import ApolloTypes
 from link_lib.microservice_graphql_model import GraphQLModel
 from link_models.enums import DownloadLocationEnum
 from movie.src.domain.lib import MovieLib
@@ -17,11 +17,12 @@ class MovieInfoPopulateMutation(GraphQLModel, MovieLib):
         super().__init__(**kwargs)
         
     def load_defs(self):
-        @apollo_types_mutation.field("movieInfoPopulate")
+        mutation = ApolloTypes.get("Mutation")
+        @mutation.field("movieInfoPopulate")
         def resolve_movie_info_populate(
             _, info: GraphQLResolveInfo, pageInfo: MovieInfoPageInfoInput = None, location: DownloadLocationEnum = [DownloadLocationEnum.IMDB], imdbIds: list[str] = None
         ) -> MovieInfoResponse:
-            
+
             self.general_validation_process(info)
             
             pageInfo = pageInfo or {}
@@ -38,13 +39,9 @@ class MovieInfoPopulateMutation(GraphQLModel, MovieLib):
                 all_popular_ids += self.imdb_helper.get_top_rating_and_votes(pageInfo.first)
             
             if DownloadLocationEnum.IMDB in location:
-                all_popular_ids += self.imdb_helper.get_charts_imdbs()
-                page = self.imdb_helper.get_popular_movie_page()
-                if page:
-                    all_popular_ids += self.imdb_helper.get_imdb_popular(page)
-                    all_popular_ids += [movie.getID() for movie in self.imdb_helper.get_popular_movies()]
+                all_popular_ids += self.imdb_helper.get_charts_imdbs() + self.imdb_helper.get_popular_movies_ids
 
-            self.log.info(f"all_popular_ids: {len(all_popular_ids)}")
+            self.log.info(f"all_popular_ids: {len(all_popular_ids)} {all_popular_ids}")
 
             with self.get_session("psqldb_movie") as db:
 
@@ -61,7 +58,7 @@ class MovieInfoPopulateMutation(GraphQLModel, MovieLib):
                 
                 movie_popular_todo = list(filter(lambda x: x not in set(movie_saga_added), all_popular_ids))[:pageInfo.first]
 
-                all_create = self.movie_saga_state_create.movie_saga_state_create(db, movie_popular_todo)
+                all_create = self.movie_saga_state_create.movie_saga_state_create(db, movie_popular_todo, body=dict(first=pageInfo.first, location=[loc.name for loc in location], imdbIds=imdbIds))
 
                 self.log.info(f"movie_saga_added={len(movie_saga_added)}, movie_popular_todo={len(movie_popular_todo)}, all_create={len(all_create)}")
 

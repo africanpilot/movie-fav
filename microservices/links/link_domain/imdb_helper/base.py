@@ -79,6 +79,10 @@ class ImdbHelper(LinkRequest):
 
     def get_popular_movies(self) -> list[Movie]:
         return ia.get_popular100_movies()
+    
+    @property
+    def get_popular_movies_ids(self) -> list[str]:
+        return [movie.getID() for movie in self.get_popular_movies()]
 
     def search_movie_by_title(self, search: str) -> list:
         return ia.search_movie(search)
@@ -253,7 +257,11 @@ class ImdbHelper(LinkRequest):
             self.access_site()
             
     def get_charts_imdbs(self, cat: str = "moviemeter") -> list[str]:
-        
+        redis_result = self.movie_redis_engine.get(f"get_charts_imdbs:{cat}")
+        if redis_result:
+            response = json.loads(redis_result)
+            return response.get("result")
+
         if not self.session_id:
             self.log.info(f"accessing site: https://m.imdb.com/chart/{cat}/")
             self.driver.get(f"https://m.imdb.com/chart/{cat}/")
@@ -262,5 +270,9 @@ class ImdbHelper(LinkRequest):
         content = self.driver.find_elements(by=By.TAG_NAME, value='a')
         data = [element.get_attribute("href") for element in content]        
         data_f: list[str] = list(filter(lambda item: "https://m.imdb.com/title/" in item, data))
-        
-        return [i.split("/")[4].replace("tt","") for i in data_f]
+
+        result = [i.split("/")[4].replace("tt","") for i in data_f]
+
+        self.load_to_redis(self.movie_redis_engine, f"get_charts_imdbs:{cat}", dict(result=result), ex=86400)
+
+        return result

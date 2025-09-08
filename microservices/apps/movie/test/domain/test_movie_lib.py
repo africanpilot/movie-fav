@@ -14,7 +14,7 @@ def test_get_movie_info(link_movie_lib: MovieLib):
     assert movie_info["cover"].startswith("https://m.media-amazon.com/images/M/MV5BN2NmN2VhMTQtMDNiOS00NDlhLTliMjgtODE2ZTY0ODQyNDRhXkEyXkFqcGc@._V1_.jpg")
     assert movie_info["rating"] >= 8.7
     assert movie_info["votes"] >= 2000000
-    assert movie_info["run_times"] == 136
+    assert movie_info["run_times"] == ["136"]
     assert "nm0075732" in movie_info["creators"]
     assert movie_info["full_cover"].startswith("https://m.media-amazon.com/images/M/MV5BN2NmN2VhMTQtMDNiOS00NDlhLTliMjgtODE2ZTY0ODQyNDRhXkEyXkFqcGc@._V1_.jpg")
     assert movie_info["release_date"] == ""

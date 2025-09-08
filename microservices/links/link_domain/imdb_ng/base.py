@@ -18,6 +18,8 @@ class ImdbNg(LinkRequest):
         return PyratebayLib()
 
     def get_movie_by_id(self, imdbId: str) -> Movie:
+        if not imdbId.startswith("tt"):
+            imdbId = "tt" + imdbId
         return web.get_title(imdbId)
     
     def get_movie_info(self, imdbId: str, movie: Movie) -> dict:
@@ -31,7 +33,7 @@ class ImdbNg(LinkRequest):
             countries=movie.countries,
             plot=movie.plot.get("en-US") if movie.plot else "",
             cover=movie.primary_image,
-            rating=movie.rating,
+            rating=float(movie.rating) if movie.rating else None,
             top_ranking=movie.top_ranking,
             votes=movie.vote_count,
             run_times=movie.runtime,
