@@ -53,9 +53,9 @@ class MovieInfoPageInfoInput(PageInfoInput):
 	sortBy: list[MovieInfoSortByEnum] = [MovieInfoSortByEnum.ID]
 
 class MovieInfoFilterInput(SQLModel):
-    id: Optional[list[int]]
-    title: Optional[list[str]]
-    year: Optional[list[int]]
+    id: Optional[list[int]] = None
+    title: Optional[list[str]] = None
+    year: Optional[list[int]] = None
 
 class MovieInfoUpdateFilterInput(SQLModel):
     download_1080p_url: bool = False

@@ -8,7 +8,7 @@ from link_models.enums import DownloadLocationEnum
 from movie.src.domain.lib import MovieLib
 from movie.src.models.movie_info import MovieInfoPageInfoInput, MovieInfoResponse
 from movie.src.controller.controller_worker import worker
-from movie.src.models.movie_saga_state import MovieSagaStateUpdate
+from movie.src.models.movie_saga_state import MovieSagaStateUpdate, MovieSagaStateCreateInput
 from movie.src.domain.orchestrator.create_movie_saga import CreateMovieSaga
 
 
@@ -41,7 +41,7 @@ class MovieInfoPopulateMutation(GraphQLModel, MovieLib):
             if DownloadLocationEnum.IMDB in location:
                 all_popular_ids += self.imdb_helper.get_charts_imdbs() + self.imdb_helper.get_popular_movies_ids
 
-            self.log.info(f"all_popular_ids: {len(all_popular_ids)} {all_popular_ids}")
+            self.log.info(f"all_popular_ids: {len(all_popular_ids)}")
 
             with self.get_session("psqldb_movie") as db:
 
@@ -58,7 +58,8 @@ class MovieInfoPopulateMutation(GraphQLModel, MovieLib):
                 
                 movie_popular_todo = list(filter(lambda x: x not in set(movie_saga_added), all_popular_ids))[:pageInfo.first]
 
-                all_create = self.movie_saga_state_create.movie_saga_state_create(db, movie_popular_todo, body=dict(first=pageInfo.first, location=[loc.name for loc in location], imdbIds=imdbIds))
+                createInput = [MovieSagaStateCreateInput(movie_info_imdb_id=i, body=dict(first=pageInfo.first, location=[loc.name for loc in location], imdbIds=imdbIds)) for i in movie_popular_todo]
+                all_create = self.movie_saga_state_create.movie_saga_state_create(db, createInput)
 
                 self.log.info(f"movie_saga_added={len(movie_saga_added)}, movie_popular_todo={len(movie_popular_todo)}, all_create={len(all_create)}")
 

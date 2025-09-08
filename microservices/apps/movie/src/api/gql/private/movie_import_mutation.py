@@ -36,7 +36,7 @@ class MovieImportMutation(GraphQLModel, MovieLib):
 
                 # update popular order
                 for i, item in enumerate(all_popular_ids):
-                    self.movie_info_update.movie_info_update_imdb(db=db, imdbId=item, popular_id=i+1)
+                    self.movie_info_update.movie_info_update(db=db, imdbId=item, popular_id=i+1)
 
                 db.commit()
                 self.redis_delete_movie_info_keys()

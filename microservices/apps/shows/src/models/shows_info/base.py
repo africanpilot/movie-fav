@@ -56,10 +56,10 @@ class ShowsInfoPageInfoInput(PageInfoInput):
 	sortBy: list[ShowsInfoSortByEnum] = [ShowsInfoSortByEnum.ID]
 
 class ShowsInfoFilterInput(SQLModel):
-    id: Optional[list[int]]
-    title: Optional[list[str]]
-    year: Optional[list[int]]
-    
+    id: Optional[list[int]] = None
+    title: Optional[list[str]] = None
+    year: Optional[list[int]] = None
+
 class ShowsUpdateFilterInput(SQLModel):
     download_1080p_url: bool = False
     download_720p_url: bool = False

@@ -29,7 +29,6 @@ class MovieInfoUpdate(LinkGeneral):
   def movie_info_update_popular_id(self, db: Connection, commit: bool = True, **fields_to_update) -> Optional[Update]:
     sql_query = (
       update(MovieInfo)
-      .where(MovieInfo.popular_id.isnot(None))
       .values(**fields_to_update, updated=datetime.now())
     )
     
@@ -42,6 +41,17 @@ class MovieInfoUpdate(LinkGeneral):
       insert(MovieInfo)
       .values(**MovieInfo(imdb_id=imdbId, **fields_to_update, updated=datetime.now()).dict(exclude_unset=True))
     ).on_conflict_do_update(constraint='movie_info_imdb_id_key', set_=dict(**fields_to_update, updated=datetime.now()))
+
+    if commit:
+      db.execute(sql_query)
+    return sql_query
+  
+  def movie_info_update(self, db: Optional[Connection], imdbId: str, commit: bool = True, **fields_to_update) -> Optional[Update]:
+    sql_query = (
+      update(MovieInfo)
+      .where(MovieInfo.imdb_id == imdbId)
+      .values(**fields_to_update, updated=datetime.now())
+    )
 
     if commit:
       db.execute(sql_query)

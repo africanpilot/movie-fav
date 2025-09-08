@@ -269,6 +269,8 @@ services:
         condition: service_started
       rabbitmq:
         condition: service_started
+      selenium:
+        condition: service_started
     environment:
       APP_DEFAULT_ENV: test
     env_file:
@@ -484,6 +486,8 @@ services:
       redis:
         condition: service_started
       rabbitmq:
+        condition: service_started
+      selenium:
         condition: service_started
     environment:
       APP_DEFAULT_ENV: dev
