@@ -47,6 +47,10 @@ def upgrade() -> None:
         sa.Column('failed_step', sa.VARCHAR(100), nullable=True),
         sa.Column('failed_at', sa.DateTime(), nullable=True),
         sa.Column('failure_details', sa.VARCHAR(), nullable=True),
+        sa.Column('body', postgresql.JSONB),
+        sa.Column('payload', postgresql.JSONB),
+        sa.Column('created', sa.DateTime(), nullable=False, server_default=sa.sql.func.now()),
+        sa.Column('updated', sa.DateTime(), nullable=False, server_default=sa.sql.func.now()),
         schema='person'
     )
 

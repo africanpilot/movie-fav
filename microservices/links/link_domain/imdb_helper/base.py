@@ -276,3 +276,25 @@ class ImdbHelper(LinkRequest):
         self.load_to_redis(self.movie_redis_engine, f"get_charts_imdbs:{cat}", dict(result=result), ex=86400)
 
         return result
+
+    def get_person_info(self, imdbId: str, data: dict) -> dict:
+        return dict(
+            imdb_id=imdbId,
+            name=data.get("name"),
+            birth_place=data.get('birth info').get('birth place') if data.get('birth info') else None,
+            akas=data.get('akas'),
+            filmography=[
+                item.getID()
+                for item in data.get('filmography').get('actress', [])
+            ] + [
+                item.getID()
+                for item in data.get('filmography').get('actor', [])
+            ] if data.get('filmography') else None,
+            mini_biography=data.get("mini biography")[0] if data.get('mini biography') else None,
+            birth_date=self.convert_imdb_date(data.get('birth date')),
+            titles_refs=[
+                v.getID()
+                for k,v in data.get('titlesRefs').items()
+            ] if data.get('titlesRefs') else None,
+            head_shot=self.url_clean(data.get('headshot')),
+        )

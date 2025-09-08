@@ -18,7 +18,7 @@ class APIController(ControllerToApollo):
     
     private_models_to_load = [
         "PersonInfoPopulateMutation",
-        "PersonRedisSyncMutation",
+        "PersonImportMutation",
     ]
     
     public_routes_to_load = []

@@ -1,4 +1,4 @@
 extend type Mutation {
   personInfoPopulate(pageInfo: PersonInfoPageInfoInput): PersonInfoResponse
-  personRedisSync: PersonInfoResponse
+  personImport(pageInfo: PageInfoInput): PersonInfoResponse
 }

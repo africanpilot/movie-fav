@@ -60,7 +60,7 @@ class APIController(ControllerToApollo):
       
       # person
       "PersonInfoPopulateMutation",
-      "PersonRedisSyncMutation",
+      "PersonImportMutation",
       
       # shows
       "ShowsInfoPopulateMutation",

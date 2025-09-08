@@ -40,5 +40,5 @@ class PersonInfoPageInfoInput(PageInfoInput):
 	sortBy: list[PersonInfoSortByEnum] = [PersonInfoSortByEnum.ID]
 
 class PersonInfoFilterInput(SQLModel):
-    id: Optional[list[int]]
-    name: Optional[list[int]]
+    id: Optional[list[int]] = None
+    name: Optional[list[str]] = None

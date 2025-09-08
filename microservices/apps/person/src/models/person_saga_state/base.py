@@ -4,6 +4,9 @@
 from datetime import datetime
 from typing import Optional
 from sqlmodel import Field, SQLModel
+from sqlalchemy import Column
+from sqlalchemy.dialects import postgresql
+
 
 
 class PersonSagaStateBase(SQLModel):
@@ -14,6 +17,10 @@ class PersonSagaStateBase(SQLModel):
   failed_at: Optional[datetime] = Field(default=None)
   failure_details: Optional[str] = Field(default=None)
   person_info_imdb_id: Optional[str] = Field(default=None, nullable=False, unique=True, max_length=100)
+  body: Optional[dict] = Field(default=None, sa_column=Column(postgresql.JSONB))
+  payload: Optional[dict] = Field(default=None, sa_column=Column(postgresql.JSONB))
+  created: Optional[datetime] = Field(default=datetime.now())
+  updated: Optional[datetime] = Field(default=datetime.now())
 
 
 class PersonSagaState(PersonSagaStateBase, table=True):
