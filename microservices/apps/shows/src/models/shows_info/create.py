@@ -1,6 +1,7 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
+from typing import List, Optional, Set
 from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.engine.base import Connection
@@ -9,6 +10,33 @@ from shows.src.models.shows_episode.base import ShowsEpisode
 from shows.src.models.shows_info.base import ShowsInfo
 from shows.src.models.shows_info.read import ShowsInfoRead
 from shows.src.models.shows_season import ShowsSeason, ShowsSeasonRead
+from link_models.enums import ProviderTypeEnum
+from pydantic import BaseModel
+
+
+class ShowsInfoCreateInput(BaseModel):
+  imdb_id: Optional[str]
+  cast: Optional[Set[str]]
+  year: Optional[int]
+  directors: Optional[Set[str]]
+  genres: Optional[Set[str]]
+  countries: Optional[Set[str]]
+  plot: Optional[str]
+  cover: Optional[str]
+  rating: Optional[float]
+  votes: Optional[int]
+  run_times: Optional[List[str]]
+  series_years: Optional[str]
+  creators: Optional[Set[str]]
+  full_cover: Optional[str]
+  popular_id: Optional[int]
+  release_date: Optional[datetime]
+  trailer_link: Optional[str]
+  added_count: Optional[int]
+  provider: Optional[ProviderTypeEnum]
+  total_seasons: Optional[int]
+  total_episodes: Optional[int]
+  videos: Optional[Set[str]]
 
 
 class ShowsInfoCreate:
@@ -16,7 +44,7 @@ class ShowsInfoCreate:
     super().__init__(**kwargs)
   
   def shows_info_create(self, **other_fields):
-    return insert(ShowsInfo).values(**ShowsInfo(**other_fields).dict(exclude_unset=True))
+    return insert(ShowsInfo).values(**ShowsInfo(**other_fields).model_dump(exclude_unset=True))
   
   def shows_info_create_imdb(self, db: Connection, createInput: dict) -> list:
     sql_query = []
@@ -44,7 +72,7 @@ class ShowsInfoCreate:
         .values(
           id=text("nextval('shows.shows_season_id_seq')"),
           shows_info_id=shows_info_id,
-          **ShowsSeason(**season["season"]).dict(exclude_unset=True)
+          **ShowsSeason(**season["season"]).model_dump(exclude_unset=True)
         )).on_conflict_do_update(constraint='shows_season_imdb_id_key', set_=dict(**season["season"], updated=datetime.now()))
       )
 
@@ -59,7 +87,7 @@ class ShowsInfoCreate:
             id=text("nextval('shows.shows_episode_id_seq')"),
             shows_info_id=shows_info_id,
             shows_season_id=shows_season_id,
-            **ShowsEpisode(**episode).dict(exclude_unset=True)
+            **ShowsEpisode(**episode).model_dump(exclude_unset=True)
           )).on_conflict_do_update(constraint='shows_episode_imdb_id_key', set_=dict(**episode, updated=datetime.now()))
         )
   

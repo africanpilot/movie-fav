@@ -23,5 +23,4 @@ PERSON_COMMANDS_QUEUE = 'person.commands'
 
 # Shows
 CREATE_SHOWS_SAGA_RESPONSE_QUEUE = 'create_shows_saga_responses'
-SHOWS_IMPORT_SAGA_RESPONSE_QUEUE = 'shows_import_saga_responses'
 SHOWS_COMMANDS_QUEUE = 'shows.commands'

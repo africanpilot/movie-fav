@@ -44,8 +44,8 @@ class MovieInfoCreate:
     for movie in createInput:
       sql_query.append(
           insert(MovieInfo)
-          .values(**movie.dict(exclude_unset=True))
-          .on_conflict_do_update(constraint='movie_info_imdb_id_key', set_=dict(**movie.dict(exclude_unset=True), updated=datetime.now()))
+          .values(**movie.model_dump(exclude_unset=True))
+          .on_conflict_do_update(constraint='movie_info_imdb_id_key', set_=dict(**movie.model_dump(exclude_unset=True), updated=datetime.now()))
       )
 
     if commit:

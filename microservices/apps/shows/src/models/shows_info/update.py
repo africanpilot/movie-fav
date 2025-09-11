@@ -8,6 +8,7 @@ from shows.src.models.shows_info.base import ShowsInfo
 from link_lib.microservice_general import LinkGeneral
 from sqlalchemy import update
 from sqlalchemy.sql.dml import Update
+from sqlalchemy.dialects.postgresql import insert
 
 class ShowsInfoUpdate(LinkGeneral):
   def __init__(self, **kwargs):
@@ -36,11 +37,10 @@ class ShowsInfoUpdate(LinkGeneral):
       
   def shows_info_update_imdb(self, db: Optional[Connection], imdbId: str, commit: bool = True, **fields_to_update) -> Optional[Update]:
     sql_query = (
-      update(ShowsInfo)
-      .where(ShowsInfo.imdb_id == imdbId)
-      .values(**fields_to_update, updated=datetime.now())
-    )
-    
+      insert(ShowsInfo)
+      .values(**ShowsInfo(imdb_id=imdbId, **fields_to_update, updated=datetime.now()).model_dump(exclude_unset=True))
+    ).on_conflict_do_update(constraint='shows_info_imdb_id_key', set_=dict(**fields_to_update, updated=datetime.now()))
+
     if commit:
       db.execute(sql_query)
     return sql_query

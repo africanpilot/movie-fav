@@ -32,10 +32,8 @@ class PersonInfoPopulateMutation(GraphQLModel, PersonLib):
 
             pageInfo = PersonInfoPageInfoInput(**pageInfo)
 
-            # Get remaining person todo
-            redis_result = self.person_redis_engine.get(f"""person_remaining_query""")
-            person_ids = json.loads(redis_result).get("data") if redis_result else None
-            
+            person_ids = []
+
             if not person_ids:
                 
                 remaining_movie_person_imdbs = MovieGrpcClient.get_remaining_movie_cast_query().get("message").get("cast_ids")
@@ -44,17 +42,13 @@ class PersonInfoPopulateMutation(GraphQLModel, PersonLib):
                 
                 person_ids = set(remaining_movie_person_imdbs + remaining_shows_person_imdbs)
             
-            with self.get_connection("psqldb_person") as db:
-                
-                person_complete = [
-                    person.imdb_id for person in self.find_person_imdb_completed(db, person_ids)
-                ]
+            with self.get_session("psqldb_person") as db:
                 
                 person_saga_added = [
-                    saga.person_info_imdb_id for saga in self.find_person_imdb_saga_added(db, person_ids)
+                    saga.person_info_imdb_id for saga in self.person_saga_state_read.find_person_imdb_saga_added(db, person_ids)
                 ]
                                 
-                person_todo = list(filter(lambda x: x not in set(person_complete + person_saga_added), person_ids))[:pageInfo.first]
+                person_todo = list(filter(lambda x: x not in set(person_saga_added), person_ids))[:pageInfo.first]
                 
                 all_create = self.person_saga_state_create(db, person_todo)
 
@@ -76,9 +70,4 @@ class PersonInfoPopulateMutation(GraphQLModel, PersonLib):
                         
                 db.close()
 
-            # set to redis cache
-            person_ids_left = list(filter(lambda x: x not in person_todo, person_ids))
-            
-            self.load_to_redis(self.person_redis_engine, f"person_remaining_query", dict(data=list(person_ids_left)))
-            
             return self.success_response(PersonInfoResponse, nullPass=True)

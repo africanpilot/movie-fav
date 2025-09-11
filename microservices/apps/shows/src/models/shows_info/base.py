@@ -31,12 +31,12 @@ class ShowsInfoBase(SQLModel):
     release_date: Optional[datetime] = Field(default=None)
     trailer_link: Optional[str] = Field(default=None)
     added_count: Optional[int] = Field(default=0)
-    created: Optional[datetime] = Field(default=datetime.now())
-    updated: Optional[datetime] = Field(default=datetime.now())
     provider: Optional[ProviderTypeEnum] = Field(default=None, sa_column=Column(Enum(ProviderTypeEnum)))
     total_seasons: Optional[int] = Field(default=None)
     total_episodes: Optional[int] = Field(default=None)
     videos: Optional[Set[str]] = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
+    created: Optional[datetime] = Field(default=datetime.now())
+    updated: Optional[datetime] = Field(default=datetime.now())
     
 
 class ShowsInfo(ShowsInfoBase, table=True):

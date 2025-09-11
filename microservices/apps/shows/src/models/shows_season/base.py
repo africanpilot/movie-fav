@@ -3,10 +3,8 @@
 
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel
 from sqlmodel import Field, SQLModel
-from sqlalchemy import Integer, ForeignKey, Column, String
-from sqlalchemy.dialects import postgresql
+from sqlalchemy import Integer, ForeignKey, Column
 
 
 class ShowsSeasonBase(SQLModel):
@@ -16,10 +14,10 @@ class ShowsSeasonBase(SQLModel):
     )
     imdb_id: Optional[str] = Field(default=None, nullable=False, unique=True, max_length=100)
     season: Optional[int] = Field(default=None)
-    created: Optional[datetime] = Field(default=datetime.now())
-    updated: Optional[datetime] = Field(default=datetime.now())
     release_date: Optional[datetime] = Field(default=None)
     total_episodes: Optional[int] = Field(default=None)
+    created: Optional[datetime] = Field(default=datetime.now())
+    updated: Optional[datetime] = Field(default=datetime.now())
     
 
 class ShowsSeason(ShowsSeasonBase, table=True):

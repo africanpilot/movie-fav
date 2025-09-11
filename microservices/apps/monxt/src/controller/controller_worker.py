@@ -16,7 +16,6 @@ from link_models.messaging import (
   CREATE_PERSON_SAGA_RESPONSE_QUEUE,
   PERSON_COMMANDS_QUEUE,
   CREATE_SHOWS_SAGA_RESPONSE_QUEUE,
-  SHOWS_IMPORT_SAGA_RESPONSE_QUEUE,
   SHOWS_COMMANDS_QUEUE
 )
 from account.src.models.account_saga_state import AccountSagaStateUpdate
@@ -54,7 +53,6 @@ worker_queues = (
   Queue(CREATE_PERSON_SAGA_RESPONSE_QUEUE),
   Queue(PERSON_COMMANDS_QUEUE),
   Queue(CREATE_SHOWS_SAGA_RESPONSE_QUEUE),
-  Queue(SHOWS_IMPORT_SAGA_RESPONSE_QUEUE),
   Queue(SHOWS_COMMANDS_QUEUE),
 )
 
@@ -76,4 +74,3 @@ class WorkerController:
     CreateMovieSaga.register_async_step_handlers(MovieSagaStateUpdate(), worker)
     CreatePersonSaga.register_async_step_handlers(PersonSagaStateUpdate(), worker)
     CreateShowsSaga.register_async_step_handlers(ShowsSagaStateUpdate(), worker)
-    ShowsImportSaga.register_async_step_handlers(ShowsSagaStateUpdate(), worker)

@@ -32,8 +32,6 @@ class ShowsEpisodeBase(SQLModel):
     series_years: Optional[str] = Field(default=None)
     creators: Optional[Set[str]] = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
     release_date: Optional[datetime] = Field(default=None)
-    created: Optional[datetime] = Field(default=datetime.now())
-    updated: Optional[datetime] = Field(default=datetime.now())
     season: Optional[int] = Field(default=None)
     episode: Optional[int] = Field(default=None)
     download_1080p_url: Optional[str] = Field(default=None)
@@ -41,6 +39,8 @@ class ShowsEpisodeBase(SQLModel):
     download_480p_url: Optional[str] = Field(default=None)
     cover: Optional[str] = Field(default=None)
     full_cover: Optional[str] = Field(default=None)
+    created: Optional[datetime] = Field(default=datetime.now())
+    updated: Optional[datetime] = Field(default=datetime.now())
 
 class ShowsEpisode(ShowsEpisodeBase, table=True):
     """_summary_
