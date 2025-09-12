@@ -9,16 +9,16 @@ from shows.src.domain.lib import ShowsLib
 
 
 @pytest.fixture
-def link_shows_lib() -> ShowsLib:
+def shows_lib() -> ShowsLib:
   return ShowsLib()
 
 @pytest.fixture
-def create_shows_info(link_shows_lib: ShowsLib) -> ShowsInfo:
+def create_shows_info(shows_lib: ShowsLib) -> ShowsInfo:
   def create(db) -> ShowsInfo:
     val = "21 Oct 2022 (USA)".strip(" (USA)")
     date = datetime.strptime(val, '%d %b %Y')
 
-    return link_shows_lib.shows_info_create(db,
+    return shows_lib.shows_info_create(db,
       dict(
         shows_info=dict(
           imdb_id="test",

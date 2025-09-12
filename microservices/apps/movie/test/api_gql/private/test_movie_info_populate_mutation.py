@@ -36,7 +36,7 @@ def test_movie_info_popular_mutation(benchmark, test_database: Session, flush_re
 
   # monkey patch
   with patch('link_domain.imdb_helper.base.ImdbHelper.get_charts_imdbs', return_value=["0133093"]), \
-       patch('link_domain.imdb_helper.base.ImdbHelper.get_popular_movies_ids', new_callable=lambda: property(lambda self: ["0133093"])):
+      patch('link_domain.imdb_helper.base.ImdbHelper.get_popular_movies_ids', new_callable=lambda: property(lambda self: ["0133093"])):
     success, result = graphql_sync(private_schema, {"query": qgl_query, "variables": variables}, context_value=auth_1["context_value"])
 
   response = result["data"][QUERY_NAME]

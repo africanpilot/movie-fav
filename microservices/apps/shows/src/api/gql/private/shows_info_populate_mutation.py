@@ -4,11 +4,11 @@
 from graphql import GraphQLResolveInfo
 from link_lib.microservice_controller import ApolloTypes
 from link_lib.microservice_graphql_model import GraphQLModel
-from link_models.enums import DownloadLocationEnum
+from link_models.enums import AccountRoleEnum, DownloadLocationEnum
 from shows.src.domain.lib import ShowsLib
 from shows.src.models.shows_info import ShowsInfoPageInfoInput, ShowsInfoResponse
 from shows.src.controller.controller_worker import worker
-from shows.src.models.shows_saga_state import ShowsSagaStateUpdate
+from shows.src.models.shows_saga_state import ShowsSagaStateUpdate, ShowsSagaStateCreateInput
 from shows.src.domain.orchestrator.create_shows_saga import CreateShowsSaga
 
 
@@ -24,7 +24,7 @@ class ShowsInfoPopulateMutation(GraphQLModel, ShowsLib):
             _, info: GraphQLResolveInfo, pageInfo: ShowsInfoPageInfoInput = None, location: DownloadLocationEnum = [DownloadLocationEnum.IMDB], imdbIds: list[str] = None
         ) -> ShowsInfoResponse:
             
-            self.general_validation_process(info)
+            self.general_validation_process(info, roles=[AccountRoleEnum.ADMIN, AccountRoleEnum.COMPANY, AccountRoleEnum.MANAGER])
             
             pageInfo = pageInfo or {}
 
@@ -36,34 +36,31 @@ class ShowsInfoPopulateMutation(GraphQLModel, ShowsLib):
                 all_popular_ids += imdbIds
             
             if DownloadLocationEnum.IMDB_ALL in location:
-                all_popular_ids += [shows.getID() for shows in self.get_popular_shows()]
+                all_popular_ids += [shows.getID() for shows in self.imdb_helper.get_popular_shows()]
                 
             if DownloadLocationEnum.IMDB in location:
-                all_popular_ids += self.get_charts_imdbs("tvmeter")
-                page = self.get_popular_movie_page("tvmeter")
-                if page:
-                    all_popular_ids += self.get_imdb_popular(page)
+                all_popular_ids += self.imdb_helper.get_charts_imdbs("tvmeter")
 
             with self.get_session("psqldb_shows") as db:
                 
                 if DownloadLocationEnum.DATABASE in location:
-                    no_shows_info = [r.imdb_id for r in self.get_no_shows_info(db)]
-                    no_download_urls = [r.shows_imdb_id for r in self.get_no_download_urls(db)]
+                    no_shows_info = [r.imdb_id for r in self.shows_info_read.get_no_shows_info(db)]
+                    no_download_urls = [r.shows_imdb_id for r in self.shows_episode_read.get_no_download_urls(db)]
                     all_popular_ids = no_shows_info + no_download_urls + all_popular_ids
-                    self.log.info(f"no_movie_info={len(no_shows_info)}, no_download_urls={len(no_download_urls)}")
-                
+                    self.log.info(f"no_shows_info={len(no_shows_info)}, no_download_urls={len(no_download_urls)}")
+
                 all_popular_ids = set(all_popular_ids)
                 
                 shows_saga_added = [
-                    saga.shows_info_imdb_id for saga in self.find_shows_imdb_saga_added(db, all_popular_ids)
+                    saga.shows_info_imdb_id for saga in self.shows_saga_state_read.find_shows_imdb_saga_added(db, all_popular_ids)
                 ]
                 
                 shows_popular_todo = list(filter(lambda x: x not in set(shows_saga_added), all_popular_ids))[:pageInfo.first]
-                
-                # shows_popular_todo = all_popular_ids
-                
-                all_create = self.shows_saga_state_create(db, shows_popular_todo)
-                
+
+                createInput = [ShowsSagaStateCreateInput(shows_info_imdb_id=i, body=dict(first=pageInfo.first, location=[loc.name for loc in location], imdbIds=imdbIds)) for i in shows_popular_todo]
+                self.log.info(f"shows_popular_todo: {shows_popular_todo}")
+                all_create = self.shows_saga_state_create.shows_saga_state_create(db, createInput)
+
                 self.log.info(f"shows_popular_todo={len(shows_popular_todo)}, all_create={len(all_create)}")
 
                 for saga_state in all_create:

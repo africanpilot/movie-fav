@@ -167,20 +167,23 @@ class PyratebayLib(LinkRequest):
 			
 			# filter for the correct season
 			if season:
+				season_int = int(season)
 				has_season = [
 					torrent
 					for torrent in match_torrents
-					if f"S{season:02d}" in torrent.name
+					if f"S{season_int:02d}" in torrent.name
 				]
 				if has_season:
 					match_torrents = has_season
 
 			# filter for the correct episode
 			if episode:
+				season_int = int(season)
+				episode_int = int(episode)
 				has_episode = [
 					torrent
 					for torrent in match_torrents
-					if f"S{season:02d}E{episode:02d}" in torrent.name
+					if f"S{season_int:02d}E{episode_int:02d}" in torrent.name
 				]
 				if has_episode:
 					match_torrents = has_episode

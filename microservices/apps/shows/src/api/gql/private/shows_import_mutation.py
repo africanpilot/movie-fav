@@ -8,13 +8,10 @@ from graphql import GraphQLResolveInfo
 from link_lib.microservice_controller import ApolloTypes
 from link_lib.microservice_graphql_model import GraphQLModel
 from link_models.base import PageInfoInput
-from link_models.enums import DownloadTypeEnum
+from link_models.enums import AccountRoleEnum
 
 from shows.src.domain.lib import ShowsLib
-from shows.src.domain.orchestrator.shows_import_saga import ShowsImportSaga
-from shows.src.models.shows_info import ShowsInfoResponse
-from shows.src.controller.controller_worker import worker
-from shows.src.models.shows_saga_state import ShowsSagaStateUpdate
+from shows.src.models.shows_info import ShowsInfoResponse, ShowsInfoCreateInput, ShowsInfo
 
 
 class ShowsImportMutation(GraphQLModel, ShowsLib):
@@ -25,32 +22,27 @@ class ShowsImportMutation(GraphQLModel, ShowsLib):
         mutation = ApolloTypes.get("Mutation")
 
         @mutation.field("showsImport")
-        def resolve_shows_import(
-            _, info: GraphQLResolveInfo, pageInfo: PageInfoInput = None, downloadType: DownloadTypeEnum = DownloadTypeEnum.DOWNLOAD_1080p
-        ) -> ShowsInfoResponse:
+        def resolve_shows_import(_, info: GraphQLResolveInfo, pageInfo: PageInfoInput = None) -> ShowsInfoResponse:
             
-            self.general_validation_process(info)
+            self.general_validation_process(info, roles=[AccountRoleEnum.ADMIN, AccountRoleEnum.COMPANY, AccountRoleEnum.MANAGER])
             
+            query_context = self.get_query_request(selections=info.field_nodes, fragments=info.fragments)
             pageInfo = PageInfoInput(**pageInfo) if pageInfo else PageInfoInput()
         
-            with self.get_connection("psqldb_shows") as db:
- 
-                all_import = self.shows_saga_state_create(db, imdb_ids=[f"shows_import:{uuid.uuid4()}"], body=dict(download_type=downloadType.value, page=pageInfo.first))
+            with self.get_session("psqldb_shows") as db:
+                all_saga_state_to_import = self.shows_saga_state_read.get_remaining_shows_sagas_to_ingest(db, pageInfo.first)
+                shows_info_all = [ShowsInfoCreateInput(**saga.payload) for saga in all_saga_state_to_import]
+                self.shows_info_create.shows_info_create_imdb(db, shows_info_all)
                 
-                for saga_state in all_import:
-                    
-                    self.load_to_redis(self.shows_redis_engine, f"get_saga_state_by_id:{saga_state.id}", saga_state.dict())
-                    
-                    try:
-                        ShowsImportSaga(
-                            saga_state_repository=ShowsSagaStateUpdate(),
-                            celery_app=worker,
-                            saga_id=saga_state.id,
-                        ).execute()
-                    except Exception as e:
-                        self.log.error(f"Unable to schedule ShowsImportSaga: {saga_state.id} for imdb_id {saga_state.shows_info_imdb_id}")
-                        self.log.error(e)
+                all_shows_ids = [i.imdb_id for i in shows_info_all]
+                response = self.shows_info_response.shows_response(
+                    info=info,
+                    db=db,
+                    pageInfo=pageInfo,
+                    filterInputExtra=[ShowsInfo.imdb_id.in_(all_shows_ids)],
+                    query_context=query_context,
+                )
                 
                 db.close()
 
-            return self.success_response(ShowsInfoResponse, nullPass=True)
+            return response

@@ -5,14 +5,15 @@ from datetime import datetime
 from typing import Optional
 from sqlalchemy import insert
 from shows.src.models.shows_season.base import ShowsSeason
-
+from shows.src.models.shows_episode import ShowsEpisodeCreateInput
 
 class ShowsSeasonCreateInput:
-  shows_info_id: int
   imdb_id: str
   season: int
   total_episodes: int
-  release_date: Optional[datetime]
+  shows_info_id: Optional[int] = None
+  release_date: Optional[datetime] = None
+  shows_episode: Optional[list[ShowsEpisodeCreateInput]] = None
 
 
 class ShowsSeasonCreate:

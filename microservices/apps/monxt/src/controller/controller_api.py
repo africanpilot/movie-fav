@@ -65,7 +65,6 @@ class APIController(ControllerToApollo):
       # shows
       "ShowsInfoPopulateMutation",
       "ShowsResetPopularMutation",
-      "ShowsRedisSyncMutation",
       "ShowsInfoUpdateMutation",
     ]
     

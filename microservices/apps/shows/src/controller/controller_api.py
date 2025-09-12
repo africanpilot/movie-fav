@@ -21,7 +21,6 @@ class APIController(ControllerToApollo):
     private_models_to_load = [
         "ShowsInfoPopulateMutation",
         "ShowsResetPopularMutation",
-        "ShowsRedisSyncMutation",
         "ShowsInfoUpdateMutation",
     ]
 

@@ -109,6 +109,10 @@ class ImdbHelper(LinkRequest):
     def get_popular_shows(self) -> list[Movie]:
         return ia.get_popular100_tv()
     
+    @property
+    def get_popular_shows_ids(self) -> list[str]:
+        return [shows.getID() for shows in self.get_popular_shows()]
+
     def get_person_by_id(self, imdbId: str):
         return ia.get_person(imdbId)
 
@@ -297,4 +301,87 @@ class ImdbHelper(LinkRequest):
                 for k,v in data.get('titlesRefs').items()
             ] if data.get('titlesRefs') else None,
             head_shot=self.url_clean(data.get('headshot')),
+        )
+    
+    def get_episode_info(self, episode, shows_imdb_id: str, data: dict):
+        episode_info = self.get_movie_by_id(episode.getID())
+        
+        return dict(
+            imdb_id=episode.getID(),
+            shows_imdb_id=shows_imdb_id,
+            title=episode.get("title"),
+            rating=episode.get("rating"),
+            votes=episode.get("votes"),
+            release_date=self.convert_imdb_date(episode.get("original air date")),
+            plot=episode.get("plot"),
+            year=episode.get("year"),
+            episode=episode.get("episode"),
+            season=episode.get("season"),
+            cover=self.url_clean(episode_info.get("cover")),
+            full_cover=episode_info.get("full-size cover url"),
+            run_times=episode_info.get("runtimes"),
+            download_1080p_url=self.pyratebay_helper.get_magnet_url(data.get("title"), "1080p", int(episode.get("season")), int(episode.get("episode"))),
+            download_720p_url=self.pyratebay_helper.get_magnet_url(data.get("title"), "720p", int(episode.get("season")), int(episode.get("episode"))),
+            download_480p_url=self.pyratebay_helper.get_magnet_url(data.get("title"), "480p", int(episode.get("season")), int(episode.get("episode"))),
+        )
+        
+    def parse_episode_info(self, shows_episode_imdb: str, shows_imdb_id: str, data: dict):
+        episode_info = self.get_movie_by_id(shows_episode_imdb)
+        return dict(
+            imdb_id=shows_episode_imdb,
+            shows_imdb_id=shows_imdb_id,
+            title=episode_info.get("title"),
+            rating=episode_info.get("rating"),
+            votes=episode_info.get("votes"),
+            release_date=self.convert_imdb_date(episode_info.get("original air date")),
+            plot=episode_info.get("plot"),
+            year=episode_info.get("year"),
+            episode=episode_info.get("episode"),
+            season=episode_info.get("season"),
+            cover=self.url_clean(episode_info.get("cover")),
+            full_cover=episode_info.get("full-size cover url"),
+            run_times=episode_info.get("runtimes"),
+            download_1080p_url=self.pyratebay_helper.get_magnet_url(data.get("title"), "1080p", int(episode_info.get("season")), int(episode_info.get("episode"))),
+            download_720p_url=self.pyratebay_helper.get_magnet_url(data.get("title"), "720p", int(episode_info.get("season")), int(episode_info.get("episode"))),
+            download_480p_url=self.pyratebay_helper.get_magnet_url(data.get("title"), "480p", int(episode_info.get("season")), int(episode_info.get("episode"))),
+        )
+
+    def get_shows_info(self, imdbId: str, data: dict) -> dict:
+        self.log.info(f"Parsing shows info for {imdbId} data={data.get('cover')} number of seasons={data.get('number of seasons')} {dir(data)}")
+        return dict(
+            shows_info=dict(
+                imdb_id=imdbId,
+                title=data.get("title"),
+                cast=[item.getID() for item in data.get("cast")] if data.get("cast") else [],
+                year=data.get("year"),
+                directors=[item["name"] for item in data.get("directors")] if data.get("directors") else [],
+                genres=data.get("genres"),
+                countries=data.get("countries"),
+                plot=data.get("plot")[0] if data.get("plot") else "",
+                cover=self.url_clean(data.get("cover")),
+                total_seasons=data.get('number of seasons'),
+                rating=data.get("rating"),
+                votes=data.get("votes"),
+                run_times=data.get("runtimes"),
+                series_years=data.get("series years"),
+                creators=[item.getID() for item in data.get("creators")] if data.get("creators") else [],
+                full_cover=data.get("full-size cover url"),
+                release_date=self.convert_imdb_date(data.get("original air date")),
+                videos=self.get_videos(imdbId),
+            ),
+            shows_season=[
+                dict(
+                    season=dict(
+                        season=s,
+                        imdb_id=imdbId + "_" + str(s),
+                        total_episodes=len(data['episodes'][s]) if data.get('episodes') and data.get('episodes').get(s) else None,
+                        release_date=self.convert_imdb_date(data['episodes'][s][1].get('original air date')) if data.get('episodes') and data.get('episodes').get(s) else None,
+                    ),
+                    episodes=[
+                        self.parse_episode_info(epi_imdb, imdbId, data)
+                        for epi_imdb in self.get_shows_episodes(self.get_shows_episode_page(imdbId, s))
+                    ]
+                )
+                for s in range(1, data.get('number of seasons') + 1)
+            ]
         )

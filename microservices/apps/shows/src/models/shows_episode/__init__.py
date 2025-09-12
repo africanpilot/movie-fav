@@ -2,7 +2,7 @@
 # All Rights Reserved. Proprietary and confidential.
 
 from shows.src.models.shows_episode.base import ShowsEpisode, ShowsEpisodeBase, ShowsEpisodePageInfoInput, ShowsEpisodeFilterInput
-from shows.src.models.shows_episode.create import ShowsEpisodeCreate
+from shows.src.models.shows_episode.create import ShowsEpisodeCreate, ShowsEpisodeCreateInput
 from shows.src.models.shows_episode.delete import ShowsEpisodeDelete
 from shows.src.models.shows_episode.read import ShowsEpisodeRead
 from shows.src.models.shows_episode.update import ShowsEpisodeUpdate
@@ -12,6 +12,7 @@ __all__ = (
   "ShowsEpisode",
   "ShowsEpisodeBase",
   "ShowsEpisodeCreate",
+  "ShowsEpisodeCreateInput",
   "ShowsEpisodeDelete",
   "ShowsEpisodeRead",
   "ShowsEpisodeUpdate",
