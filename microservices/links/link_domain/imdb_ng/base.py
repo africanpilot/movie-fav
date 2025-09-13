@@ -17,6 +17,11 @@ class ImdbNg(LinkRequest):
     @cached_property
     def pyratebay_helper(self):
         return PyratebayLib()
+    
+    def convert_imdb_id(self, imdbId: str) -> str:
+        if imdbId.startswith("tt"):
+            imdbId = imdbId[2:]
+        return imdbId
 
     def get_movie_by_id(self, imdbId: str) -> Movie:
         if not imdbId.startswith("tt"):
@@ -25,7 +30,7 @@ class ImdbNg(LinkRequest):
     
     def get_movie_info(self, imdbId: str, movie: Movie) -> dict:
         return dict(
-            imdb_id=imdbId,
+            imdb_id=self.convert_imdb_id(imdbId),
             title=movie.title,
             cast=[item.imdb_id for item in movie.cast] if movie.cast else [],
             year=movie.year,
@@ -57,8 +62,8 @@ class ImdbNg(LinkRequest):
 
     def get_episode_info(self, show: Movie, episode: TVEpisode): 
         return dict(
-            imdb_id=episode.imdb_id,
-            shows_imdb_id=show.imdb_id,
+            imdb_id=self.convert_imdb_id(episode.imdb_id),
+            shows_imdb_id=self.convert_imdb_id(show.imdb_id),
             title=episode.title,
             rating=float(episode.rating) if episode.rating else None,
             votes=episode.vote_count,
@@ -85,7 +90,7 @@ class ImdbNg(LinkRequest):
                 if show.episodes:
                     seasons.append(dict(
                         season=s,
-                        imdb_id=show.imdb_id + "_" + str(s),
+                        imdb_id=self.convert_imdb_id(show.imdb_id) + "_" + str(s),
                         total_episodes=len(show.episodes[str(s)]),
                         release_date=None,
                         shows_episode=[
@@ -99,7 +104,7 @@ class ImdbNg(LinkRequest):
     
     def get_shows_info(self, imdbId: str, show: Movie, season: Optional[str] = None, episode: Optional[str] = None) -> dict:
         shows_info = dict(
-            imdb_id=imdbId,
+            imdb_id=self.convert_imdb_id(imdbId),
             title=show.title,
             cast=[item.imdb_id for item in show.cast] if show.cast else [],
             year=show.year,

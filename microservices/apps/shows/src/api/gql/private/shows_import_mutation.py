@@ -34,12 +34,23 @@ class ShowsImportMutation(GraphQLModel, ShowsLib):
                 shows_info_all = [ShowsInfoCreateInput(**saga.payload) for saga in all_saga_state_to_import]
                 self.shows_info_create.shows_info_create_imdb(db, shows_info_all)
                 
-                all_shows_ids = [i.imdb_id for i in shows_info_all]
+                # clear old popular ids
+                all_popular_ids = self.imdb_helper.get_charts_imdbs("tvmeter")
+                self.shows_info_update.shows_info_update_popular_id(db, commit=False, popular_id=None)
+
+                # update popular order
+                for i, item in enumerate(all_popular_ids):
+                    self.shows_info_update.shows_info_update_by_imdb_id(db=db, imdbId=item, popular_id=i+1)
+                
+                db.commit()
+                self.redis_delete_shows_info_keys()
+                self.redis_delete_shows_episode_keys()
+                
                 response = self.shows_info_response.shows_response(
                     info=info,
                     db=db,
                     pageInfo=pageInfo,
-                    filterInputExtra=[ShowsInfo.imdb_id.in_(all_shows_ids)],
+                    filterInputExtra=[ShowsInfo.imdb_id.in_(all_popular_ids)],
                     query_context=query_context,
                 )
                 

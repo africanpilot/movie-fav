@@ -90,8 +90,8 @@ def test_shows_info_popular_mutation(benchmark, test_database: Session, flush_re
   assert len(shows_1.payload["shows_season"][0]["shows_episode"]) > 0
   
   episode = shows_1.payload["shows_season"][0]["shows_episode"][0]
-  assert episode["imdb_id"] == "tt14586040"
-  assert episode["shows_imdb_id"] == "tt11126994"
+  assert episode["imdb_id"] == "14586040"
+  assert episode["shows_imdb_id"] == "11126994"
   assert episode["title"] == "Welcome to the Playground"
   assert episode["rating"] == 8.5
   assert episode["votes"] >= 37760

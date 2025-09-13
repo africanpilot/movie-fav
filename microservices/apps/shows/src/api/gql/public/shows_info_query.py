@@ -41,12 +41,11 @@ class ShowsInfoQuery(GraphQLModel, ShowsLib):
                     return redis_response
 
             with self.get_connection("psqldb_shows") as db:
-                response = self.shows_response(
+                response = self.shows_info_response.shows_response(
                     info=info,
                     db=db,
                     pageInfo=pageInfo,
                     filterInput=filterInput,
-                    filterInputExtra=[ShowsInfo.title != None, ShowsInfo.title != ""],
                     query_context=query_context,
                 )
                 

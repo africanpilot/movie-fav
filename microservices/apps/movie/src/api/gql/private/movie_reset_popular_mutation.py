@@ -28,7 +28,7 @@ class MovieResetPopularMutation(GraphQLModel, MovieLib):
 
                 # update popular order
                 for i, item in enumerate(all_popular_ids):
-                    self.movie_info_update.movie_info_update(db=db, imdbId=item, popular_id=i+1)
+                    self.movie_info_update.movie_info_update_by_imdb_id(db=db, imdbId=item, popular_id=i+1)
 
                 db.commit()
                 db.close()

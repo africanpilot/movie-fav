@@ -13,7 +13,10 @@ from sqlmodel import Session, func
 
 
 class ShowsEpisodeBaseResponse(ShowsEpisodeBase):
-  pass
+  id: Optional[int] = None
+  shows_info_id: Optional[int] = None
+  shows_season_id: Optional[int] = None
+  shows_imdb_id: Optional[str] = None
 
 class ShowsEpisodeResponse(BaseResponse):
   result: Optional[list[ShowsEpisodeBaseResponse]] = None

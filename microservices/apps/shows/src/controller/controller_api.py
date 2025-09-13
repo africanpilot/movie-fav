@@ -22,6 +22,7 @@ class APIController(ControllerToApollo):
         "ShowsInfoPopulateMutation",
         "ShowsResetPopularMutation",
         "ShowsInfoUpdateMutation",
+        "ShowsImportMutation",
     ]
 
     public_routes_to_load = []

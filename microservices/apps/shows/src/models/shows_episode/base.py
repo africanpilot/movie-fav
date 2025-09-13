@@ -22,7 +22,7 @@ class ShowsEpisodeBase(SQLModel):
     shows_imdb_id: Optional[str] = Field(
         sa_column=Column(VARCHAR, ForeignKey("shows.shows_info.imdb_id", ondelete="CASCADE"))
     )
-    imdb_id: Optional[str] = Field(default=None, nullable=False,unique=True, max_length=100)
+    imdb_id: Optional[str] = Field(default=None, nullable=False, unique=True, max_length=100)
     title: Optional[str] = Field(default=None)
     year: Optional[int] = Field(default=None)
     plot: Optional[str] = Field(default=None)
@@ -67,6 +67,6 @@ class ShowsEpisodePageInfoInput(PageInfoInput):
 	sortBy: list[ShowsEpisodeSortByEnum] = [ShowsEpisodeSortByEnum.ID]
 
 class ShowsEpisodeFilterInput(SQLModel):
-    id: Optional[list[int]]
-    title: Optional[list[str]]
-    year: Optional[list[int]]
+    id: Optional[list[int]] = None
+    title: Optional[list[str]] = None
+    year: Optional[list[int]] = None

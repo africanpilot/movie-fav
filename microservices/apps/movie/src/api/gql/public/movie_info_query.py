@@ -45,7 +45,6 @@ class MovieInfoQuery(GraphQLModel, MovieLib):
                     db=db,
                     pageInfo=pageInfo,
                     filterInput=filterInput,
-                    filterInputExtra=[MovieInfo.title != None, MovieInfo.title != ""],
                     query_context=query_context,
                 )
             

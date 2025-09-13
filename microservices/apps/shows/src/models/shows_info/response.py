@@ -12,10 +12,20 @@ from shows.src.models.shows_season import ShowsSeason, ShowsSeasonBase
 from sqlalchemy import text, select
 from sqlmodel import Session, func
 
+
+class ShowsEpisodeBaseResponse(ShowsEpisodeBase):
+  id: Optional[int] = None
+  shows_info_id: Optional[int] = None
+  shows_season_id: Optional[int] = None
+  shows_imdb_id: Optional[str] = None
+
 class ShowSeasonBaseResponse(ShowsSeasonBase):
-  shows_episode: Optional[list[ShowsEpisodeBase]] = None
+  id: Optional[int] = None
+  shows_info_id: Optional[int] = None
+  shows_episode: Optional[list[ShowsEpisodeBaseResponse]] = None
 
 class ShowInfoBaseResponse(ShowsInfoBase):
+  id: Optional[int] = None
   shows_season: Optional[list[ShowSeasonBaseResponse]] = None
 
 class ShowsInfoResponse(BaseResponse):

@@ -29,6 +29,7 @@ class MovieInfoUpdate(LinkGeneral):
   def movie_info_update_popular_id(self, db: Connection, commit: bool = True, **fields_to_update) -> Optional[Update]:
     sql_query = (
       update(MovieInfo)
+      .where(MovieInfo.popular_id.isnot(None))
       .values(**fields_to_update, updated=datetime.now())
     )
     
@@ -46,7 +47,7 @@ class MovieInfoUpdate(LinkGeneral):
       db.execute(sql_query)
     return sql_query
   
-  def movie_info_update(self, db: Optional[Connection], imdbId: str, commit: bool = True, **fields_to_update) -> Optional[Update]:
+  def movie_info_update_by_imdb_id(self, db: Optional[Connection], imdbId: str, commit: bool = True, **fields_to_update) -> Optional[Update]:
     sql_query = (
       update(MovieInfo)
       .where(MovieInfo.imdb_id == imdbId)

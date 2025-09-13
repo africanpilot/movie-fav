@@ -20,19 +20,16 @@ class ShowsResetPopularMutation(GraphQLModel, ShowsLib):
             
             self.general_validation_process(info)
             
-            # all_popular_ids = [shows.getID() for shows in self.get_popular_shows()]
-            # page = self.get_popular_movie_page("tvmeter")
-            # all_popular_ids = self.get_imdb_popular(page)
-            all_popular_ids = self.get_charts_imdbs("tvmeter")
+            all_popular_ids = self.imdb_helper.get_charts_imdbs("tvmeter")
 
             with self.get_session("psqldb_shows") as db:
 
               # clear old popular ids
-              self.shows_info_all_update(db, commit=False, popular_id=None)
+              self.shows_info_update.shows_info_update_popular_id(db, commit=False, popular_id=None)
 
               # update popular order
               for i, item in enumerate(all_popular_ids):
-                self.shows_info_update_imdb(db=db, imdbId=item, popular_id=i+1)
+                  self.shows_info_update.shows_info_update_by_imdb_id(db=db, imdbId=item, popular_id=i+1)
               
               db.commit()
               db.close()

@@ -4,7 +4,7 @@
 from typing import List, Optional, Set
 from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import insert
-from sqlmodel import Session
+from sqlmodel import Session, select
 from datetime import datetime
 from shows.src.models.shows_episode.base import ShowsEpisode
 from shows.src.models.shows_info.base import ShowsInfo
@@ -97,5 +97,9 @@ class ShowsInfoCreate:
       for r in sql_query:
         db.exec(r)
       db.commit()
+      
+      imdb_ids = [show.imdb_id for show in createInput]
+
+      return db.exec(select(ShowsInfo).where(ShowsInfo.imdb_id.in_(imdb_ids))).all()
 
     return sql_query

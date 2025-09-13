@@ -34,12 +34,34 @@ class ShowsInfoUpdate(LinkGeneral):
     if commit:
       db.execute(sql_query)
     return sql_query
+  
+  def shows_info_update_popular_id(self, db: Connection, commit: bool = True, **fields_to_update) -> Optional[Update]:
+    sql_query = (
+      update(ShowsInfo)
+      .where(ShowsInfo.popular_id.isnot(None))
+      .values(**fields_to_update, updated=datetime.now())
+    )
+    
+    if commit:
+      db.execute(sql_query)
+    return sql_query
       
   def shows_info_update_imdb(self, db: Optional[Connection], imdbId: str, commit: bool = True, **fields_to_update) -> Optional[Update]:
     sql_query = (
       insert(ShowsInfo)
       .values(**ShowsInfo(imdb_id=imdbId, **fields_to_update, updated=datetime.now()).model_dump(exclude_unset=True))
     ).on_conflict_do_update(constraint='shows_info_imdb_id_key', set_=dict(**fields_to_update, updated=datetime.now()))
+
+    if commit:
+      db.execute(sql_query)
+    return sql_query
+
+  def shows_info_update_by_imdb_id(self, db: Optional[Connection], imdbId: str, commit: bool = True, **fields_to_update) -> Optional[Update]:
+    sql_query = (
+      update(ShowsInfo)
+      .where(ShowsInfo.imdb_id == imdbId)
+      .values(**fields_to_update, updated=datetime.now())
+    )
 
     if commit:
       db.execute(sql_query)

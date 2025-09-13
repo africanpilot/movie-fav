@@ -5,9 +5,10 @@ from datetime import datetime
 from typing import List, Optional, Set
 from sqlalchemy import insert
 from shows.src.models.shows_episode.base import ShowsEpisode
+from pydantic import BaseModel
 
 
-class ShowsEpisodeCreateInput:
+class ShowsEpisodeCreateInput(BaseModel):
   shows_imdb_id: str
   imdb_id: str
   title: str

@@ -11,7 +11,7 @@ from link_models.base import BaseResponse
 
 
 class MovieInfoBaseResponse(MovieInfoBase):
-  pass
+  id: Optional[int] = None
 
 class MovieInfoResponse(BaseResponse):
   result: Optional[list[MovieInfoBaseResponse]] = None

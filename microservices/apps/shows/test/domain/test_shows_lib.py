@@ -1,7 +1,14 @@
+import pytest
 from shows.src.domain.lib import ShowsLib
+from link_lib.microservice_general import LinkGeneral
 
 
-def test_get_show_info(shows_lib: ShowsLib):
+# add general pytest markers
+GENERAL_PYTEST_MARK = LinkGeneral().compose_decos([pytest.mark.shows_domain, pytest.mark.shows])
+
+@GENERAL_PYTEST_MARK
+@pytest.mark.shows_bench
+def test_get_show_info(benchmark, shows_lib: ShowsLib):
     show_info = shows_lib.process_shows_info("11126994", episode="1")
     assert show_info["imdb_id"] == "11126994"
     assert show_info["title"] == "Arcane: League of Legends"
@@ -37,8 +44,8 @@ def test_get_show_info(shows_lib: ShowsLib):
     assert len(show_info["shows_season"][0]["shows_episode"]) > 0
     
     episode = show_info["shows_season"][0]["shows_episode"][0]
-    assert episode["imdb_id"] == "tt14586040"
-    assert episode["shows_imdb_id"] == "tt11126994"
+    assert episode["imdb_id"] == "14586040"
+    assert episode["shows_imdb_id"] == "11126994"
     assert episode["title"] == "Welcome to the Playground"
     assert episode["rating"] == 8.5
     assert episode["votes"] >= 37760
@@ -54,3 +61,5 @@ def test_get_show_info(shows_lib: ShowsLib):
     assert episode["download_1080p_url"] is not None
     assert episode["download_720p_url"] is not None
     assert episode["download_480p_url"] is not None
+
+    benchmark(shows_lib.process_shows_info, "11126994", episode="1")

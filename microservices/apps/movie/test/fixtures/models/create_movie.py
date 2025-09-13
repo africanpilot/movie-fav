@@ -10,13 +10,13 @@ from movie.src.domain.lib import MovieLib
 
 
 @pytest.fixture
-def link_movie_lib() -> MovieLib:
+def movie_lib() -> MovieLib:
   return MovieLib()
 
 @pytest.fixture
-def create_movie_info(link_movie_lib: MovieLib) -> MovieInfo:
+def create_movie_info(movie_lib: MovieLib) -> MovieInfo:
   def create(db) -> MovieInfo:
-    return link_movie_lib.movie_info_create.movie_info_create_imdb(db,
+    return movie_lib.movie_info_create.movie_info_create_imdb(db,
       [MovieInfoCreateInput(
         imdb_id="0133093",
         title="test",
@@ -38,9 +38,9 @@ def create_movie_info(link_movie_lib: MovieLib) -> MovieInfo:
 
 
 @pytest.fixture
-def create_movie_saga_state(link_movie_lib: MovieLib) -> MovieSagaState:
+def create_movie_saga_state(movie_lib: MovieLib) -> MovieSagaState:
   def create(db) -> MovieSagaState:
-    return link_movie_lib.movie_saga_state_create.movie_saga_state_create(db,
+    return movie_lib.movie_saga_state_create.movie_saga_state_create(db,
       [MovieSagaStateCreateInput(
         movie_info_imdb_id="0133093",
         status="succeeded",

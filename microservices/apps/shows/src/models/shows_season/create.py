@@ -6,8 +6,10 @@ from typing import Optional
 from sqlalchemy import insert
 from shows.src.models.shows_season.base import ShowsSeason
 from shows.src.models.shows_episode import ShowsEpisodeCreateInput
+from pydantic import BaseModel
 
-class ShowsSeasonCreateInput:
+
+class ShowsSeasonCreateInput(BaseModel):
   imdb_id: str
   season: int
   total_episodes: int
