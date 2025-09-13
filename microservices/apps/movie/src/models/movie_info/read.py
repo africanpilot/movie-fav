@@ -35,52 +35,13 @@ class MovieInfoRead(LinkResponse):
 
     return db.execute(sql_query).one()
   
-  def get_no_download_urls(self, db: Connection) -> list[MovieInfo]:
-    sql_query = self.query_cols([
-      MovieInfo.imdb_id,
-      MovieInfo.title,
-      MovieInfo.download_1080p_url,
-      MovieInfo.download_720p_url,
-      MovieInfo.download_480p_url
-    ])
-
-    sql_query = sql_query.filter(
-      (MovieInfo.download_1080p_url == None) |
-      (MovieInfo.download_720p_url == None) |
-      (MovieInfo.download_480p_url == None)
-    )
-
-    return db.execute(sql_query).all()
-  
   def get_no_movie_info(self, db: Connection) -> list[MovieInfo]:
     sql_query = self.query_cols([MovieInfo.imdb_id]).filter(MovieInfo.title == None)
-    return db.execute(sql_query).all()
-  
-  def get_all_movie_info_to_update(self, db: Connection, first: int = 5) -> list[MovieInfo]:
-    sql_query = self.query_cols([MovieInfo.imdb_id])
-    sql_query = sql_query.filter(
-      (MovieInfo.download_1080p_url == None) |
-      (MovieInfo.download_720p_url == None) |
-      (MovieInfo.download_480p_url == None) |
-      (MovieInfo.title == None) |
-      (MovieInfo.videos == None)
-    ).limit(first)
     return db.execute(sql_query).all()
   
   def get_all_movies_to_update(self, db: Connection, pageInfo: PageInfoInput) -> list[MovieInfo]:
     sql_query = self.query_cols([MovieInfo.imdb_id])
     sql_query = self.paginate_by_page_number(sql_query, pageInfo).limit(pageInfo.first)
-    return db.execute(sql_query).all()
-  
-  def get_download_urls(self, db: Connection, imdb_ids: list[str]) -> list[MovieInfo]:
-    sql_query = self.query_cols([
-      MovieInfo.imdb_id,
-      MovieInfo.download_1080p_url,
-      MovieInfo.download_720p_url,
-      MovieInfo.download_480p_url
-    ])
-
-    sql_query = self.query_filter(sql_query, [MovieInfo.imdb_id.in_(imdb_ids)])
     return db.execute(sql_query).all()
 
   def get_movie_update(self, db: Connection, movie_info_id: int)-> MovieInfo:

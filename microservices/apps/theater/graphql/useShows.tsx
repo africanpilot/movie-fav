@@ -1,22 +1,12 @@
 import { 
     useShowsPopularQuery, ShowsInfoPageInfoInput,
     useShowsDetailsQuery, ShowsInfoFilterInput,
-    useShowsEpisodeDetailsQuery, useShowsDownloadMutation, ShowsDownloadInput, useShowsEpisodeUpdateMutation
+    useShowsEpisodeDetailsQuery, useShowsEpisodeUpdateMutation
 } from "./schema";
 
 
 export const useShows = (pageInfo: ShowsInfoPageInfoInput = {}, filterInput: ShowsInfoFilterInput = {}) => {
-    const [showsDownload, { loading: isShowsDownload }] = useShowsDownloadMutation();
     const [showsEpisodeUpdate, { loading: isShowsEpisodeUpdate }] = useShowsEpisodeUpdateMutation();
-  
-    const handleShowsDownload = async (searchInput: ShowsDownloadInput[]) => {
-      try {
-        const { data } = await showsDownload({ variables: { searchInput } });
-        return data?.showsDownload;
-      } catch (error: any) {
-        try { return JSON.parse(error.message) } catch (error: any) { throw error;};
-      }
-    };
 
     const handleShowsEpisodeUpdate = async (showsEpisodeId: number) => {
         try {
@@ -39,7 +29,6 @@ export const useShows = (pageInfo: ShowsInfoPageInfoInput = {}, filterInput: Sho
 
         const showsPopular = data?.showsInfo;
 
-
         const { data: showsDetails , loading: isShowsDetails, error: isShowsDetailsError, refetch: showsDetailsRefetch } = useShowsDetailsQuery(
             { 
                 variables: { filterInput: filterInput },
@@ -61,7 +50,7 @@ export const useShows = (pageInfo: ShowsInfoPageInfoInput = {}, filterInput: Sho
         );
 
         const showsEpisodeDetailsData = showsEpisodeDetails?.showsEpisode?.result?.[0];
-        const isSaving = (isShowsDownload || isShowsEpisodeUpdate);
+        const isSaving = (isShowsEpisodeUpdate);
         
         return {
             showsPopular,
@@ -76,7 +65,6 @@ export const useShows = (pageInfo: ShowsInfoPageInfoInput = {}, filterInput: Sho
             isShowsEpisodeDetails,
             isShowsEpisodeDetailsError,
             showsEpisodeDetailsRefetch,
-            showsDownload: handleShowsDownload,
             showsEpisodeUpdate: handleShowsEpisodeUpdate,
             isSaving
         };

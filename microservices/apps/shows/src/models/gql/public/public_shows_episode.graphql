@@ -2,10 +2,6 @@ extend type Query {
     showsEpisode(pageInfo: ShowsEpisodePageInfoInput, filterInput: ShowsEpisodeFilterInput): ShowsEpisodeResponse
 }
 
-extend type Mutation {
-    showsEpisodeUpdate(shows_episode_id: Int!): ShowsEpisodeResponse
-}
-
 type ShowsEpisodeResponse {
     response: GeneralResponse!
     pageInfo: PageInfo
@@ -26,9 +22,6 @@ type ShowsEpisode @key(fields: "id") {
     year: Int
     season: Int
     episode: Int
-    download_1080p_url: String
-    download_720p_url: String
-    download_480p_url: String
     cover: String
     full_cover: String
     run_times: [String]

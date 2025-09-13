@@ -28,9 +28,6 @@ class MovieInfoCreateInput(BaseModel):
   release_date: Optional[datetime] = None
   trailer_link: Optional[str] = None
   added_count: Optional[int] = 0
-  download_1080p_url: Optional[str] = None
-  download_720p_url: Optional[str] = None
-  download_480p_url: Optional[str] = None
   videos: Optional[Set[str]] = None
 
 

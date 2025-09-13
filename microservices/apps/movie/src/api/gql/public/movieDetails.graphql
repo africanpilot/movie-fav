@@ -31,9 +31,6 @@ query MovieDetails($filterInput: MovieInfoFilterInput) {
       cover
       votes
       year
-      download_1080p_url
-      download_720p_url
-      download_480p_url
       videos
     }
   }

@@ -58,8 +58,5 @@ def test_get_show_info(benchmark, shows_lib: ShowsLib):
     assert "full_cover" in episode
     assert "run_times" in episode
     assert isinstance(episode["run_times"], list)
-    assert episode["download_1080p_url"] is not None
-    assert episode["download_720p_url"] is not None
-    assert episode["download_480p_url"] is not None
 
     benchmark(shows_lib.process_shows_info, "11126994", episode="1")

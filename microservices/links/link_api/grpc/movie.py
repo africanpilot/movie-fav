@@ -23,15 +23,3 @@ class MovieGrpcClient:
     return MovieGrpcClient.deserialize_response(
       MovieGrpcClient.get("GetRemainingMovieCastQuery", body)
     )
-    
-  @staticmethod
-  def get_remaining_movie_downloads_query(body: Optional[dict] = None):
-    return MovieGrpcClient.deserialize_response(
-      MovieGrpcClient.get("GetRemainingMovieDownloadsQuery", body)
-    )
-    
-  @staticmethod
-  def get_movie_downloads_query(body: Optional[dict] = None):
-    return MovieGrpcClient.deserialize_response(
-      MovieGrpcClient.get("GetMovieDownloadsQuery", body)
-    )

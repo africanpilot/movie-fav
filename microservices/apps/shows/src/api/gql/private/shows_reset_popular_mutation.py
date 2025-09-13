@@ -25,13 +25,13 @@ class ShowsResetPopularMutation(GraphQLModel, ShowsLib):
             with self.get_session("psqldb_shows") as db:
 
               # clear old popular ids
-              self.shows_info_update.shows_info_update_popular_id(db, commit=False, popular_id=None)
+              self.shows_info_update.shows_info_update_popular_id(db, commit=True, popular_id=None)
 
               # update popular order
+              self.log.info(f"Resetting popular ids for {all_popular_ids} shows")
               for i, item in enumerate(all_popular_ids):
-                  self.shows_info_update.shows_info_update_by_imdb_id(db=db, imdbId=item, popular_id=i+1)
+                self.shows_info_update.shows_info_update_by_imdb_id(db=db, imdbId=item, commit=True, popular_id=i+1)
               
-              db.commit()
               db.close()
               
             self.redis_delete_shows_info_keys()

@@ -6,7 +6,5 @@ extend type Mutation {
 }
 
 input MovieInfoUpdateFilterInput {
-  download_1080p_url: Boolean
-  download_720p_url: Boolean
-  download_480p_url: Boolean
+  imdb_ids: [String]!
 }

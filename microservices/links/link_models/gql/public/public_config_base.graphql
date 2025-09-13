@@ -122,12 +122,6 @@ enum PersonInfoSortByEnum {
   ID
 }
 
-enum DownloadTypeEnum {
-  DOWNLOAD_1080p
-  DOWNLOAD_720p
-  DOWNLOAD_480p
-}
-
 enum DownloadLocationEnum {
   DATABASE
   REDIS

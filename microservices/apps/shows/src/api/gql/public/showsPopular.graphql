@@ -23,9 +23,6 @@ query ShowsPopular($pageInfo: ShowsInfoPageInfoInput) {
           id
           shows_info_id
           shows_season_id
-          download_1080p_url
-          download_720p_url
-          download_480p_url
         }
       }
     }

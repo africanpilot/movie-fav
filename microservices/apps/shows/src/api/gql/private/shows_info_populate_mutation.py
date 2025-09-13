@@ -45,9 +45,8 @@ class ShowsInfoPopulateMutation(GraphQLModel, ShowsLib):
                 
                 if DownloadLocationEnum.DATABASE in location:
                     no_shows_info = [r.imdb_id for r in self.shows_info_read.get_no_shows_info(db)]
-                    no_download_urls = [r.shows_imdb_id for r in self.shows_episode_read.get_no_download_urls(db)]
-                    all_popular_ids = no_shows_info + no_download_urls + all_popular_ids
-                    self.log.info(f"no_shows_info={len(no_shows_info)}, no_download_urls={len(no_download_urls)}")
+                    all_popular_ids = no_shows_info + all_popular_ids
+                    self.log.info(f"no_shows_info={len(no_shows_info)}")
 
                 all_popular_ids = set(all_popular_ids)
                 

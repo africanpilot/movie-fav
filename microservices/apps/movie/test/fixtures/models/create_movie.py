@@ -66,9 +66,6 @@ def create_movie_saga_state(movie_lib: MovieLib) -> MovieSagaState:
           full_cover="https://example.com/full_cover.jpg",
           release_date=None,
           videos=[],
-          download_1080p_url="test",
-          download_720p_url="test",
-          download_480p_url="test",
         )
       )]
     )

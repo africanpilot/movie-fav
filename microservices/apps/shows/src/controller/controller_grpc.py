@@ -19,8 +19,6 @@ class GrpcController:
         "GetAllShowsSeasonQuery",
         "GetCurrentEpisodeQuery",
         "GetRemainingShowsCastQuery",
-        "GetRemainingShowsDownloadsQuery",
-        "GetShowsDownloadsQuery",
       ]
 
       if topic not in registered_topics:

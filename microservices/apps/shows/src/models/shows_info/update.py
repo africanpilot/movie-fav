@@ -6,9 +6,9 @@ from typing import Optional
 from sqlalchemy.engine.base import Connection
 from shows.src.models.shows_info.base import ShowsInfo
 from link_lib.microservice_general import LinkGeneral
-from sqlalchemy import update
 from sqlalchemy.sql.dml import Update
 from sqlalchemy.dialects.postgresql import insert
+from sqlmodel import Session, update
 
 class ShowsInfoUpdate(LinkGeneral):
   def __init__(self, **kwargs):
@@ -43,7 +43,8 @@ class ShowsInfoUpdate(LinkGeneral):
     )
     
     if commit:
-      db.execute(sql_query)
+      db.exec(sql_query)
+      db.commit()
     return sql_query
       
   def shows_info_update_imdb(self, db: Optional[Connection], imdbId: str, commit: bool = True, **fields_to_update) -> Optional[Update]:
@@ -54,9 +55,10 @@ class ShowsInfoUpdate(LinkGeneral):
 
     if commit:
       db.execute(sql_query)
+      db.commit()
     return sql_query
 
-  def shows_info_update_by_imdb_id(self, db: Optional[Connection], imdbId: str, commit: bool = True, **fields_to_update) -> Optional[Update]:
+  def shows_info_update_by_imdb_id(self, db: Optional[Session], imdbId: str, commit: bool = True, **fields_to_update) -> Optional[Update]:
     sql_query = (
       update(ShowsInfo)
       .where(ShowsInfo.imdb_id == imdbId)
@@ -64,5 +66,6 @@ class ShowsInfoUpdate(LinkGeneral):
     )
 
     if commit:
-      db.execute(sql_query)
+      db.exec(sql_query)
+      db.commit()
     return sql_query

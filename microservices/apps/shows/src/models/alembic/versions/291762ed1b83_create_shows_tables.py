@@ -88,9 +88,6 @@ def upgrade() -> None:
         sa.Column('updated', sa.DateTime(), nullable=False),
         sa.Column('season', sa.INTEGER, nullable=True),
         sa.Column('episode', sa.INTEGER, nullable=True),
-        sa.Column('download_1080p_url', sa.VARCHAR(), nullable=True),
-        sa.Column('download_720p_url', sa.VARCHAR(), nullable=True),
-        sa.Column('download_480p_url', sa.VARCHAR(), nullable=True),
         sa.Column('cover', sa.VARCHAR(), nullable=True),
         sa.Column('full_cover', sa.VARCHAR(), nullable=True),
         schema='shows'

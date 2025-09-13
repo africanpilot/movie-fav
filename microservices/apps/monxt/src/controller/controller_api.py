@@ -31,7 +31,6 @@ class APIController(ControllerToApollo):
       # movie
       "MovieInfoQuery",
       "MovieFederations",
-      "MovieUpdateMutation",
       
       # notifications
       "NotificationsCreateMutation",
@@ -47,7 +46,6 @@ class APIController(ControllerToApollo):
       "ShowsInfoQuery",
       "ShowsFederations",
       "ShowsEpisodeQuery",
-      "ShowsEpisodeUpdateMutation",
     ]
     
     private_models_to_load = [

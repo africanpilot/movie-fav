@@ -19,6 +19,3 @@ def test_get_movie_info(link_movie_lib: MovieLib):
     assert movie_info["full_cover"].startswith("https://m.media-amazon.com/images/M/MV5BN2NmN2VhMTQtMDNiOS00NDlhLTliMjgtODE2ZTY0ODQyNDRhXkEyXkFqcGc@._V1_.jpg")
     assert movie_info["release_date"] == ""
     assert movie_info["videos"] == []
-    assert movie_info["download_1080p_url"] is not None
-    assert movie_info["download_720p_url"] is not None
-    assert movie_info["download_480p_url"] is not None

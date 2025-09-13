@@ -104,9 +104,6 @@ def test_shows_info_popular_mutation(benchmark, test_database: Session, flush_re
   assert "full_cover" in episode
   assert "run_times" in episode
   assert isinstance(episode["run_times"], list)
-  assert episode["download_1080p_url"] is not None
-  assert episode["download_720p_url"] is not None
-  assert episode["download_480p_url"] is not None
 
   # # run benchmark
   with patch('link_domain.imdb_helper.base.ImdbHelper.get_charts_imdbs', return_value=["11126994"]), \

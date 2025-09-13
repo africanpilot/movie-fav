@@ -7,7 +7,7 @@ import { BsPlayFill } from "react-icons/bs";
 import CastSlide from "@/components/CastSlide";
 import CircularRate from "@/components/CircularRate";
 import Container from "@/components/Container";
-import { MovieInfo, PersonInfo, DownloadTypeEnum, ShowsInfo, ShowsEpisode } from "@/graphql/schema";
+import { MovieInfo, PersonInfo, ShowsInfo, ShowsEpisode } from "@/graphql/schema";
 import { useMovie } from "@/graphql";
 import Link from "next/link";
 import { toast } from "react-toastify";
@@ -18,20 +18,6 @@ type Props = {
 };
 
 function DetailsBanner({ movieDetails }: Props) {
-  const { movieDownload, isSaving } = useMovie();
-
-    const handleDownload = (e: { preventDefault: () => void; }, download_type: DownloadTypeEnum) => {
-        movieDownload(
-          [{imdb_id: (movieDetails?.imdb_id!), download_type: download_type}]
-        ).then((res) => {
-          window.open(process.env.NEXT_PUBLIC_TRANSMISSION, "_blank")
-        })
-        .catch((err) => {
-			console.log("ERR", JSON.stringify(err, null, 2));
-			toast.error("There is something wrong, please give us a minute to fix it!");
-		});
-    };
-
   return (
     <>
       <Box
@@ -126,33 +112,6 @@ function DetailsBanner({ movieDetails }: Props) {
                     <BsPlayFill />
                     Watch Trailer
                   </Link>
-                  {movieDetails?.download_1080p_url && (
-                    <button
-                      className="flex gap-3 bg-gray-400 px-2.5 py-2.5 rounded-md items-center"
-                      onClick={(e: { preventDefault: () => void; }) => handleDownload(e, DownloadTypeEnum.Download_1080p)}
-                    >
-                      <BsPlayFill />
-                      {DownloadTypeEnum.Download_1080p.replace("DOWNLOAD_","")}
-                    </button>
-                  )}
-                  {movieDetails?.download_720p_url && (
-                    <button
-                      className="flex gap-3 bg-gray-400 px-2.5 py-2.5 rounded-md items-center"
-                      onClick={(e: { preventDefault: () => void; }) => handleDownload(e, DownloadTypeEnum.Download_720p)}
-                    >
-                      <BsPlayFill />
-                      {DownloadTypeEnum.Download_720p.replace("DOWNLOAD_","")}
-                    </button>
-                  )}
-                  {movieDetails?.download_480p_url && (
-                    <button
-                      className="flex gap-3 bg-gray-400 px-2.5 py-2.5 rounded-md items-center"
-                      onClick={(e: { preventDefault: () => void; }) => handleDownload(e, DownloadTypeEnum.Download_480p)}
-                    >
-                      <BsPlayFill />
-                      {DownloadTypeEnum.Download_480p.replace("DOWNLOAD_","")}
-                    </button>
-                  )}
                 </Stack>
                 {movieDetails?.casts && (
                   <Container header="cast">

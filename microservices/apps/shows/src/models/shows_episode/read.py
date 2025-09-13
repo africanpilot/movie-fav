@@ -31,52 +31,6 @@ class ShowsEpisodeRead(LinkResponse):
 
     return db.execute(sql_query).first()
   
-  def get_no_download_urls(self, db: Connection) -> list[ShowsEpisode]:
-    sql_query = self.query_cols([
-      ShowsEpisode.imdb_id,
-      ShowsInfo.title,
-      ShowsEpisode.shows_imdb_id,
-      ShowsEpisode.season,
-      ShowsEpisode.episode,
-      ShowsEpisode.download_1080p_url,
-      ShowsEpisode.download_720p_url,
-      ShowsEpisode.download_480p_url
-    ])
-    
-    sql_query = self.join_tables(sql_query, [dict(from_=ShowsInfo, target=ShowsEpisode, isouter=False),])
-
-    sql_query = sql_query.filter(
-      (ShowsEpisode.download_1080p_url == None) |
-      (ShowsEpisode.download_720p_url == None) |
-      (ShowsEpisode.download_480p_url == None)
-    )
-
-    return db.execute(sql_query).all()
-  
-  def get_download_urls(self, db: Connection, imdb_ids: list[str]) -> list[ShowsEpisode]:
-    sql_query = self.query_cols([
-      ShowsEpisode.imdb_id,
-      ShowsEpisode.shows_imdb_id,
-      ShowsEpisode.season,
-      ShowsEpisode.episode,
-      ShowsEpisode.download_1080p_url,
-      ShowsEpisode.download_720p_url,
-      ShowsEpisode.download_480p_url
-    ])
-
-    sql_query = self.query_filter(sql_query, [ShowsEpisode.imdb_id.in_(imdb_ids)])
-    return db.execute(sql_query).all()
-
-  def get_all_shows_info_to_update(self, db: Connection, first: int = 5) -> list[ShowsEpisode]:
-    sql_query = self.query_cols([ShowsEpisode.shows_imdb_id])
-    sql_query = sql_query.filter(
-      (ShowsEpisode.download_1080p_url == None) |
-      (ShowsEpisode.download_720p_url == None) |
-      (ShowsEpisode.download_480p_url == None)
-    ).limit(first)
-
-    return db.execute(sql_query).all()
-  
   def get_shows_episode_update(self, db: Connection, shows_episode_id: int)-> ShowsEpisode:
     sql_query = self.query_cols([
       ShowsEpisode.id,

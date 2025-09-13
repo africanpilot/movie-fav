@@ -2,11 +2,6 @@ extend type Query {
     movieInfo(pageInfo: MovieInfoPageInfoInput, filterInput: MovieInfoFilterInput): MovieInfoResponse
 }
 
-extend type Mutation {
-    movieDownload(searchInput: [MovieInfoDownloadInput]): MovieInfoResponse
-    movieUpdate(movie_info_id: Int!): MovieInfoResponse
-}
-
 type MovieInfoResponse {
     response: GeneralResponse!
     pageInfo: PageInfo
@@ -32,9 +27,6 @@ extend type MovieInfo @key(fields: "id") {
     release_date: String
     trailer_link: String
     added_count: Int
-    download_1080p_url: String
-    download_720p_url: String
-    download_480p_url: String
     videos: [String]
 }
 
@@ -55,5 +47,4 @@ input MovieInfoPageInfoInput {
 
 input MovieInfoDownloadInput {
     imdb_id: String!
-    download_type: DownloadTypeEnum!
 }

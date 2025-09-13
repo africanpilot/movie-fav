@@ -2,10 +2,6 @@ extend type Query {
     showsInfo(pageInfo: ShowsInfoPageInfoInput, filterInput: ShowsInfoFilterInput): ShowsInfoResponse
 }
 
-extend type Mutation {
-    showsDownload(searchInput: [ShowsDownloadInput]): ShowsInfoResponse
-}
-
 type ShowsInfoResponse {
     response: GeneralResponse!
     pageInfo: PageInfo
@@ -59,5 +55,4 @@ input ShowsDownloadInput {
     shows_imdb_id: String!
     season: Int!
     episode: Int!
-    download_type: DownloadTypeEnum!
 }

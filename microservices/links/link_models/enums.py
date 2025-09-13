@@ -244,15 +244,6 @@ class PersonInfoSortByEnum(Enum):
         return True
 
 
-class DownloadTypeEnum(Enum):
-    DOWNLOAD_1080p = "1080p"
-    DOWNLOAD_720p = "720p"
-    DOWNLOAD_480p = "480p"
-
-    @property
-    def is_gql():
-        return True
-
 class DownloadLocationEnum(Enum):
     DATABASE = "database"
     REDIS = "redis"

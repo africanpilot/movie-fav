@@ -8,7 +8,7 @@ from link_lib.microservice_controller import ApolloTypes
 from link_lib.microservice_graphql_model import GraphQLModel
 from link_lib.microservice_general import GeneralJSONEncoder
 from shows.src.domain.lib import ShowsLib
-from shows.src.models.shows_episode import ShowsEpisode, ShowsEpisodeFilterInput, ShowsEpisodePageInfoInput, ShowsEpisodeResponse, ShowsEpisodeResponses
+from shows.src.models.shows_episode import ShowsEpisodeFilterInput, ShowsEpisodePageInfoInput, ShowsEpisodeResponse, ShowsEpisodeResponses
 
 
 class ShowsEpisodeQuery(GraphQLModel, ShowsLib, ShowsEpisodeResponses):

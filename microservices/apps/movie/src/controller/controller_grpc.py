@@ -14,8 +14,6 @@ class GrpcController:
     def handler(topic: str, **kwargs) -> dict:
       registered_topics = [
         "GetRemainingMovieCastQuery",
-        "GetRemainingMovieDownloadsQuery",
-        "GetMovieDownloadsQuery",
       ]
 
       if topic not in registered_topics:

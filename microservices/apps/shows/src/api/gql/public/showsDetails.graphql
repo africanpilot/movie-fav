@@ -39,9 +39,6 @@ query ShowsDetails($filterInput: ShowsInfoFilterInput) {
           episode
           shows_info_id
           shows_season_id
-          download_1080p_url
-          download_720p_url
-          download_480p_url
           cover
           full_cover
         }

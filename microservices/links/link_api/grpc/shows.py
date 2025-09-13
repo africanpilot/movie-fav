@@ -53,15 +53,3 @@ class ShowsGrpcClient:
     return ShowsGrpcClient.deserialize_response(
       ShowsGrpcClient.get("GetRemainingShowsCastQuery", body)
     )
-    
-  @staticmethod
-  def get_remaining_shows_downloads_query(body: Optional[dict] = None):
-    return ShowsGrpcClient.deserialize_response(
-      ShowsGrpcClient.get("GetRemainingShowsDownloadsQuery", body)
-    )
-
-  @staticmethod
-  def get_shows_downloads_query(body: Optional[dict] = None):
-    return ShowsGrpcClient.deserialize_response(
-      ShowsGrpcClient.get("GetShowsDownloadsQuery", body)
-    )

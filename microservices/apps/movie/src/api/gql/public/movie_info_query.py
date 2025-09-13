@@ -8,7 +8,7 @@ from link_lib.microservice_controller import ApolloTypes
 from link_lib.microservice_graphql_model import GraphQLModel
 from link_lib.microservice_general import GeneralJSONEncoder
 from movie.src.domain.lib import MovieLib
-from movie.src.models.movie_info import MovieInfo, MovieInfoFilterInput, MovieInfoPageInfoInput, MovieInfoResponse
+from movie.src.models.movie_info import MovieInfoFilterInput, MovieInfoPageInfoInput, MovieInfoResponse
 
 
 class MovieInfoQuery(GraphQLModel, MovieLib):

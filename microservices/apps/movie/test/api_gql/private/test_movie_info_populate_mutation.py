@@ -72,9 +72,6 @@ def test_movie_info_popular_mutation(benchmark, test_database: Session, flush_re
   assert movie_1.payload["full_cover"].startswith("https://m.media-amazon.com/images/M/MV5BN2NmN2VhMTQtMDNiOS00NDlhLTliMjgtODE2ZTY0ODQyNDRhXkEyXkFqcGc@._V1_.jpg")
   assert movie_1.payload["release_date"] == ""
   assert movie_1.payload["videos"] == []
-  assert movie_1.payload["download_1080p_url"] is not None
-  assert movie_1.payload["download_720p_url"] is not None
-  assert movie_1.payload["download_480p_url"] is not None
 
   # run benchmark
   with patch('link_domain.imdb_helper.base.ImdbHelper.get_charts_imdbs', return_value=["0133093"]), \

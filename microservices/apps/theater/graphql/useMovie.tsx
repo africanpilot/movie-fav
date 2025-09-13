@@ -1,22 +1,13 @@
 import { 
     useMoviePopularQuery, MovieInfoPageInfoInput,
     useMovieDetailsQuery, MovieInfoFilterInput,
-    useMovieDownloadMutation, MovieInfoDownloadInput, useMovieUpdateMutation
+    useMovieUpdateMutation
 } from "./schema";
 
 
 export const useMovie = (pageInfo: MovieInfoPageInfoInput = {}, filterInput: MovieInfoFilterInput = {}) => {
-    const [movieDownload, { loading: isMovieDownload }] = useMovieDownloadMutation();
     const [movieUpdate, { loading: isMovieUpdate }] = useMovieUpdateMutation();
-  
-    const handleMovieDownload = async (searchInput: MovieInfoDownloadInput[]) => {
-      try {
-        const { data } = await movieDownload({ variables: { searchInput } });
-        return data?.movieDownload;
-      } catch (error: any) {
-        try { return JSON.parse(error.message) } catch (error: any) { throw error;};
-      }
-    };
+
 
     const handleMovieUpdate = async (movieInfoId: number) => {
       try {
@@ -51,7 +42,7 @@ export const useMovie = (pageInfo: MovieInfoPageInfoInput = {}, filterInput: Mov
         );
 
         const movieDetailsData = movieDetails?.movieInfo?.result?.[0];
-        const isSaving = (isMovieDownload || isMovieUpdate);
+        const isSaving = (isMovieUpdate);
 
         return {
             moviePopular,
@@ -62,7 +53,6 @@ export const useMovie = (pageInfo: MovieInfoPageInfoInput = {}, filterInput: Mov
             isMovieDetails,
             isMovieDetailsError,
             movieDetailsRefetch,
-            movieDownload: handleMovieDownload,
             movieUpdate: handleMovieUpdate,
             isSaving
         };

@@ -17,9 +17,6 @@ query MoviePopular($pageInfo: MovieInfoPageInfoInput) {
       full_cover
       cover
       trailer_link
-      download_1080p_url
-      download_720p_url
-      download_480p_url
       plot
     }
   }

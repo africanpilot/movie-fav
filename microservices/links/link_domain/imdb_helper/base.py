@@ -9,7 +9,6 @@ from dateutil import parser
 from datetime import datetime
 from typing import Optional
 from bs4 import BeautifulSoup
-from link_domain.pyratebay import PyratebayLib
 from sqlmodel import Session
 from os import path
 from imdb import Cinemagoer
@@ -27,10 +26,6 @@ ia = Cinemagoer()
 class ImdbHelper(LinkRequest):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        
-    @cached_property
-    def pyratebay_helper(self):
-        return PyratebayLib()
 
     @cached_property
     def rating_download_url(self) -> str:
@@ -164,9 +159,6 @@ class ImdbHelper(LinkRequest):
             full_cover=data.get("full-size cover url"),
             release_date=self.convert_imdb_date(data.get("original air date")),
             videos=self.get_videos(imdbId),
-            download_1080p_url=self.pyratebay_helper.get_magnet_url(data.get("title"), "1080p"),
-            download_720p_url=self.pyratebay_helper.get_magnet_url(data.get("title"), "720p"),
-            download_480p_url=self.pyratebay_helper.get_magnet_url(data.get("title"), "480p"),
         )
 
     def get_popular_movie_page(self, chart_type: str = "moviemeter") -> BeautifulSoup:
@@ -320,9 +312,6 @@ class ImdbHelper(LinkRequest):
             cover=self.url_clean(episode_info.get("cover")),
             full_cover=episode_info.get("full-size cover url"),
             run_times=episode_info.get("runtimes"),
-            download_1080p_url=self.pyratebay_helper.get_magnet_url(data.get("title"), "1080p", int(episode.get("season")), int(episode.get("episode"))),
-            download_720p_url=self.pyratebay_helper.get_magnet_url(data.get("title"), "720p", int(episode.get("season")), int(episode.get("episode"))),
-            download_480p_url=self.pyratebay_helper.get_magnet_url(data.get("title"), "480p", int(episode.get("season")), int(episode.get("episode"))),
         )
         
     def parse_episode_info(self, shows_episode_imdb: str, shows_imdb_id: str, data: dict):
@@ -341,9 +330,6 @@ class ImdbHelper(LinkRequest):
             cover=self.url_clean(episode_info.get("cover")),
             full_cover=episode_info.get("full-size cover url"),
             run_times=episode_info.get("runtimes"),
-            download_1080p_url=self.pyratebay_helper.get_magnet_url(data.get("title"), "1080p", int(episode_info.get("season")), int(episode_info.get("episode"))),
-            download_720p_url=self.pyratebay_helper.get_magnet_url(data.get("title"), "720p", int(episode_info.get("season")), int(episode_info.get("episode"))),
-            download_480p_url=self.pyratebay_helper.get_magnet_url(data.get("title"), "480p", int(episode_info.get("season")), int(episode_info.get("episode"))),
         )
 
     def get_shows_info(self, imdbId: str, data: dict) -> dict:

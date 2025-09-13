@@ -3,7 +3,6 @@
 
 from functools import cached_property
 from typing import Optional
-from link_domain.pyratebay import PyratebayLib
 from link_lib.microservice_request import LinkRequest
 
 from cinemagoerng import web
@@ -13,10 +12,6 @@ from cinemagoerng.model import Movie, TVMovie, TVEpisode
 class ImdbNg(LinkRequest):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
-    @cached_property
-    def pyratebay_helper(self):
-        return PyratebayLib()
     
     def convert_imdb_id(self, imdbId: str) -> str:
         if imdbId.startswith("tt"):
@@ -47,9 +42,6 @@ class ImdbNg(LinkRequest):
             full_cover=movie.primary_image,
             release_date=None,
             videos=[],
-            download_1080p_url=self.pyratebay_helper.get_magnet_url(movie.title, "1080p"),
-            download_720p_url=self.pyratebay_helper.get_magnet_url(movie.title, "720p"),
-            download_480p_url=self.pyratebay_helper.get_magnet_url(movie.title, "480p"),
         )
 
     def get_shows_by_id(self, imdbId: str, season: Optional[str] = None) -> Movie:
@@ -75,9 +67,6 @@ class ImdbNg(LinkRequest):
             cover=show.primary_image,
             full_cover=show.primary_image,
             run_times=[str(episode.runtime)] if episode.runtime else [],
-            download_1080p_url=self.pyratebay_helper.get_magnet_url(show.title, "1080p", int(episode.season), int(episode.episode)),
-            download_720p_url=self.pyratebay_helper.get_magnet_url(show.title, "720p", int(episode.season), int(episode.episode)),
-            download_480p_url=self.pyratebay_helper.get_magnet_url(show.title, "480p", int(episode.season), int(episode.episode)),
         )
 
     def scan_seasons_episodes(self, show: Movie, season: Optional[str] = None, episode: Optional[str] = None) -> int:

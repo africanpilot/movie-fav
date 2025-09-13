@@ -61,7 +61,4 @@ class ShowsInfoFilterInput(SQLModel):
     year: Optional[list[int]] = None
 
 class ShowsUpdateFilterInput(SQLModel):
-    download_1080p_url: bool = False
-    download_720p_url: bool = False
-    download_480p_url: bool = False
-    shows_episode_id: int = None
+    imdb_ids: list[str]

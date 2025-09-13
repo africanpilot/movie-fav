@@ -48,9 +48,6 @@ SHOWS_PAYLOAD = {
             'cover': 'https://m.media-amazon.com/images/M/MV5BOWJhYjdjNWEtMWFmNC00ZjNkLThlZGEtN2NkM2U3NTVmMjZkXkEyXkFqcGc@._V1_.jpg',
             'full_cover': 'https://m.media-amazon.com/images/M/MV5BOWJhYjdjNWEtMWFmNC00ZjNkLThlZGEtN2NkM2U3NTVmMjZkXkEyXkFqcGc@._V1_.jpg',
             'run_times': [],
-            'download_1080p_url': "test 1080p",
-            'download_720p_url': "test 720p",
-            'download_480p_url': "test 480p"
           }
         ]
       },
@@ -74,9 +71,6 @@ SHOWS_PAYLOAD = {
             'cover': 'https://m.media-amazon.com/images/M/MV5BOWJhYjdjNWEtMWFmNC00ZjNkLThlZGEtN2NkM2U3NTVmMjZkXkEyXkFqcGc@._V1_.jpg',
             'full_cover': 'https://m.media-amazon.com/images/M/MV5BOWJhYjdjNWEtMWFmNC00ZjNkLThlZGEtN2NkM2U3NTVmMjZkXkEyXkFqcGc@._V1_.jpg',
             'run_times': [],
-            'download_1080p_url': "test 1080p",
-            'download_720p_url': "test 720p",
-            'download_480p_url': "test 480p"
           }
         ]
       }

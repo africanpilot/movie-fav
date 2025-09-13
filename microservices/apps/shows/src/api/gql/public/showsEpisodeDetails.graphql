@@ -21,9 +21,6 @@ query ShowsEpisodeDetails($filterInput: ShowsEpisodeFilterInput) {
       rating
       plot
       release_date
-      download_1080p_url
-      download_720p_url
-      download_480p_url
       cover
       full_cover
       run_times

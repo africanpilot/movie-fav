@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import List, Set, Optional
 from sqlmodel import Field, SQLModel
 from link_models.base import PageInfoInput
-from link_models.enums import DownloadTypeEnum, MovieInfoSortByEnum
+from link_models.enums import MovieInfoSortByEnum
 from sqlalchemy import Column, String
 from sqlalchemy.dialects import postgresql
 from pydantic import BaseModel
@@ -31,9 +31,6 @@ class MovieInfoBase(SQLModel):
     release_date: Optional[datetime] = Field(default=None)
     trailer_link: Optional[str] = Field(default=None)
     added_count: Optional[int] = Field(default=0)
-    download_1080p_url: Optional[str] = Field(default=None)
-    download_720p_url: Optional[str] = Field(default=None)
-    download_480p_url: Optional[str] = Field(default=None)
     created: Optional[datetime] = Field(default=datetime.now())
     updated: Optional[datetime] = Field(default=datetime.now())
     videos: Optional[Set[str]] = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
@@ -58,10 +55,7 @@ class MovieInfoFilterInput(SQLModel):
     year: Optional[list[int]] = None
 
 class MovieInfoUpdateFilterInput(SQLModel):
-    download_1080p_url: bool = False
-    download_720p_url: bool = False
-    download_480p_url: bool = False
+    imdb_ids: list[str]
 
 class MovieInfoDownloadInput(BaseModel):
     imdb_id: str
-    download_type: DownloadTypeEnum = DownloadTypeEnum.DOWNLOAD_1080p

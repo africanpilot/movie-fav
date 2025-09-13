@@ -24,9 +24,6 @@ class ShowsEpisodeCreateInput(BaseModel):
   series_years: Optional[str] = None
   creators: Optional[Set[str]] = None
   release_date: Optional[datetime] = None
-  download_1080p_url: Optional[str] = None
-  download_720p_url: Optional[str] = None
-  download_480p_url: Optional[str] = None
   cover: Optional[str] = None
   full_cover: Optional[str] = None
 

@@ -43,9 +43,6 @@ def upgrade() -> None:
         sa.Column('release_date', sa.DateTime(), nullable=True),
         sa.Column('trailer_link', sa.VARCHAR(), nullable=True),
         sa.Column('added_count', sa.INTEGER, nullable=False),
-        sa.Column('download_1080p_url', sa.VARCHAR(), nullable=True),
-        sa.Column('download_720p_url', sa.VARCHAR(), nullable=True),
-        sa.Column('download_480p_url', sa.VARCHAR(), nullable=True),
         sa.Column('created', sa.DateTime(), nullable=True),
         sa.Column('updated', sa.DateTime(), nullable=True),
         schema='movie'

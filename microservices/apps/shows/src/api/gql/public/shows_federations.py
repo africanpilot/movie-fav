@@ -32,7 +32,7 @@ class ShowsFederations(GraphQLModel, ShowsLib):
                 return redis_response.result[0]
             
             with self.get_connection("psqldb_shows") as db:
-                response = self.shows_response(
+                response = self.shows_info_response.shows_response(
                     info=info,
                     db=db,
                     query_context=query_context,
