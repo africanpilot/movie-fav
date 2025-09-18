@@ -1,7 +1,7 @@
 extend type Mutation {
   showsInfoPopulate(pageInfo: ShowsInfoPageInfoInput, location: [DownloadLocationEnum]!, imdbIds: [String]): ShowsInfoResponse
   showsInfoUpdate(pageInfo: ShowsInfoPageInfoInput, updateFilterInput: ShowsUpdateFilterInput): ShowsInfoResponse
-  showsResetPopular: ShowsInfoResponse
+  showsResetPopular(pageInfo: PageInfoInput): ShowsInfoResponse
   showsImport(pageInfo: PageInfoInput): ShowsInfoResponse
 }
 

@@ -13,33 +13,32 @@ from sqlmodel import Session
 from unittest.mock import patch
 
 
-QUERY_NAME = "showsInfoPopulate"
+QUERY_NAME = "showsInfoUpdate"
 
 qgl_query = gql("""
-mutation showsInfoPopulate($pageInfo: ShowsInfoPageInfoInput, $location: [DownloadLocationEnum]!) {
-  showsInfoPopulate(pageInfo: $pageInfo, location: $location) {
+mutation showsInfoUpdate($pageInfo: ShowsInfoPageInfoInput, $updateFilterInput: ShowsUpdateFilterInput!) {
+  showsInfoUpdate(pageInfo: $pageInfo, updateFilterInput: $updateFilterInput) {
     ...ShowsInfoResponse
   }
 }
 """ + SHOWS_RESPONSE_FRAGMENT)
 
 # add general pytest markers
-GENERAL_PYTEST_MARK = LinkGeneral().compose_decos([pytest.mark.shows_info_popular_mutation, pytest.mark.shows])
+GENERAL_PYTEST_MARK = LinkGeneral().compose_decos([pytest.mark.shows_info_update_mutation, pytest.mark.shows])
 
 
 @GENERAL_PYTEST_MARK
 @pytest.mark.shows_bench
-def test_shows_info_popular_mutation(benchmark, test_database: Session, flush_redis_db, create_account, private_schema):
+def test_shows_info_update_mutation(benchmark, test_database: Session, flush_redis_db, create_account, private_schema, create_shows_info):
   flush_redis_db()
-  
+
   _, auth_1 = create_account(test_database)
 
-  variables = dict(pageInfo=dict(first=1), location=[DownloadLocationEnum.IMDB.name])
+  variables = dict(pageInfo=dict(first=1), updateFilterInput=dict(imdb_ids=["11126994"]))
+  shows_1 = create_shows_info(test_database)[0]
+  assert shows_1.imdb_id == "11126994"
 
-  # monkey patch
-  with patch('link_domain.imdb_helper.base.ImdbHelper.get_charts_imdbs', return_value=["11126994"]), \
-      patch('link_domain.imdb_helper.base.ImdbHelper.get_popular_shows_ids', new_callable=lambda: property(lambda self: ["11126994"])):
-    success, result = graphql_sync(private_schema, {"query": qgl_query, "variables": variables}, context_value=auth_1["context_value"])
+  success, result = graphql_sync(private_schema, {"query": qgl_query, "variables": variables}, context_value=auth_1["context_value"])
 
   response = result["data"][QUERY_NAME]
 
@@ -48,11 +47,11 @@ def test_shows_info_popular_mutation(benchmark, test_database: Session, flush_re
     success=True, code=200, message="Success", version="1.0",
   )
   assert response["pageInfo"] is None
-  
+
   time.sleep(20)  # wait for worker to process
 
   shows_1: ShowsSagaState = test_database.query(ShowsSagaState).get(1)
-  
+
   assert shows_1.payload["imdb_id"] == "11126994"
   assert shows_1.payload["title"] == "Arcane: League of Legends"
   assert shows_1.payload["year"] == 2021
@@ -81,12 +80,12 @@ def test_shows_info_popular_mutation(benchmark, test_database: Session, flush_re
   assert "release_date" in shows_1.payload
   assert "videos" in shows_1.payload
   assert isinstance(shows_1.payload["videos"], list)
-  
+
   # Assert shows_episode structure and content
   assert "shows_episode" in shows_1.payload["shows_season"][0]
   assert isinstance(shows_1.payload["shows_season"][0]["shows_episode"], list)
   assert len(shows_1.payload["shows_season"][0]["shows_episode"]) > 0
-  
+
   episode = shows_1.payload["shows_season"][0]["shows_episode"][0]
   assert episode["imdb_id"] == "14586040"
   assert episode["shows_imdb_id"] == "11126994"
@@ -103,7 +102,4 @@ def test_shows_info_popular_mutation(benchmark, test_database: Session, flush_re
   assert "run_times" in episode
   assert isinstance(episode["run_times"], list)
 
-  # # run benchmark
-  with patch('link_domain.imdb_helper.base.ImdbHelper.get_charts_imdbs', return_value=["11126994"]), \
-      patch('link_domain.imdb_helper.base.ImdbHelper.get_popular_shows_ids', new_callable=lambda: property(lambda self: ["11126994"])):
-    benchmark(graphql_sync, private_schema, {"query": qgl_query, "variables": variables}, context_value=auth_1["context_value"])
+  benchmark(graphql_sync, private_schema, {"query": qgl_query, "variables": variables}, context_value=auth_1["context_value"])

@@ -41,12 +41,11 @@ class ShowsEpisodeQuery(GraphQLModel, ShowsLib, ShowsEpisodeResponses):
                     return redis_response       
             
             with self.get_connection("psqldb_shows") as db:
-                response = self.shows_episode_response(
+                response = self.shows_episode_response.shows_episode_response(
                     info=info,
                     db=db,
                     pageInfo=pageInfo,
                     filterInput=filterInput,
-                    # filterInputExtra=[ShowsEpisode.title != None, ShowsEpisode.title != ""],
                     query_context=query_context,
                 )
             

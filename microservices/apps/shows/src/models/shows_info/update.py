@@ -35,7 +35,7 @@ class ShowsInfoUpdate(LinkGeneral):
       db.execute(sql_query)
     return sql_query
   
-  def shows_info_update_popular_id(self, db: Connection, commit: bool = True, **fields_to_update) -> Optional[Update]:
+  def shows_info_update_popular_id(self, db: Session, commit: bool = True, **fields_to_update) -> Optional[Update]:
     sql_query = (
       update(ShowsInfo)
       .where(ShowsInfo.popular_id.isnot(None))
@@ -58,7 +58,7 @@ class ShowsInfoUpdate(LinkGeneral):
       db.commit()
     return sql_query
 
-  def shows_info_update_by_imdb_id(self, db: Optional[Session], imdbId: str, commit: bool = True, **fields_to_update) -> Optional[Update]:
+  def shows_info_update_by_imdb_id(self, db: Session, imdbId: str, commit: bool = True, **fields_to_update) -> Optional[Update]:
     sql_query = (
       update(ShowsInfo)
       .where(ShowsInfo.imdb_id == imdbId)

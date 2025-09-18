@@ -8,6 +8,25 @@ from movie.src.models.movie_info import MovieInfo, MovieInfoCreateInput
 from movie.src.models.movie_saga_state import MovieSagaState, MovieSagaStateCreateInput
 from movie.src.domain.lib import MovieLib
 
+MOVIE_PAYLOAD = {
+  "imdb_id": "0133093",
+  "title": "The Matrix",
+  "cast": ["nm0000206", "nm0000401"],
+  "year": 1999,
+  "directors": ["Lana Wachowski", "Lilly Wachowski"],
+  "genres": ["Action", "Sci-Fi"],
+  "countries": ["United States", "Australia"],
+  "plot": "A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.",
+  "cover": "https://example.com/cover.jpg",
+  "rating": 8.7,
+  "votes": 2000000,
+  "run_times": ["136"],
+  "creators": ["nm0075732"],
+  "full_cover": "https://example.com/full_cover.jpg",
+  "release_date": None,
+  "videos": [],
+}
+
 
 @pytest.fixture
 def movie_lib() -> MovieLib:
@@ -49,24 +68,19 @@ def create_movie_saga_state(movie_lib: MovieLib) -> MovieSagaState:
         failed_at=None,
         failure_details=None,
         last_message_id=str(uuid.uuid4()),
-        payload=dict(
-          imdb_id="0133093",
-          title="The Matrix",
-          cast=["nm0000206", "nm0000401"],
-          year=1999,
-          directors=["Lana Wachowski", "Lilly Wachowski"],
-          genres=["Action", "Sci-Fi"],
-          countries=["United States", "Australia"],
-          plot="A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.",
-          cover="https://example.com/cover.jpg",
-          rating=8.7,
-          votes=2000000,
-          run_times=["136"],
-          creators=["nm0075732"],
-          full_cover="https://example.com/full_cover.jpg",
-          release_date=None,
-          videos=[],
-        )
+        payload=MOVIE_PAYLOAD,
       )]
+    )
+  return create
+
+
+@pytest.fixture
+def create_movie_info(movie_lib: MovieLib, create_movie_saga_state) -> MovieInfo:
+  def create(db) -> MovieInfo:
+    create_movie_saga_state(db)
+    return movie_lib.movie_info_create.movie_info_create_imdb(
+      db,
+      [MovieInfoCreateInput(**MOVIE_PAYLOAD)],
+      commit=True
     )
   return create

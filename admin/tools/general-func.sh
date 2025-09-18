@@ -146,7 +146,13 @@ docker_compose_up () {
     ycommand="$1"
     d="$2"
     shift 2
-    xcommand="${ycommand} -p services up -d $d"
+    CICD_MODE=${CICD_MODE:-False}
+    if [ "$CICD_MODE" = "True" ]; then
+        d="$d"
+    else
+        d="-d $d"
+    fi
+    xcommand="${ycommand} -p services up $d"
     announce "Running $xcommand"
     eval $xcommand
     if [ $? -ne 0 ]; then

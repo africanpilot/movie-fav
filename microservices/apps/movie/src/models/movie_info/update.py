@@ -6,9 +6,9 @@ from typing import Optional
 from sqlalchemy.engine.base import Connection
 from movie.src.models.movie_info.base import MovieInfo
 from link_lib.microservice_general import LinkGeneral
-from sqlalchemy import update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.sql.dml import Update, Insert
+from sqlmodel import Session, update
 
 
 class MovieInfoUpdate(LinkGeneral):
@@ -26,7 +26,7 @@ class MovieInfoUpdate(LinkGeneral):
       db.execute(sql_query)
     return sql_query
 
-  def movie_info_update_popular_id(self, db: Connection, commit: bool = True, **fields_to_update) -> Optional[Update]:
+  def movie_info_update_popular_id(self, db: Session, commit: bool = True, **fields_to_update) -> Optional[Update]:
     sql_query = (
       update(MovieInfo)
       .where(MovieInfo.popular_id.isnot(None))
@@ -34,7 +34,8 @@ class MovieInfoUpdate(LinkGeneral):
     )
     
     if commit:
-      db.execute(sql_query)
+      db.exec(sql_query)
+      db.commit()
     return sql_query
       
   def movie_info_update_imdb(self, db: Optional[Connection], imdbId: str, commit: bool = True, **fields_to_update) -> Optional[Insert]:
@@ -46,8 +47,8 @@ class MovieInfoUpdate(LinkGeneral):
     if commit:
       db.execute(sql_query)
     return sql_query
-  
-  def movie_info_update_by_imdb_id(self, db: Optional[Connection], imdbId: str, commit: bool = True, **fields_to_update) -> Optional[Update]:
+
+  def movie_info_update_by_imdb_id(self, db: Session, imdbId: str, commit: bool = True, **fields_to_update) -> Optional[Update]:
     sql_query = (
       update(MovieInfo)
       .where(MovieInfo.imdb_id == imdbId)
@@ -55,5 +56,6 @@ class MovieInfoUpdate(LinkGeneral):
     )
 
     if commit:
-      db.execute(sql_query)
+      db.exec(sql_query)
+      db.commit()
     return sql_query

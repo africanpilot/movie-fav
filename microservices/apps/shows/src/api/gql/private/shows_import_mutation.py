@@ -36,13 +36,18 @@ class ShowsImportMutation(GraphQLModel, ShowsLib):
                 
                 # clear old popular ids
                 all_popular_ids = self.imdb_helper.get_charts_imdbs("tvmeter")
-                self.shows_info_update.shows_info_update_popular_id(db, commit=False, popular_id=None)
+                
+                sql_query = []
+                sql_query.append(self.shows_info_update.shows_info_update_popular_id(db, commit=False, popular_id=None))
 
                 # update popular order
                 for i, item in enumerate(all_popular_ids):
-                    self.shows_info_update.shows_info_update_by_imdb_id(db=db, imdbId=item, popular_id=i+1)
-                
+                    sql_query.append(self.shows_info_update.shows_info_update_by_imdb_id(db=db, imdbId=item, commit=False, popular_id=i+1))
+
+                for query in sql_query:
+                    db.exec(query)
                 db.commit()
+            
                 self.redis_delete_shows_info_keys()
                 self.redis_delete_shows_episode_keys()
                 

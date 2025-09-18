@@ -13,74 +13,74 @@ class ShowsModels(LinkRequest):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    @cached_property
+    @property
     def shows_info(self):
         return ShowsInfo()
-    
-    @cached_property
+
+    @property
     def shows_info_create(self):
         return ShowsInfoCreate()
     
-    @cached_property
+    @property
     def shows_info_read(self):
         return ShowsInfoRead()
-    
-    @cached_property
+
+    @property
     def shows_info_update(self):
         return ShowsInfoUpdate()
-    
-    @cached_property
+
+    @property
     def shows_info_response(self):
         return ShowsInfoResponses()
-    
-    @cached_property
+
+    @property
     def shows_saga_state(self):
         return ShowsSagaState()
-    
-    @cached_property
+
+    @property
     def shows_saga_state_create(self):
         return ShowsSagaStateCreate()
-    
-    @cached_property
+
+    @property
     def shows_saga_state_read(self):
         return ShowsSagaStateRead()
-    
-    @cached_property
+
+    @property
     def shows_saga_state_update(self):
         return ShowsSagaStateUpdate()
-    
-    @cached_property
+
+    @property
     def shows_season(self):
         return ShowsSeason()
 
-    @cached_property
+    @property
     def shows_season_create(self):
         return ShowsSeasonCreate()
 
-    @cached_property
+    @property
     def shows_season_read(self):
         return ShowsSeasonRead()
 
-    @cached_property
+    @property
     def shows_season_update(self):
         return ShowsSeasonUpdate()
 
-    @cached_property
+    @property
     def shows_episode(self):
         return ShowsEpisode()
 
-    @cached_property
+    @property
     def shows_episode_create(self):
         return ShowsEpisodeCreate()
 
-    @cached_property
+    @property
     def shows_episode_read(self):
         return ShowsEpisodeRead()
 
-    @cached_property
+    @property
     def shows_episode_update(self):
         return ShowsEpisodeUpdate()
 
-    @cached_property
+    @property
     def shows_episode_response(self):
         return ShowsEpisodeResponses()

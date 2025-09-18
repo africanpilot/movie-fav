@@ -25,7 +25,6 @@ class MovieInfoUpdateMutation(GraphQLModel, MovieLib):
             self.general_validation_process(info)
             
             pageInfo = MovieInfoPageInfoInput(**(pageInfo or {}))
-
             updateFilterInput = MovieInfoUpdateFilterInput(**updateFilterInput)
             
             with self.get_session("psqldb_movie") as db:

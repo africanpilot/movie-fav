@@ -1,7 +1,7 @@
 extend type Mutation {
   movieInfoPopulate(pageInfo: MovieInfoPageInfoInput, location: [DownloadLocationEnum]!, imdbIds: [String]): MovieInfoResponse
   movieInfoUpdate(pageInfo: MovieInfoPageInfoInput, updateFilterInput: MovieInfoUpdateFilterInput): MovieInfoResponse
-  movieResetPopular: MovieInfoResponse
+  movieResetPopular(pageInfo: PageInfoInput): MovieInfoResponse
   movieImport(pageInfo: PageInfoInput): MovieInfoResponse
 }
 

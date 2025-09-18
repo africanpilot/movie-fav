@@ -60,6 +60,15 @@ SHOWS_INFO_FRAGMENT = gql("""
 """ + SHOWS_SEASON_FRAGMENT)
 
 
+SHOWS_EPISODE_RESPONSE_FRAGMENT = gql("""
+  fragment ShowsEpisodeResponse on ShowsEpisodeResponse {
+    response{...GeneralResponse}
+    pageInfo{...PageInfo}
+    result{...ShowsEpisode}
+  }
+""" + GENERAL_RESPONSE_FRAGMENT + PAGE_INFO_FRAGMENT + SHOWS_EPISODE_FRAGMENT)
+
+
 SHOWS_RESPONSE_FRAGMENT = gql("""
   fragment ShowsInfoResponse on ShowsInfoResponse {
     response{...GeneralResponse}
@@ -67,3 +76,4 @@ SHOWS_RESPONSE_FRAGMENT = gql("""
     result{...ShowsInfo}
   }
 """ + GENERAL_RESPONSE_FRAGMENT + PAGE_INFO_FRAGMENT + SHOWS_INFO_FRAGMENT)
+
