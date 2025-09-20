@@ -14,7 +14,7 @@ class GetShowsEpisodeQuery(ShowsLib):
   def execute(self):
     self.log.info(f"GetShowsEpisodeQuery: {self.body}")
     with self.get_session("psqldb_shows") as db:
-      result = self.get_shows_episode(
+      result = self.shows_episode_read.get_shows_episode(
         db, self.body.get("shows_info_id"),
         self.body.get("shows_season_id"),
         self.body.get("shows_episode_id")

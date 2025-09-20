@@ -6,8 +6,6 @@ import pytest
 from link_lib.microservice_general import LinkGeneral
 from ariadne import gql, graphql_sync
 from movie.test.fixtures.models import MOVIE_INFO_RESPONSE_FRAGMENT
-from link_models.enums import AccountRegistrationEnum
-from link_test.fixtures import GeneralMovieLib
 
 
 QUERY_NAME = "movieInfo"
@@ -26,12 +24,12 @@ GENERAL_PYTEST_MARK = LinkGeneral().compose_decos([pytest.mark.movie_info_query,
 
 @GENERAL_PYTEST_MARK
 @pytest.mark.movie_bench
-def test_movie_info_query(benchmark, test_database, flush_redis_db, create_account, create_movie_info, private_schema, link_movie_lib: GeneralMovieLib):
+def test_movie_info_query(benchmark, test_database, flush_redis_db, create_account, create_movie_info, private_schema):
   flush_redis_db()
   
   _, auth_1 = create_account(test_database)
-  
-  movie_1 = create_movie_info(test_database)
+
+  movie_1 = create_movie_info(test_database)[0]
 
   variables = dict(
     pageInfo=dict(pageNumber=1),

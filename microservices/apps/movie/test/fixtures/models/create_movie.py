@@ -1,7 +1,6 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
-from datetime import datetime
 import pytest
 import uuid
 from movie.src.models.movie_info import MovieInfo, MovieInfoCreateInput
@@ -31,29 +30,6 @@ MOVIE_PAYLOAD = {
 @pytest.fixture
 def movie_lib() -> MovieLib:
   return MovieLib()
-
-@pytest.fixture
-def create_movie_info(movie_lib: MovieLib) -> MovieInfo:
-  def create(db) -> MovieInfo:
-    return movie_lib.movie_info_create.movie_info_create_imdb(db,
-      [MovieInfoCreateInput(
-        imdb_id="0133093",
-        title="test",
-        cast=["02012345"],
-        year=2022,
-        directors=["test"],
-        genres=["test"],
-        countries=["test"],
-        plot="test",
-        cover="test",
-        rating=9.3,
-        popular_id=1,
-        release_date=datetime.now(),
-        trailer_link="test",
-        added_count=100,
-      )]
-    )
-  return create
 
 
 @pytest.fixture

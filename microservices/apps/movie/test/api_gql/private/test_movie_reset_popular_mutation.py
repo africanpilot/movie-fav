@@ -32,6 +32,7 @@ def test_movie_reset_popular_mutation(benchmark, test_database: Session, flush_r
   variables = dict(pageInfo=dict(first=1))
   
   movie_1 = create_movie_info(test_database)[0]
+
   assert movie_1.popular_id is None
 
   # monkey patch

@@ -1,7 +1,6 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
-import json
 from graphql import GraphQLResolveInfo
 from link_api.grpc.movie import MovieGrpcClient
 from link_api.grpc.shows import ShowsGrpcClient
@@ -11,7 +10,7 @@ from person.src.domain.lib import PersonLib
 from person.src.models.person_info import PersonInfoPageInfoInput, PersonInfoResponse
 from person.src.domain.orchestrator import CreatePersonSaga
 from person.src.controller.controller_worker import worker
-from person.src.models.person_saga_state import PersonSagaStateUpdate
+from person.src.models.person_saga_state import PersonSagaStateUpdate, PersonSagaStateCreateInput
 
 
 class PersonInfoPopulateMutation(GraphQLModel, PersonLib):
@@ -47,10 +46,11 @@ class PersonInfoPopulateMutation(GraphQLModel, PersonLib):
                 person_saga_added = [
                     saga.person_info_imdb_id for saga in self.person_saga_state_read.find_person_imdb_saga_added(db, person_ids)
                 ]
-                                
+
                 person_todo = list(filter(lambda x: x not in set(person_saga_added), person_ids))[:pageInfo.first]
-                
-                all_create = self.person_saga_state_create(db, person_todo)
+                createInput = [PersonSagaStateCreateInput(person_info_imdb_id=i, body=dict(first=pageInfo.first)) for i in person_todo]
+
+                all_create = self.person_saga_state_create.person_saga_state_create(db, createInput)
 
                 self.log.info(f"""Person todo: {len(person_todo)}""")
 

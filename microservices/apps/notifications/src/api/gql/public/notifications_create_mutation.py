@@ -7,11 +7,11 @@ from link_lib.microservice_graphql_model import GraphQLModel
 from notifications.src.domain.orchestrator import CreateNotifySaga
 from notifications.src.domain.lib import NotificationsLib
 from notifications.src.models.notifications_info import NotificationsInfoCreateInput, NotificationsInfoResponse
-from notifications.src.models.notifications_saga_state import NotificationsSagaStateCreate, NotificationsSagaStateUpdate
+from notifications.src.models.notifications_saga_state import NotificationsSagaStateUpdate
 from notifications.src.controller.controller_worker import worker
 
 
-class NotificationsCreateMutation(GraphQLModel, NotificationsLib, NotificationsSagaStateCreate):
+class NotificationsCreateMutation(GraphQLModel, NotificationsLib):
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
 
@@ -27,7 +27,7 @@ class NotificationsCreateMutation(GraphQLModel, NotificationsLib, NotificationsS
 
 			with self.get_session("psqldb_notifications") as db:
 
-				saga_state = self.notifications_saga_state_create(db, dict(
+				saga_state = self.notifications_saga_state_create.notifications_saga_state_create(db, dict(
 					account_store_id=token_decode.account_store_id,
         			body=dict(service_name=token_decode.service_name.value, template=createInput.template.value, status=createInput.status.value, **createInput.dict(exclude={"template", "status"}))
         		))

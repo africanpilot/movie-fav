@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import List, Optional, Set
 from sqlalchemy.dialects.postgresql import insert
 from movie.src.models.movie_info.base import MovieInfo
-from sqlmodel import Session
+from sqlmodel import Session, select
 from pydantic import BaseModel
 
 
@@ -37,7 +37,7 @@ class MovieInfoCreate:
 
   def movie_info_create_imdb(self, db: Session, createInput: list[MovieInfoCreateInput], commit: bool = True):
     sql_query = []
-     
+
     for movie in createInput:
       sql_query.append(
           insert(MovieInfo)
@@ -49,5 +49,9 @@ class MovieInfoCreate:
       for r in sql_query:
         db.exec(r)
       db.commit()
+      
+      imdb_ids = [movie.imdb_id for movie in createInput]
+      
+      return db.exec(select(MovieInfo).where(MovieInfo.imdb_id.in_(imdb_ids))).all()
 
     return sql_query

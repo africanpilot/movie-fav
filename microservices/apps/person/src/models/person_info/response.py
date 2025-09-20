@@ -10,7 +10,7 @@ from person.src.models.person_info import PersonInfo, PersonInfoBase, PersonInfo
 
 
 class PersonInfoBaseResponse(PersonInfoBase):
-  pass
+  id: Optional[int] = None
 
 class PersonInfoResponse(BaseResponse):
   result: Optional[list[PersonInfoBaseResponse]] = None

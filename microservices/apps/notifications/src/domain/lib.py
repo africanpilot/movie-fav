@@ -2,12 +2,12 @@
 # All Rights Reserved. Proprietary and confidential.
 
 
-from link_lib.microservice_to_redis import LinkRedis
-from link_lib.microservice_request import LinkRequest
+from link_domain.base import LinkDomain
+from notifications.src.models import NotificationsModels
 from notifications.src.models.notifications_saga_state import NotificationsSagaStateResponse
 
 
-class NotificationsLib(LinkRequest, LinkRedis):
+class NotificationsLib(LinkDomain, NotificationsModels):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
     

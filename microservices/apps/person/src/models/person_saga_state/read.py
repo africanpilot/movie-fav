@@ -32,6 +32,7 @@ class PersonSagaStateRead(LinkResponse):
     sql_query = self.query_filter(sql_query, [
       PersonSagaState.person_info_imdb_id.in_(imdb_ids),
       PersonSagaState.payload.isnot(None),
+      PersonSagaState.failed_at == None,
     ])
     return db.execute(sql_query).all()
 

@@ -7,19 +7,17 @@ from graphql import GraphQLResolveInfo
 from link_lib.microservice_general import GeneralJSONEncoder
 from link_lib.microservice_controller import ApolloTypes
 from link_lib.microservice_graphql_model import GraphQLModel
-from link_models.enums import AccountRoleEnum
 from notifications.src.domain.lib import NotificationsLib
 from notifications.src.models.notifications_saga_state import (
     NotificationsSagaState,
     NotificationsSagaStatePageInfoInput,
     NotificationsSagaStateFilterInput,
     NotificationsSagaStateResponse,
-    NotificationsSagaStateResponses
 )
 from account.src.models.account_info import AccountInfoRead
 from sqlalchemy import text
 
-class NotificationsSagaStateQuery(GraphQLModel, NotificationsLib, NotificationsSagaStateResponses):
+class NotificationsSagaStateQuery(GraphQLModel, NotificationsLib):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         
@@ -52,13 +50,11 @@ class NotificationsSagaStateQuery(GraphQLModel, NotificationsLib, NotificationsS
             with self.get_session("psqldb_account") as db:
                 account_user = AccountInfoRead().get_user(db, token_decode.account_info_id)
                 
-            filterInputExtra = [NotificationsSagaState.account_store_id == token_decode.account_store_id]  
-            if account_user.email not in ["info@sumexus.com"]:
-                filterInputExtra.append(text(f"notifications_saga_state.body->>'email' = '{account_user.email}'"))
+            filterInputExtra = [NotificationsSagaState.account_store_id == token_decode.account_store_id, text(f"notifications_saga_state.body->>'email' = '{account_user.email}'")]
 
             with self.get_connection("psqldb_notifications") as db:
     
-                response = self.notifications_saga_state_response(
+                response = self.notifications_saga_state_responses.notifications_saga_state_response(
                     info=info,
                     db=db,
                     pageInfo=pageInfo,

@@ -11,7 +11,7 @@ class GetAllShowsSeasonQuery(ShowsLib):
   def execute(self):
     self.log.info(f"GetAllShowsSeasonQuery: {self.body}")
     with self.get_session("psqldb_shows") as db:
-      result = self.get_all_shows_seasons(db, self.body.get("shows_info_id"))
+      result = self.shows_season_read.get_all_shows_seasons(db, self.body.get("shows_info_id"))
     
     seasons = list({r.id for r in result})
     return dict(message=dict(data=seasons), received=True)

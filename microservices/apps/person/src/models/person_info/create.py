@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import insert
 from typing import Optional, Set
 from person.src.models.person_info.base import PersonInfo
 from pydantic import BaseModel
-from sqlmodel import Session
+from sqlmodel import Session, select
 from datetime import datetime
 
 
@@ -39,5 +39,9 @@ class PersonInfoCreate:
       for r in sql_query:
         db.exec(r)
       db.commit()
+
+      imdb_ids = [person.imdb_id for person in createInput]
+
+      return db.exec(select(PersonInfo).where(PersonInfo.imdb_id.in_(imdb_ids))).all()
 
     return sql_query

@@ -14,7 +14,7 @@ class GetCurrentEpisodeQuery(ShowsLib):
   def execute(self):
     self.log.info(f"GetCurrentEpisodeQuery: {self.body}")
     with self.get_session("psqldb_shows") as db:
-      result = self.get_current_episode(db, self.body.get("shows_info_id"))
+      result = self.shows_episode_read.get_current_episode(db, self.body.get("shows_info_id"))
     
     return dict(
       message=json.dumps(dict(result), cls=GeneralJSONEncoder),

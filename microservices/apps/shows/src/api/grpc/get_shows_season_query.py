@@ -14,7 +14,7 @@ class GetShowsSeasonQuery(ShowsLib):
   def execute(self):
     self.log.info(f"GetShowsSeasonQuery: {self.body}")
     with self.get_session("psqldb_shows") as db:
-      result = self.get_shows_seasons(db, self.body.get("shows_info_id"), self.body.get("shows_season_id"))
+      result = self.shows_season_read.get_shows_seasons(db, self.body.get("shows_info_id"), self.body.get("shows_season_id"))
     
     return dict(
       message=dict(data=json.dumps(dict(result), cls=GeneralJSONEncoder)),

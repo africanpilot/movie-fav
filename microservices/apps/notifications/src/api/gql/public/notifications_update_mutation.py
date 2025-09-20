@@ -11,15 +11,13 @@ from notifications.src.models.notifications_saga_state import (
     NotificationsSagaStatePageInfoInput,
     NotificationsSagaStateFilterInput,
     NotificationsSagaStateResponse,
-    NotificationsSagaStateResponses,
     NotificationsSagaStateUpdateInput,
-    NotificationsUpdate
 )
 from account.src.models.account_info import AccountInfoRead
 from sqlalchemy import text
 
 
-class NotificationsUpdateMutation(GraphQLModel, NotificationsLib, NotificationsSagaStateResponses, NotificationsUpdate):
+class NotificationsUpdateMutation(GraphQLModel, NotificationsLib):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         
@@ -48,15 +46,13 @@ class NotificationsUpdateMutation(GraphQLModel, NotificationsLib, NotificationsS
             with self.get_session("psqldb_account") as db:
                 account_user = AccountInfoRead().get_user(db, token_decode.account_info_id)
             
-            filterInputExtra = [NotificationsSagaState.account_store_id == token_decode.account_store_id]  
-            if account_user.email not in ["info@sumexus.com"]:
-                filterInputExtra.append(text(f"notifications_saga_state.body->>'email' = '{account_user.email}'"))
+            filterInputExtra = [NotificationsSagaState.account_store_id == token_decode.account_store_id, text(f"notifications_saga_state.body->>'email' = '{account_user.email}'")]  
 
             with self.get_session("psqldb_notifications") as db:
                 
-                self.notifications_update(db, updateInput.saga_id, updateInput)
+                self.notifications_update.notifications_update(db, updateInput.saga_id, updateInput)
 
-                response = self.notifications_saga_state_response(
+                response = self.notifications_saga_state_responses.notifications_saga_state_response(
                     info=info,
                     db=db,
                     pageInfo=pageInfo,

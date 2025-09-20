@@ -3,7 +3,6 @@
 
 from link_lib.microservice_response import LinkResponse
 from sqlalchemy.engine.base import Connection
-
 from person.src.models.person_info.base import PersonInfo
 
 

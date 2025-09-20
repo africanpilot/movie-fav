@@ -1,11 +1,18 @@
+import pytest
+from link_lib.microservice_general import LinkGeneral
 from movie.src.domain.lib import MovieLib
 
 
-def test_get_movie_info(link_movie_lib: MovieLib):
-    movie_info = link_movie_lib.process_movie_info("tt0133093")  # The Matrix
+# add general pytest markers
+GENERAL_PYTEST_MARK = LinkGeneral().compose_decos([pytest.mark.movie_domain, pytest.mark.movie])
+
+@GENERAL_PYTEST_MARK
+@pytest.mark.movie_bench
+def test_get_movie_info(benchmark, movie_lib: MovieLib):
+    movie_info = movie_lib.process_movie_info("tt0133093")  # The Matrix
     assert movie_info["title"] == "The Matrix"
     assert movie_info["year"] == 1999
-    assert movie_info["imdb_id"] == "tt0133093"
+    assert movie_info["imdb_id"] == "0133093"
     assert movie_info["directors"] == ["Lana Wachowski", "Lilly Wachowski"]
     assert "nm0000206" in movie_info["cast"]
     assert movie_info["genres"] == ["Action", "Sci-Fi"]
@@ -17,5 +24,7 @@ def test_get_movie_info(link_movie_lib: MovieLib):
     assert movie_info["run_times"] == ["136"]
     assert "nm0075732" in movie_info["creators"]
     assert movie_info["full_cover"].startswith("https://m.media-amazon.com/images/M/MV5BN2NmN2VhMTQtMDNiOS00NDlhLTliMjgtODE2ZTY0ODQyNDRhXkEyXkFqcGc@._V1_.jpg")
-    assert movie_info["release_date"] == ""
+    assert movie_info["release_date"] == None
     assert movie_info["videos"] == []
+
+    benchmark(movie_lib.process_movie_info, "0133093")

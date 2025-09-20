@@ -13,7 +13,7 @@ class GetRemainingShowsCastQuery(ShowsLib):
 
   def execute(self):
     with self.get_session("psqldb_shows") as db:
-      result = self.get_all_shows_cast(db)
+      result = self.shows_info_read.get_all_shows_cast(db)
   
     return dict(
       message=json.dumps(dict(result), cls=GeneralJSONEncoder),

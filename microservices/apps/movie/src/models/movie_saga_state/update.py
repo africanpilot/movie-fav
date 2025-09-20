@@ -35,7 +35,8 @@ class MovieSagaStateUpdate(AbstractSagaStateRepository, LinkRedis):
         .values(
           failed_step=failed_step.name,
           failed_at=datetime.now(),
-          failure_details=initial_failure_payload['message']
+          failure_details=initial_failure_payload['message'],
+          updated=datetime.now()
         )
       )
       db.commit()

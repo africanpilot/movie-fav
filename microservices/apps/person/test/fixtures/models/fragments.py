@@ -7,6 +7,13 @@ PERSON_INFO_FRAGMENT = gql("""
     id
     imdb_id
     name
+    birth_place
+    akas
+    filmography
+    mini_biography
+    birth_date
+    titles_refs
+    head_shot
   }
 """)
 
