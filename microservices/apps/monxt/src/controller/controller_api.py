@@ -34,7 +34,6 @@ class APIController(ControllerToApollo):
       
       # notifications
       "NotificationsCreateMutation",
-      "NotificationsCreateFormMutation",
       "NotificationsSagaStateQuery",
       "NotificationsUpdateMutation",
       

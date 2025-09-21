@@ -11,35 +11,14 @@ TASK_NAME = 'notifications.create_notify'
 class CreateNotifyMessage(BaseModel):
   email: str
   template: str
-  service_name: Optional[str]
-  name: Optional[str]
-  message: Optional[str]
-  number: Optional[str]
-  subject: Optional[str]
-  date: Optional[str]
-  duration: Optional[str]
-  requestor_name: Optional[str]
-  patient_name: Optional[str]
-  relationship: Optional[str]
-  phone: Optional[str]
-  mailing_address: Optional[str]
-  transport_type: Optional[str]
-  wheelchair: Optional[str]
-  oxygen: Optional[str]
-  starting_address: Optional[str]
-  ending_address: Optional[str]
-  transport_date: Optional[str]
-  additional_needs: Optional[str]
-  payment_method: Optional[str]
-  high_school_name: Optional[str]
-  first_guest: Optional[str]
-  second_guest: Optional[str]
-  drop_off_date: Optional[str]
-  billing_type: Optional[str]
-  patient_weight: Optional[str]
-  drop_off_message: Optional[str]
-  pickup_message: Optional[str]
-  status: Optional[str]
+  service_name: str
+  name: Optional[str] = None
+  message: Optional[str] = None
+  number: Optional[str] = None
+  subject: Optional[str] = None
+  date: Optional[str] = None
+  status: Optional[str] = None
+
 
 message = asyncapi.Message(
   name=TASK_NAME,

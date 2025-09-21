@@ -40,10 +40,3 @@ class MovieSagaStateUpdate(AbstractSagaStateRepository, LinkRedis):
         )
       )
       db.commit()
-  
-  def movie_state_saga_update(self, saga_id: int, **other_fields):
-    return (
-      update(MovieSagaState)
-      .where(MovieSagaState.id == saga_id)
-      .values(**other_fields, updated=datetime.now())
-    )

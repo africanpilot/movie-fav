@@ -14,49 +14,52 @@ from sqlalchemy.engine.base import Connection
 from link_lib.microservice_general import LinkGeneral
 
 
+class NotificationsSagaStateBodyUpdateInput(BaseModel):
+  name: Optional[str] = None
+  message: Optional[str] = None
+  number: Optional[str] = None
+  subject: Optional[str] = None
+  date: Optional[str] = None
+  status: Optional[str] = None
+
 class NotificationsSagaStateUpdateInput(BaseModel):
   saga_id: int
-  modified_body: dict
+  modified_body: NotificationsSagaStateBodyUpdateInput
 
 class NotificationsSagaStateUpdate(AbstractSagaStateRepository, DbConn):
   def get_saga_state_by_id(self, saga_id: int) -> NotificationsSagaState:
     with self.get_session("psqldb_notifications") as db:
-      return db.exec(select(NotificationsSagaState).where(NotificationsSagaState.id == saga_id)).one_or_none()
+      return db.exec(select(NotificationsSagaState).where(NotificationsSagaState.id == saga_id)).one()
 
   def update_status(self, saga_id: int, status: str) -> None:
     with self.get_session("psqldb_notifications") as db:
-      db.execute(update(NotificationsSagaState)
+      db.exec(update(NotificationsSagaState)
         .where(NotificationsSagaState.id == saga_id)
-        .values(status=status)
+        .values(status=status, updated=datetime.now())
       )
       db.commit()
 
   def update(self, saga_id: int, **fields_to_update) -> None:
     with self.get_session("psqldb_notifications") as db:
-      db.execute(update(NotificationsSagaState)
+      db.exec(update(NotificationsSagaState)
         .where(NotificationsSagaState.id == saga_id)
-        .values(**fields_to_update)
+        .values(**fields_to_update, updated=datetime.now())
       )
       db.commit()
 
   def on_step_failure(self, saga_id: int, failed_step: BaseStep, initial_failure_payload: dict) -> NotificationsSagaState:
     with self.get_session("psqldb_notifications") as db:
-      db.execute(update(NotificationsSagaState)
+      db.exec(update(NotificationsSagaState)
         .where(NotificationsSagaState.id == saga_id)
         .values(
           failed_step=failed_step.name,
           failed_at=datetime.now(),
-          failure_details=initial_failure_payload['message']
+          failure_details=initial_failure_payload['message'],
+          updated=datetime.now()
         )
       )
       db.commit()
 
-  def notifications_state_saga_update(self, saga_id: int, **other_fields):
-    return (
-      update(NotificationsSagaState)
-      .where(NotificationsSagaState.id == saga_id)
-      .values(**other_fields)
-    )
 
 class NotificationsUpdate(LinkGeneral):
   def __init__(self, **kwargs):

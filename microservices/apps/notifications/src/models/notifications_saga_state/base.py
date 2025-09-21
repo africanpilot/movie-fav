@@ -46,4 +46,4 @@ class NotificationsSagaStatePageInfoInput(PageInfoInput):
 	sortBy: list[NotificationsSagaStateSortByEnum] = [NotificationsSagaStateSortByEnum.ID]
 
 class NotificationsSagaStateFilterInput(SQLModel):
-    id: Optional[list[int]]
+    id: Optional[list[int]] = None

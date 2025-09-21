@@ -13,6 +13,7 @@ from link_models.messaging import (
   CREATE_MOVIE_SAGA_RESPONSE_QUEUE,
   MOVIE_COMMANDS_QUEUE,
   NOTIFICATIONS_COMMANDS_QUEUE,
+  CREATE_NOTIFY_SAGA_RESPONSE_QUEUE,
   CREATE_PERSON_SAGA_RESPONSE_QUEUE,
   PERSON_COMMANDS_QUEUE,
   CREATE_SHOWS_SAGA_RESPONSE_QUEUE,
@@ -30,7 +31,7 @@ from notifications.src.domain.orchestrator import CreateNotifySaga
 from person.src.models.person_saga_state import PersonSagaStateUpdate
 from person.src.domain.orchestrator import CreatePersonSaga
 
-from shows.src.domain.orchestrator import CreateShowsSaga, ShowsImportSaga
+from shows.src.domain.orchestrator import CreateShowsSaga
 from shows.src.models.shows_saga_state import ShowsSagaStateUpdate
 
 
@@ -50,6 +51,7 @@ worker_queues = (
   Queue(CREATE_MOVIE_SAGA_RESPONSE_QUEUE),
   Queue(MOVIE_COMMANDS_QUEUE),
   Queue(NOTIFICATIONS_COMMANDS_QUEUE),
+  Queue(CREATE_NOTIFY_SAGA_RESPONSE_QUEUE),
   Queue(CREATE_PERSON_SAGA_RESPONSE_QUEUE),
   Queue(PERSON_COMMANDS_QUEUE),
   Queue(CREATE_SHOWS_SAGA_RESPONSE_QUEUE),

@@ -6,6 +6,7 @@ from celery import Task
 from notifications.src.controller.controller_worker import worker
 from link_lib.saga_framework import saga_step_handler
 from link_models.messaging import create_notify_message as message, CREATE_NOTIFY_SAGA_RESPONSE_QUEUE
+from notifications.src.domain.lib import NotificationsLib
 from notifications.src.domain.sendgrid_helper.base import SendgridHelper
 
 
@@ -13,7 +14,13 @@ from notifications.src.domain.sendgrid_helper.base import SendgridHelper
 @saga_step_handler(response_queue=CREATE_NOTIFY_SAGA_RESPONSE_QUEUE)
 def create_notify_task(self: Task, saga_id: int, payload: dict) -> Union[dict, None]:
     request_data = message.CreateNotifyMessage(**payload)
-
-    SendgridHelper(body=request_data.dict(), template=request_data.template).execute()
+    lib = NotificationsLib()
+    
+    try:
+        SendgridHelper(body=request_data.dict(), template=request_data.template).execute()
+    except Exception as e:
+        raise lib.http_500_internal_server_error(
+            f"Failed to update notifications saga {request_data.email} for saga id {saga_id} -- {e}"
+        )
  
-    return None  # nothing to return
+    return None

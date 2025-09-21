@@ -5,7 +5,6 @@ extend type Query {
 extend type Mutation {
   notificationsCreate(createInput: NotificationsInfoCreateInput!): NotificationsInfoResponse
   notificationsUpdate(updateInput: NotificationsSagaStateUpdateInput!, pageInfo: NotificationsSagaStatePageInfoInput, filterInput: NotificationsSagaStateFilterInput): NotificationsSagaStateResponse
-  notificationsCreateForm(createInput: NotificationsInfoCreateFormInput!): NotificationsInfoResponse
 }
 
 type NotificationsInfoResponse {
@@ -34,25 +33,11 @@ extend type NotificationsSagaState @key(fields: "id") {
 type NotificationsSagaStateBody {
   email: String
   template: String
-  requestor_name: String
-  patient_name: String
-  relationship: String
-  phone: String
-  mailing_address: String
-  transport_type: String
-  wheelchair: String
-  oxygen: String
-  starting_address: String
-  ending_address: String
-  transport_date: String
-  additional_needs: String
+  name: String
   message: String
-  payment_method: String
-  drop_off_date: String
-  billing_type: String
-  patient_weight: String
-  drop_off_message: String
-  pickup_message: String
+  number: String
+  subject: String
+  date: String
   status: String
 }
 
@@ -77,63 +62,19 @@ input NotificationsInfoCreateInput {
   number: String
   subject: String
   date: String
-  duration: String
-  high_school_name: String
-  first_guest: String
-  second_guest: String
-}
-
-input NotificationsInfoCreateFormInput {
-  email: String!
-  template: NotifyTemplateEnum!
-  requestor_name: String!
-  patient_name: String!
-  relationship: String!
-  phone: String!
-  mailing_address: String
-  transport_type: String!
-  wheelchair: String!
-  oxygen: String!
-  starting_address: String!
-  ending_address: String!
-  transport_date: String!
-  additional_needs: String
-  message: String
-  payment_method: String
-  drop_off_date: String
-  billing_type: String!
-  patient_weight: String!
-  drop_off_message: String
-  pickup_message: String
-  status: NotifyStatusEnum
+  status: String
 }
 
 input NotificationsSagaStateUpdateInput {
-    saga_id: Int!
-    modified_body: NotificationsSagaStateBodyUpdateInput!
+  saga_id: Int!
+  modified_body: NotificationsSagaStateBodyUpdateInput!
 }
 
 input NotificationsSagaStateBodyUpdateInput {
-  email: String
-  template: String
-  requestor_name: String
-  patient_name: String
-  relationship: String
-  phone: String
-  mailing_address: String
-  transport_type: String
-  wheelchair: String
-  oxygen: String
-  starting_address: String
-  ending_address: String
-  transport_date: String
-  additional_needs: String
+  name: String
   message: String
-  payment_method: String
-  drop_off_date: String
-  billing_type: String
-  patient_weight: String
-  drop_off_message: String
-  pickup_message: String
+  number: String
+  subject: String
+  date: String
   status: String
 }

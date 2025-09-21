@@ -9,49 +9,21 @@ mutation NotificationsUpdate($updateInput: NotificationsSagaStateUpdateInput!, $
       body{
         email
         template
-        requestor_name
-        patient_name
-        relationship
-        phone
-        mailing_address
-        transport_type
-        wheelchair
-        oxygen
-        starting_address
-        ending_address
-        transport_date
-        additional_needs
+        name
         message
-        payment_method
-        drop_off_date
-        billing_type
-        patient_weight
-        drop_off_message
-        pickup_message
+        number
+        subject
+        date
         status
       }
       modified_body{
         email
         template
-        requestor_name
-        patient_name
-        relationship
-        phone
-        mailing_address
-        transport_type
-        wheelchair
-        oxygen
-        starting_address
-        ending_address
-        transport_date
-        additional_needs
+        name
         message
-        payment_method
-        drop_off_date
-        billing_type
-        patient_weight
-        drop_off_message
-        pickup_message
+        number
+        subject
+        date
         status
       }
     }

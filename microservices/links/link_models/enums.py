@@ -272,6 +272,7 @@ class StripeMethodEnum(Enum):
     VERIFICATION_ID_CHECK = "verification_id_check"
 
 class NotifyTemplateEnum(Enum):
+    THEATER_CONTACT = "theater_contact"
     LABELLE_APPOINTMENT = "labelle_appointment"
     ALL_NATION_CONTACT = "all_nation_contact"
     LABELLE_CONTACT = "labelle_contact"
