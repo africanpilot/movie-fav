@@ -3,6 +3,4 @@
 
 from notifications.src.domain.orchestrator.create_notify_saga import CreateNotifySaga
 
-__all__ = (
-  "CreateNotifySaga",
-)
+__all__ = ("CreateNotifySaga",)

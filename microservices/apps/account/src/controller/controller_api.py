@@ -4,6 +4,7 @@
 from link_lib.microservice_controller import ControllerToApollo
 from link_models.enums import SchemaTypeEnum
 
+
 class APIController(ControllerToApollo):
     """
     List of the class models for each query type.
@@ -27,9 +28,9 @@ class APIController(ControllerToApollo):
         "AccountCompanyQuery",
         "AccountGuestLoginMutation",
     ]
-    
+
     private_models_to_load = []
-    
+
     public_routes_to_load = [
         "AccountAuthZeroRouter",
     ]
@@ -42,7 +43,7 @@ class APIController(ControllerToApollo):
         self._microservice = microservice
 
         self.set_models_to_load(self.public_models_to_load)
-        
+
         if self._schema_type == SchemaTypeEnum.PRIVATE:
             self.set_models_to_load(self.private_models_to_load)
 

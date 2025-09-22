@@ -1,9 +1,10 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
+import logging
 import os
 import sys
-import logging
+
 
 class MicroserviceDynamicLinkImport:
     """

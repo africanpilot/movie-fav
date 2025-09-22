@@ -1,13 +1,11 @@
-from dataclasses import dataclass
-from unittest.mock import MagicMock
-
 import typing
+from dataclasses import dataclass
+from test.domain.common import FakeCeleryApp
+from unittest.mock import MagicMock
 
 from link_lib.saga_framework.async_saga import AsyncStep
 from link_lib.saga_framework.base_saga import SyncStep
-from link_lib.saga_framework.stateful_saga import StatefulSaga, \
-    AbstractSagaStateRepository
-from test.domain.common import FakeCeleryApp
+from link_lib.saga_framework.stateful_saga import AbstractSagaStateRepository, StatefulSaga
 
 
 @dataclass
@@ -47,23 +45,16 @@ def test_saga_run_success():
             super().__init__(*args, **kwargs)
 
             self.steps = [
-                SyncStep(
-                    name='step_1',
-                    compensation=step_1_compensation_mock
-                ),
+                SyncStep(name="step_1", compensation=step_1_compensation_mock),
                 AsyncStep(
-                    name='step_2',
+                    name="step_2",
                     action=step_2_action_mock,
-
-                    queue='some_queue',
-                    base_task_name='step_2_task',
+                    queue="some_queue",
+                    base_task_name="step_2_task",
                     on_success=step_2_on_success_mock,
-                    on_failure=step_2_on_failure_mock
+                    on_failure=step_2_on_failure_mock,
                 ),
-                SyncStep(
-                    name='step_3',
-                    action=step_3_action_mock
-                ),
+                SyncStep(name="step_3", action=step_3_action_mock),
             ]
 
     fake_celery_app = FakeCeleryApp()
@@ -86,18 +77,15 @@ def test_saga_run_success():
     Saga(repository, fake_celery_app, fake_saga_id).execute()
 
     # check that status is correct (step 2 is running until we have response from Celery)
-    assert repository._saga_states[fake_saga_id].status == 'step_2.running'
+    assert repository._saga_states[fake_saga_id].status == "step_2.running"
 
     # emulate that Step Handler service successfully handled step 2
     #  and triggered corresponding Celery task on Saga Orchestrator
-    celery_task_params = dict(
-        saga_id=fake_saga_id,
-        payload={'ticket_id': '111'}
-    )
-    fake_celery_app.emulate_celery_task_launch('step_2_task.response.success', **celery_task_params)
+    celery_task_params = dict(saga_id=fake_saga_id, payload={"ticket_id": "111"})
+    fake_celery_app.emulate_celery_task_launch("step_2_task.response.success", **celery_task_params)
 
     # check that status is correct after saga successfully runs
-    assert repository._saga_states[fake_saga_id].status == 'succeeded'
+    assert repository._saga_states[fake_saga_id].status == "succeeded"
 
 
 def test_saga_run_failure():
@@ -114,23 +102,16 @@ def test_saga_run_failure():
             super().__init__(*args, **kwargs)
 
             self.steps = [
-                SyncStep(
-                    name='step_1',
-                    compensation=step_1_compensation_mock
-                ),
+                SyncStep(name="step_1", compensation=step_1_compensation_mock),
                 AsyncStep(
-                    name='step_2',
+                    name="step_2",
                     action=step_2_action_mock,
-
-                    queue='some_queue',
-                    base_task_name='step_2_task',
+                    queue="some_queue",
+                    base_task_name="step_2_task",
                     on_success=step_2_on_success_mock,
-                    on_failure=step_2_on_failure_mock
+                    on_failure=step_2_on_failure_mock,
                 ),
-                SyncStep(
-                    name='step_3',
-                    action=step_3_action_mock
-                )
+                SyncStep(name="step_3", action=step_3_action_mock),
             ]
 
     fake_celery_app = FakeCeleryApp()
@@ -152,16 +133,12 @@ def test_saga_run_failure():
     Saga(repository, fake_celery_app, fake_saga_id).execute()
 
     # check that status is correct (step 2 is running until we have response from Celery)
-    assert repository._saga_states[fake_saga_id].status == 'step_2.running'
+    assert repository._saga_states[fake_saga_id].status == "step_2.running"
 
     # emulate that Step Handler service successfully handled step 2
     #  and triggered corresponding Celery task on Saga Orchestrator
-    celery_task_params = dict(
-        saga_id=fake_saga_id,
-        payload={'ticket_id': '111'}
-    )
-    fake_celery_app.emulate_celery_task_launch('step_2_task.response.failure', **celery_task_params)
+    celery_task_params = dict(saga_id=fake_saga_id, payload={"ticket_id": "111"})
+    fake_celery_app.emulate_celery_task_launch("step_2_task.response.failure", **celery_task_params)
 
     # check that status is correct after saga fails
-    assert repository._saga_states[fake_saga_id].status == 'failed'
-
+    assert repository._saga_states[fake_saga_id].status == "failed"

@@ -3,6 +3,4 @@
 
 from movie.src.domain.orchestrator.create_movie_saga import CreateMovieSaga
 
-__all__ = (
-  "CreateMovieSaga",
-)
+__all__ = ("CreateMovieSaga",)

@@ -2,12 +2,13 @@
 # All Rights Reserved. Proprietary and confidential.
 
 from datetime import datetime
-from typing import List, Set, Optional
-from sqlmodel import Field, SQLModel
+from typing import List, Optional, Set
+
 from link_models.base import PageInfoInput
 from link_models.enums import ProviderTypeEnum, ShowsInfoSortByEnum
-from sqlalchemy import Column, String, Enum
+from sqlalchemy import Column, Enum, String
 from sqlalchemy.dialects import postgresql
+from sqlmodel import Field, SQLModel
 
 
 class ShowsInfoBase(SQLModel):
@@ -37,7 +38,7 @@ class ShowsInfoBase(SQLModel):
     videos: Optional[Set[str]] = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
     created: Optional[datetime] = Field(default=datetime.now())
     updated: Optional[datetime] = Field(default=datetime.now())
-    
+
 
 class ShowsInfo(ShowsInfoBase, table=True):
     """_summary_
@@ -47,18 +48,20 @@ class ShowsInfo(ShowsInfoBase, table=True):
     """
 
     __tablename__ = "shows_info"
-    __table_args__ = {'extend_existing': True, 'schema': 'shows'}
-    
+    __table_args__ = {"extend_existing": True, "schema": "shows"}
+
     provider: Optional[ProviderTypeEnum] = Field(default=None, sa_column=Column(Enum(ProviderTypeEnum)))
 
 
 class ShowsInfoPageInfoInput(PageInfoInput):
-	sortBy: list[ShowsInfoSortByEnum] = [ShowsInfoSortByEnum.ID]
+    sortBy: list[ShowsInfoSortByEnum] = [ShowsInfoSortByEnum.ID]
+
 
 class ShowsInfoFilterInput(SQLModel):
     id: Optional[list[int]] = None
     title: Optional[list[str]] = None
     year: Optional[list[int]] = None
+
 
 class ShowsUpdateFilterInput(SQLModel):
     imdb_ids: list[str]

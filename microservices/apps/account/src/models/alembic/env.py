@@ -1,15 +1,10 @@
 import os
-import link # noqa: F401
-
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
-from alembic import context
-
+import link  # noqa: F401
 from account.src.models import ALL_MODELS
-
+from alembic import context
+from sqlalchemy import engine_from_config, pool
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -17,7 +12,7 @@ config = context.config
 
 # this will overwrite the ini-file sqlalchemy.url path
 # with the path given in the config of the main code
-config.set_main_option("sqlalchemy.url", os.getenv('DB_POSTGRES_ACCOUNT'))
+config.set_main_option("sqlalchemy.url", os.getenv("DB_POSTGRES_ACCOUNT"))
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -54,13 +49,13 @@ def run_migrations_offline(target_metadata) -> None:
         url=url,
         target_metadata=target_metadata,
         literal_binds=True,
-        version_table_schema='account',
+        version_table_schema="account",
         include_schemas=True,
         dialect_opts={"paramstyle": "named"},
     )
 
     with context.begin_transaction():
-        context.execute('create schema IF NOT EXISTS account')
+        context.execute("create schema IF NOT EXISTS account")
         context.run_migrations()
 
 
@@ -81,13 +76,14 @@ def run_migrations_online(target_metadata) -> None:
         context.configure(
             connection=connection,
             target_metadata=target_metadata,
-            version_table_schema='account',
+            version_table_schema="account",
             include_schemas=True,
         )
 
         with context.begin_transaction():
-            context.execute('create schema IF NOT EXISTS account')
+            context.execute("create schema IF NOT EXISTS account")
             context.run_migrations()
+
 
 for model in ALL_MODELS:
     if context.is_offline_mode():

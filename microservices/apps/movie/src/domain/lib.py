@@ -21,7 +21,7 @@ class MovieLib(LinkDomain, MovieModels):
         redis_conv = response.dict()
         redis_conv.update(dict(result=self.convert_sql_response_to_dict(redis_conv["result"])))
         self.load_to_redis(self.movie_redis_engine, f"movie_info_query:{key}", redis_conv)
-        
+
     def redis_delete_movie_info_keys(self) -> None:
         self.redis_delete_keys_pipe(self.movie_redis_engine, [f"movie_info_query:*"]).execute()
 

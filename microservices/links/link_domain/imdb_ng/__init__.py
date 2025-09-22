@@ -3,7 +3,4 @@
 
 from link_domain.imdb_ng.base import ImdbNg
 
-
-__all__ = (
-  "ImdbNg",
-)
+__all__ = ("ImdbNg",)

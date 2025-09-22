@@ -1,7 +1,8 @@
-from link_test.fixtures import GENERAL_RESPONSE_FRAGMENT, PAGE_INFO_FRAGMENT
 from ariadne import gql
+from link_test.fixtures import GENERAL_RESPONSE_FRAGMENT, PAGE_INFO_FRAGMENT
 
-ACCOUNT_STORE_EMPLOYEE_FRAGMENT = gql("""
+ACCOUNT_STORE_EMPLOYEE_FRAGMENT = gql(
+    """
   fragment AccountStoreEmployee on AccountStoreEmployee {
     id
     account_company_id
@@ -9,9 +10,11 @@ ACCOUNT_STORE_EMPLOYEE_FRAGMENT = gql("""
     account_info_id
     user_role
   }
-""")
+"""
+)
 
-ACCOUNT_STORE_FRAGMENT = gql("""
+ACCOUNT_STORE_FRAGMENT = gql(
+    """
   fragment AccountStore on AccountStore {
     id
     account_company_id
@@ -36,10 +39,13 @@ ACCOUNT_STORE_FRAGMENT = gql("""
     longitude
     account_store_employee{ ...AccountStoreEmployee }
   }
-""" + ACCOUNT_STORE_EMPLOYEE_FRAGMENT )
+"""
+    + ACCOUNT_STORE_EMPLOYEE_FRAGMENT
+)
 
 
-ACCOUNT_COMPANY_FRAGMENT = gql("""
+ACCOUNT_COMPANY_FRAGMENT = gql(
+    """
   fragment AccountCompany on AccountCompany {
     id
     name
@@ -72,9 +78,12 @@ ACCOUNT_COMPANY_FRAGMENT = gql("""
     sole_zip_code
     account_store{ ...AccountStore }
   }
-""" + ACCOUNT_STORE_FRAGMENT )
+"""
+    + ACCOUNT_STORE_FRAGMENT
+)
 
-ACCOUNT_INFO_FRAGMENT = gql("""
+ACCOUNT_INFO_FRAGMENT = gql(
+    """
   fragment AccountInfo on AccountInfo {
     id
     email
@@ -98,55 +107,86 @@ ACCOUNT_INFO_FRAGMENT = gql("""
     state
     zip_code
   }
-""")
+"""
+)
 
 
-ACCOUNT_RESPONSE_FRAGMENT = gql("""
+ACCOUNT_RESPONSE_FRAGMENT = gql(
+    """
   fragment AccountInfoResponse on AccountInfoResponse {
     response{...GeneralResponse}
     pageInfo{...PageInfo}
     result{...AccountInfo}
   }
-""" + GENERAL_RESPONSE_FRAGMENT + PAGE_INFO_FRAGMENT + ACCOUNT_INFO_FRAGMENT)
+"""
+    + GENERAL_RESPONSE_FRAGMENT
+    + PAGE_INFO_FRAGMENT
+    + ACCOUNT_INFO_FRAGMENT
+)
 
 
-ACCOUNT_COMPANY_RESPONSE_FRAGMENT = gql("""
+ACCOUNT_COMPANY_RESPONSE_FRAGMENT = gql(
+    """
   fragment AccountCompanyResponse on AccountCompanyResponse {
     response{...GeneralResponse}
     pageInfo{...PageInfo}
     result{...AccountCompany}
   }
-""" + GENERAL_RESPONSE_FRAGMENT + PAGE_INFO_FRAGMENT + ACCOUNT_COMPANY_FRAGMENT)
+"""
+    + GENERAL_RESPONSE_FRAGMENT
+    + PAGE_INFO_FRAGMENT
+    + ACCOUNT_COMPANY_FRAGMENT
+)
 
-ACCOUNT_STORE_RESPONSE_FRAGMENT = gql("""
+ACCOUNT_STORE_RESPONSE_FRAGMENT = gql(
+    """
   fragment AccountStoreResponse on AccountStoreResponse {
     response{...GeneralResponse}
     pageInfo{...PageInfo}
     result{...AccountStore}
   }
-""" + GENERAL_RESPONSE_FRAGMENT + PAGE_INFO_FRAGMENT + ACCOUNT_STORE_FRAGMENT)
+"""
+    + GENERAL_RESPONSE_FRAGMENT
+    + PAGE_INFO_FRAGMENT
+    + ACCOUNT_STORE_FRAGMENT
+)
 
-ACCOUNT_STORE_EMPLOYEE_RESPONSE_FRAGMENT = gql("""
+ACCOUNT_STORE_EMPLOYEE_RESPONSE_FRAGMENT = gql(
+    """
   fragment AccountStoreEmployeeResponse on AccountStoreEmployeeResponse {
     response{...GeneralResponse}
     pageInfo{...PageInfo}
     result{...AccountStoreEmployee}
   }
-""" + GENERAL_RESPONSE_FRAGMENT + PAGE_INFO_FRAGMENT + ACCOUNT_STORE_EMPLOYEE_FRAGMENT)
+"""
+    + GENERAL_RESPONSE_FRAGMENT
+    + PAGE_INFO_FRAGMENT
+    + ACCOUNT_STORE_EMPLOYEE_FRAGMENT
+)
 
-ACCOUNT_AUTHENTICATION_FRAGMENT = gql("""
+ACCOUNT_AUTHENTICATION_FRAGMENT = (
+    gql(
+        """
   fragment AccountAuthentication on AccountAuthentication {
     authenticationToken
     authenticationTokenType
     registrationStatus
     account_info{...AccountInfo}
   }
-""") + ACCOUNT_INFO_FRAGMENT
+"""
+    )
+    + ACCOUNT_INFO_FRAGMENT
+)
 
-ACCOUNT_AUTHENTICATION_RESPONSE_FRAGMENT = gql("""
+ACCOUNT_AUTHENTICATION_RESPONSE_FRAGMENT = gql(
+    """
   fragment AccountAuthenticationResponse on AccountAuthenticationResponse {
     response{...GeneralResponse}
     pageInfo{...PageInfo}
     result{...AccountAuthentication}
   }
-""" + GENERAL_RESPONSE_FRAGMENT + PAGE_INFO_FRAGMENT + ACCOUNT_AUTHENTICATION_FRAGMENT)
+"""
+    + GENERAL_RESPONSE_FRAGMENT
+    + PAGE_INFO_FRAGMENT
+    + ACCOUNT_AUTHENTICATION_FRAGMENT
+)

@@ -5,6 +5,6 @@ from account.src.domain.orchestrator.create_account_saga import CreateAccountSag
 from account.src.domain.orchestrator.forgot_password_saga import ForgotPasswordSaga
 
 __all__ = (
-  "CreateAccountSaga",
-  "ForgotPasswordSaga",
+    "CreateAccountSaga",
+    "ForgotPasswordSaga",
 )

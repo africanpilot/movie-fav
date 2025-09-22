@@ -1,8 +1,9 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
-import os
+
 from link_lib.microservice_dynamic_link import MicroserviceDynamicLinkImport
+
 
 class GrpcController:
     """
@@ -12,11 +13,11 @@ class GrpcController:
 
     @staticmethod
     def handler(topic: str, **kwargs) -> dict:
-      registered_topics = [
-        "GetRemainingMovieCastQuery",
-      ]
+        registered_topics = [
+            "GetRemainingMovieCastQuery",
+        ]
 
-      if topic not in registered_topics:
-        return dict(message=f"Topic {topic} not found in movie microservice", received=False)
-      
-      return MicroserviceDynamicLinkImport.fork(["../api/grpc/"], topic, **kwargs).execute()
+        if topic not in registered_topics:
+            return dict(message=f"Topic {topic} not found in movie microservice", received=False)
+
+        return MicroserviceDynamicLinkImport.fork(["../api/grpc/"], topic, **kwargs).execute()

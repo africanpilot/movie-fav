@@ -16,28 +16,28 @@ See AsyncSaga.register_async_step_handlers for more details.
 
 """
 
-__all__ = ['AsyncSaga', 'AsyncStep']
+__all__ = ["AsyncSaga", "AsyncStep"]
 
 import logging
 import typing
 
 from celery import Celery, Task
-
 from link_lib.saga_framework.base_saga import BaseSaga, BaseStep
-from link_lib.saga_framework.utils import success_task_name, failure_task_name, NO_ACTION
-
+from link_lib.saga_framework.utils import NO_ACTION, failure_task_name, success_task_name
 
 logger = logging.getLogger(__name__)
 
 
 class AsyncStep(BaseStep):
-    def __init__(self,
-                 base_task_name: str,
-                 queue: str,
-                 on_success: typing.Callable = NO_ACTION,
-                 on_failure: typing.Callable = NO_ACTION,
-                 *args, **kwargs
-                 ):
+    def __init__(
+        self,
+        base_task_name: str,
+        queue: str,
+        on_success: typing.Callable = NO_ACTION,
+        on_failure: typing.Callable = NO_ACTION,
+        *args,
+        **kwargs,
+    ):
         self.base_task_name = base_task_name
         self.queue = queue
         self.on_success = on_success
@@ -50,6 +50,7 @@ class AsyncSaga(BaseSaga):
     """
     Saga that has integration with Celery
     """
+
     celery_app: Celery = None
 
     def __init__(self, celery_app: Celery, *args, **kwargs):
@@ -57,8 +58,7 @@ class AsyncSaga(BaseSaga):
         super().__init__(*args, **kwargs)
 
     def on_async_step_success(self, step: AsyncStep, payload: dict):
-        logger.info(f'Saga {self.saga_id}: '
-                    f'running on_success for "{step.name}" step')
+        logger.info(f"Saga {self.saga_id}: " f'running on_success for "{step.name}" step')
 
         step.on_success(step, payload)
 
@@ -69,8 +69,7 @@ class AsyncSaga(BaseSaga):
             self.execute(next_step)
 
     def on_async_step_failure(self, step: AsyncStep, payload: dict):
-        logger.info(f'Saga {self.saga_id}: '
-                    f'running on_failure for "{step.name}" step')
+        logger.info(f"Saga {self.saga_id}: " f'running on_failure for "{step.name}" step')
 
         step.on_failure(step, payload)
         self.compensate(step, payload)
@@ -84,14 +83,14 @@ class AsyncSaga(BaseSaga):
             if success_task_name(step.base_task_name) == success_task_name_:
                 return step
 
-        raise KeyError(f'no step found with success task name {success_task_name_}')
+        raise KeyError(f"no step found with success task name {success_task_name_}")
 
     def get_async_step_by_failure_task_name(self, failure_task_name_: str) -> AsyncStep:
         for step in self.async_steps:
             if failure_task_name(step.base_task_name) == failure_task_name_:
                 return step
 
-        raise KeyError(f'no step found with failure task name {failure_task_name_}')
+        raise KeyError(f"no step found with failure task name {failure_task_name_}")
 
     @classmethod
     def register_async_step_handlers(cls, celery_app: Celery):
@@ -110,10 +109,7 @@ class AsyncSaga(BaseSaga):
             step_ = saga.get_async_step_by_success_task_name(celery_task.name)
             saga.on_async_step_success(step_, payload)
 
-        celery_app.task(
-            name=success_task_name(step.base_task_name),
-            bind=True
-        )(on_success_handler)
+        celery_app.task(name=success_task_name(step.base_task_name), bind=True)(on_success_handler)
 
     @classmethod
     def register_failure_handler_for_step(cls, celery_app: Celery, step: AsyncStep):
@@ -124,22 +120,14 @@ class AsyncSaga(BaseSaga):
             step_ = saga.get_async_step_by_failure_task_name(celery_task.name)
             saga.on_async_step_failure(step_, payload)
 
-        celery_app.task(
-            name=failure_task_name(step.base_task_name),
-            bind=True
-        )(on_failure_handler)
+        celery_app.task(name=failure_task_name(step.base_task_name), bind=True)(on_failure_handler)
 
     def send_message_to_other_service(self, step: AsyncStep, payload: dict, task_name: str = None):
         """
         Helper for sending Celery tasks to Async Handler Services
         """
         task_result = self.celery_app.send_task(
-            task_name or step.base_task_name,
-            args=[
-                self.saga_id,
-                payload
-            ],
-            queue=step.queue
+            task_name or step.base_task_name, args=[self.saga_id, payload], queue=step.queue
         )
 
         return task_result.id

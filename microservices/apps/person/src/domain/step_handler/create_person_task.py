@@ -2,10 +2,12 @@
 # All Rights Reserved. Proprietary and confidential.
 
 from typing import Union
+
 from celery import Task
-from person.src.controller.controller_worker import worker
 from link_lib.saga_framework import saga_step_handler
-from link_models.messaging import create_person_message as message, CREATE_PERSON_SAGA_RESPONSE_QUEUE
+from link_models.messaging import CREATE_PERSON_SAGA_RESPONSE_QUEUE
+from link_models.messaging import create_person_message as message
+from person.src.controller.controller_worker import worker
 from person.src.domain.lib import PersonLib
 
 

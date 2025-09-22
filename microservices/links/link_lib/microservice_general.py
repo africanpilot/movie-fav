@@ -6,7 +6,6 @@ import string
 from datetime import datetime
 from enum import Enum
 from json import JSONEncoder
-from sqlalchemy.engine import Row
 
 from link_lib.microservice_generic_model import GenericModel
 
@@ -36,19 +35,19 @@ class LinkGeneral(GenericModel):
 class GeneralJSONEncoder(JSONEncoder):
     def default(self, obj):
 
-      def default_encoder(obj):
-        if isinstance(obj, Enum):
-          return obj.value
-        
-        if isinstance(obj, set):
-            return list(obj)
-        
-        if isinstance(obj, datetime):
-          return str(obj)
-        
-        return None
-      
-      get_encoder = default_encoder(obj)
-      if get_encoder is not None:
-          return get_encoder
-      return super().default(obj)
+        def default_encoder(obj):
+            if isinstance(obj, Enum):
+                return obj.value
+
+            if isinstance(obj, set):
+                return list(obj)
+
+            if isinstance(obj, datetime):
+                return str(obj)
+
+            return None
+
+        get_encoder = default_encoder(obj)
+        if get_encoder is not None:
+            return get_encoder
+        return super().default(obj)

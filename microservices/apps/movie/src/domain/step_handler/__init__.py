@@ -3,6 +3,4 @@
 
 from movie.src.domain.step_handler.create_movie_task import create_movie_task
 
-__all__ = (
-  "create_movie_task",
-)
+__all__ = ("create_movie_task",)

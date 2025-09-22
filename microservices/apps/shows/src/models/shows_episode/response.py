@@ -2,60 +2,70 @@
 # All Rights Reserved. Proprietary and confidential.
 
 from typing import Optional
+
 from graphql import GraphQLResolveInfo
 from link_lib.microservice_request import LinkRequest
 from link_models.base import BaseResponse, PageInfoInput
-from sqlmodel import Session
-from shows.src.models.shows_episode.base import ShowsEpisode, ShowsEpisodePageInfoInput, ShowsEpisodeFilterInput, ShowsEpisodeBase
+from shows.src.models.shows_episode.base import (
+    ShowsEpisode,
+    ShowsEpisodeBase,
+    ShowsEpisodeFilterInput,
+    ShowsEpisodePageInfoInput,
+)
 from shows.src.models.shows_info import ShowsInfo
-from sqlalchemy import text, select
-from sqlmodel import Session, func
+from sqlmodel import Session
 
 
 class ShowsEpisodeBaseResponse(ShowsEpisodeBase):
-  id: Optional[int] = None
-  shows_info_id: Optional[int] = None
-  shows_season_id: Optional[int] = None
-  shows_imdb_id: Optional[str] = None
+    id: Optional[int] = None
+    shows_info_id: Optional[int] = None
+    shows_season_id: Optional[int] = None
+    shows_imdb_id: Optional[str] = None
+
 
 class ShowsEpisodeResponse(BaseResponse):
-  result: Optional[list[ShowsEpisodeBaseResponse]] = None
+    result: Optional[list[ShowsEpisodeBaseResponse]] = None
+
 
 class ShowsEpisodeResponses(LinkRequest):
-  def __init__(self, **kwargs):
-    super().__init__(**kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-  def shows_episode_response(
-    self,
-    info: GraphQLResolveInfo,
-    db: Session,
-    pageInfo: ShowsEpisodePageInfoInput = PageInfoInput(),
-    filterInput: ShowsEpisodeFilterInput = None,
-    filterInputExtra: list = None,
-    extraCols: list[ShowsInfo] = None,
-    query_context: list[tuple] = None,
-    baseRootNode: str = "result",
-  ) -> ShowsEpisodeResponse:
-    # check nulls
-    extraCols = extraCols or []
-    filterInputExtra = filterInputExtra or []
-    
-    if not query_context:
-      query_context = self.get_query_request(selections=info.field_nodes, fragments=info.fragments)
+    def shows_episode_response(
+        self,
+        info: GraphQLResolveInfo,
+        db: Session,
+        pageInfo: ShowsEpisodePageInfoInput = PageInfoInput(),
+        filterInput: ShowsEpisodeFilterInput = None,
+        filterInputExtra: list = None,
+        extraCols: list[ShowsInfo] = None,
+        query_context: list[tuple] = None,
+        baseRootNode: str = "result",
+    ) -> ShowsEpisodeResponse:
+        # check nulls
+        extraCols = extraCols or []
+        filterInputExtra = filterInputExtra or []
 
-    # determine columns needed
-    shows_episode = self.convert_to_db_cols_with_attr(resultObject=ShowsEpisode, info=info, query_context=query_context, root_node=baseRootNode)
-    
-    total_list_cols = set(shows_episode + extraCols)
-    total_filter = set(self.get_filter_info_in(filterInput, ShowsEpisode) + filterInputExtra)
+        if not query_context:
+            query_context = self.get_query_request(selections=info.field_nodes, fragments=info.fragments)
 
-    # exe filter sql
-    result, page_info = self.filter_sql(
-      db=db,
-      pageInfo=pageInfo,
-      filterInput=total_filter,
-      cols=total_list_cols,
-      baseObject=ShowsEpisode,
-    )
-    
-    return self.success_response(result=result, pageInfo=page_info, nullPass=True, resultObject=ShowsEpisodeResponse)
+        # determine columns needed
+        shows_episode = self.convert_to_db_cols_with_attr(
+            resultObject=ShowsEpisode, info=info, query_context=query_context, root_node=baseRootNode
+        )
+
+        total_list_cols = set(shows_episode + extraCols)
+        total_filter = set(self.get_filter_info_in(filterInput, ShowsEpisode) + filterInputExtra)
+
+        # exe filter sql
+        result, page_info = self.filter_sql(
+            db=db,
+            pageInfo=pageInfo,
+            filterInput=total_filter,
+            cols=total_list_cols,
+            baseObject=ShowsEpisode,
+        )
+
+        return self.success_response(
+            result=result, pageInfo=page_info, nullPass=True, resultObject=ShowsEpisodeResponse
+        )

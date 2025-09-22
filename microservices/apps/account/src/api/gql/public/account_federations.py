@@ -1,10 +1,10 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
-from link_lib.microservice_graphql_model import GraphQLModel
-from link_lib.microservice_controller import ApolloTypes
 from account.src.domain.lib import AccountLib
-from account.src.models.account_info import AccountInfo
+from link_lib.microservice_controller import ApolloTypes
+from link_lib.microservice_graphql_model import GraphQLModel
+
 
 class AccountFederations(GraphQLModel, AccountLib):
 
@@ -12,7 +12,7 @@ class AccountFederations(GraphQLModel, AccountLib):
         super().__init__(**kwargs)
 
     def load_defs(self):
-        
+
         accountInfo = ApolloTypes.get("AccountInfo")
 
         @accountInfo.reference_resolver

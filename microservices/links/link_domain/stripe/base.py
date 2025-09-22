@@ -1,16 +1,18 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
-import stripe
 from functools import cached_property
+
+import stripe
+from link_config.config import LOGLEVEL, STRIPE_API_KEY
 from link_lib.microservice_response import LinkResponse
-from link_config.config import STRIPE_API_KEY, LOGLEVEL
 from link_models.enums import StripeMethodEnum
+
 
 class LinkStripe(LinkResponse):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-    
+
     @cached_property
     def stripe_api(self):
         stripe.api_key = STRIPE_API_KEY
@@ -18,23 +20,20 @@ class LinkStripe(LinkResponse):
         return stripe
 
     def _stripe_create_customer(self, payment: dict):
-        return self.stripe_api.Customer.create(
-            email=payment["email"], # must be an email
-            description="TrackstarUser"
-        )
+        return self.stripe_api.Customer.create(email=payment["email"], description="TrackstarUser")  # must be an email
 
     def _stripe_ephemeral_key(self, payment: dict):
         return self.stripe_api.EphemeralKey.create(
             customer=payment["customer_id"],
-            stripe_version='2020-08-27',
+            stripe_version="2020-08-27",
         )
 
     def _stripe_payment_intent(self, payment: dict):
         return self.stripe_api.PaymentIntent.create(
-            amount=int(payment["amount"] * 100), # charge is in cents
+            amount=int(payment["amount"] * 100),  # charge is in cents
             currency="usd",
             customer=payment.get("customer_id"),
-            capture_method = 'automatic',
+            capture_method="automatic",
             # payment_method_types=['card'], # ex: card
             # payment_method_options={
             #     'card': {
@@ -42,9 +41,9 @@ class LinkStripe(LinkResponse):
             #     }
             # },
             # payment_method=payment.get("payment_method"),
-            metadata=payment.get("metadata", {})
+            metadata=payment.get("metadata", {}),
         )
-        
+
     def _stripe_payment_capture_intent(self, payment: dict):
         return self.stripe_api.PaymentIntent.confirm(
             payment["intent_id"],
@@ -73,7 +72,7 @@ class LinkStripe(LinkResponse):
     def _stripe_transfer_payment(self, payment: dict):
         return self.stripe_api.Transfer.create(
             amount=int(payment["amount"] * 100),  # charge is in cents
-            currency='usd',
+            currency="usd",
             destination=payment["destination"],
         )
 
@@ -86,7 +85,7 @@ class LinkStripe(LinkResponse):
     def _stripe_payment_payout(self, payment: dict):
         return self.stripe_api.Payout.create(
             amount=int(payment["amount"] * 100),
-            currency='usd',
+            currency="usd",
             stripe_account=payment["stripe_id"],
         )
 
@@ -101,10 +100,7 @@ class LinkStripe(LinkResponse):
         )
 
     def _stripe_intent_update(self, payment: dict):
-        return self.stripe_api.PaymentIntent.modify(
-            payment["intent_id"],
-            amount=payment["amount"]
-        )
+        return self.stripe_api.PaymentIntent.modify(payment["intent_id"], amount=payment["amount"])
 
     def _stripe_payment_payout_list(self, payment: dict):
         return self.stripe_api.Payout.list(
@@ -115,17 +111,17 @@ class LinkStripe(LinkResponse):
     def _stripe_payment_balance_transaction_payout_list(self, payment: dict):
         return self.stripe_api.BalanceTransaction.list(
             limit=payment["first"],
-            starting_after=payment["startingAfter"] if "startingAfter" in payment and payment["startingAfter"] else None,
-            ending_before=payment["endingBefore"] if "endingBefore" in payment and payment["endingBefore"]else None,
+            starting_after=(
+                payment["startingAfter"] if "startingAfter" in payment and payment["startingAfter"] else None
+            ),
+            ending_before=payment["endingBefore"] if "endingBefore" in payment and payment["endingBefore"] else None,
             stripe_account=payment["stripe_id"],
-            type="payout"
+            type="payout",
         )
 
     def _stripe_payment_balance_transaction_payout_transaction_list(self, payment: dict):
         return self.stripe_api.BalanceTransaction.list(
-            stripe_account=payment["stripe_id"],
-            payout=payment["payout_id"],
-            type="payment"
+            stripe_account=payment["stripe_id"], payout=payment["payout_id"], type="payment"
         )
 
     def _stripe_payment_verification_session(self, payment: dict):
@@ -134,17 +130,17 @@ class LinkStripe(LinkResponse):
             stripe_account=payment["stripe_id"],
             options={
                 "document": {
-                    "allowed_types": ["driving_license","id_card"],
+                    "allowed_types": ["driving_license", "id_card"],
                     "require_id_number": True,
-                    "require_live_capture": True
+                    "require_live_capture": True,
                 }
-            }
+            },
         )
 
     def stripe_method(self, method: StripeMethodEnum, payment: dict):
-        
+
         payment_info = None
-        
+
         try:
             if method == StripeMethodEnum.CREATE_CUSTOMER:
                 payment_info = self._stripe_create_customer(payment)
@@ -157,7 +153,7 @@ class LinkStripe(LinkResponse):
 
             if method == StripeMethodEnum.CONFIRM_INTENT:
                 payment_info = self._stripe_payment_capture_intent(payment)
-            
+
             if method == StripeMethodEnum.CAPTURE_INTENT:
                 payment_info = self._stripe_payment_capture(payment)
 
@@ -217,7 +213,7 @@ class LinkStripe(LinkResponse):
 
         if not payment_info:
             self.http_500_internal_server_error("Stripe did not return payment info")
-    
+
         return payment_info
 
     def stripe_connected_account_business(self, data):
@@ -251,34 +247,36 @@ class LinkStripe(LinkResponse):
                     "currency": "USD",
                     "account_number": data["account_number"],
                     # "last4": data["last4"], # The last four digits of the bank account number.
-                    "account_holder_name": data["account_holder_name"], # The name of the person or business that owns the bank account.
-                    "account_holder_type": "company", # The type of entity that holds the account.
+                    "account_holder_name": data[
+                        "account_holder_name"
+                    ],  # The name of the person or business that owns the bank account.
+                    "account_holder_type": "company",  # The type of entity that holds the account.
                     # "bank_name": data["bank_name"], # Name of the bank associated with the routing number
-                    "routing_number": data["routing_number"], # The routing transit number for the bank account.
-                }
+                    "routing_number": data["routing_number"],  # The routing transit number for the bank account.
+                },
             )
             return {"Success": True, "result": account_info}
         except self.stripe_api.error.CardError as e:
-            return {"Success": False, "result":"Card Error"}
+            return {"Success": False, "result": "Card Error"}
         except self.stripe_api.error.RateLimitError as e:
             # Too many requests made to the API too quickly
-            return {"Success": False, "result":"Rate Limit Error"}
+            return {"Success": False, "result": "Rate Limit Error"}
         except self.stripe_api.error.InvalidRequestError as e:
             # Invalid parameters were supplied to Stripe's API
-            return {"Success": False, "result":"Invalid Input Error"}
+            return {"Success": False, "result": "Invalid Input Error"}
         except self.stripe_api.error.AuthenticationError as e:
             # Authentication with Stripe's API failed
             # (maybe you changed API keys recently)
-            return {"Success": False, "result":"Authentication Error"}
+            return {"Success": False, "result": "Authentication Error"}
         except self.stripe_api.error.APIConnectionError as e:
             # Network communication with Stripe failed
-            return {"Success": False, "result":"API Connection Error"}
+            return {"Success": False, "result": "API Connection Error"}
         except self.stripe_api.error.StripeError as e:
             # Display a very generic error to the user, and maybe send
             # yourself an email
-            return {"Success": False, "result":"Stripe Error"}
-        except Exception as e:
-            return {"Success": False, "result":"Unknown Error"}
+            return {"Success": False, "result": "Stripe Error"}
+        except Exception:
+            return {"Success": False, "result": "Unknown Error"}
 
     def stripe_connected_account_mobile_user(self, data):
         # create Account
@@ -304,10 +302,12 @@ class LinkStripe(LinkResponse):
                     "currency": "USD",
                     "account_number": data["account_number"],
                     # "last4": data["last4"], # The last four digits of the bank account number.
-                    "account_holder_name": data["account_holder_name"], # The name of the person or business that owns the bank account.
-                    "account_holder_type": "individual", # The type of entity that holds the account.
+                    "account_holder_name": data[
+                        "account_holder_name"
+                    ],  # The name of the person or business that owns the bank account.
+                    "account_holder_type": "individual",  # The type of entity that holds the account.
                     # "bank_name": data["bank_name"], # Name of the bank associated with the routing number
-                    "routing_number": data["routing_number"], # The routing transit number for the bank account.
+                    "routing_number": data["routing_number"],  # The routing transit number for the bank account.
                 },
                 individual={
                     "first_name": data["first_name"],
@@ -318,27 +318,27 @@ class LinkStripe(LinkResponse):
                         "year": data["year"],
                     },
                     "ssn_last_4": data["ssn_last_4"],
-                }
+                },
             )
             return {"Success": True, "result": account_info}
         except self.stripe_api.error.CardError as e:
-            return {"Success": False, "result":"Card Error"}
+            return {"Success": False, "result": "Card Error"}
         except self.stripe_api.error.RateLimitError as e:
             # Too many requests made to the API too quickly
-            return {"Success": False, "result":"Rate Limit Error"}
+            return {"Success": False, "result": "Rate Limit Error"}
         except self.stripe_api.error.InvalidRequestError as e:
             # Invalid parameters were supplied to Stripe's API
-            return {"Success": False, "result":"Invalid Input Error"}
+            return {"Success": False, "result": "Invalid Input Error"}
         except self.stripe_api.error.AuthenticationError as e:
             # Authentication with Stripe's API failed
             # (maybe you changed API keys recently)
-            return {"Success": False, "result":"Authentication Error"}
+            return {"Success": False, "result": "Authentication Error"}
         except self.stripe_api.error.APIConnectionError as e:
             # Network communication with Stripe failed
-            return {"Success": False, "result":"API Connection Error"}
+            return {"Success": False, "result": "API Connection Error"}
         except self.stripe_api.error.StripeError as e:
             # Display a very generic error to the user, and maybe send
             # yourself an email
-            return {"Success": False, "result":"Stripe Error"}
-        except Exception as e:
-            return {"Success": False, "result":"Unknown Error"}
+            return {"Success": False, "result": "Stripe Error"}
+        except Exception:
+            return {"Success": False, "result": "Unknown Error"}

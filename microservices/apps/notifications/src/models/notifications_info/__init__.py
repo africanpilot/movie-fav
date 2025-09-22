@@ -3,6 +3,4 @@
 
 from notifications.src.models.notifications_info.response import NotificationsInfoResponse
 
-__all__ = (
-  "NotificationsInfoResponse",
-)
+__all__ = ("NotificationsInfoResponse",)

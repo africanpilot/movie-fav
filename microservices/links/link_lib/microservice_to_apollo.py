@@ -1,7 +1,6 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
-import logging
 import os
 from multiprocessing import cpu_count
 
@@ -27,7 +26,7 @@ class ProductionApplication(BaseApplication):
         self._setup_logging()
         required_options = {
             "bind": "%s:%s" % ("0.0.0.0", str(os.environ.get("APP_DEFAULT_PORT", 8000))),
-            "workers":int(os.environ.get("GUNICORN_WORKERS", self._number_of_workers())),
+            "workers": int(os.environ.get("GUNICORN_WORKERS", self._number_of_workers())),
             "worker_class": "uvicorn.workers.UvicornWorker",
             "preload": True,
             "log-file": "-",
@@ -65,10 +64,8 @@ class DevelopmentApplication(GenericLinkModel):
             host=self.host,
             port=int(self.port),
             reload=True,
-            reload_dirs=[
-                "../../src/",
-                "../../../../links/"
-            ] + [f"../../../{ms}/src/" for ms in self.enabled_microservices],
+            reload_dirs=["../../src/", "../../../../links/"]
+            + [f"../../../{ms}/src/" for ms in self.enabled_microservices],
         )
 
 

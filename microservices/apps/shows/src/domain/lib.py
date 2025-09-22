@@ -4,11 +4,10 @@
 import json
 from typing import Optional
 
-from sqlalchemy.engine.base import Connection
 from link_domain.base import LinkDomain
 from shows.src.models import ShowsModels
-from shows.src.models.shows_info import ShowsInfoResponse
 from shows.src.models.shows_episode import ShowsEpisodeResponse
+from shows.src.models.shows_info import ShowsInfoResponse
 
 
 class ShowsLib(LinkDomain, ShowsModels):
@@ -36,19 +35,20 @@ class ShowsLib(LinkDomain, ShowsModels):
             return None
 
         return self.load_from_redis(ShowsEpisodeResponse, redis_result)
-    
+
     def shows_episode_query_redis_dump(self, key, response: ShowsEpisodeResponse) -> None:
         redis_conv = response.dict()
         redis_conv.update(dict(result=self.convert_sql_response_to_dict(redis_conv["result"])))
         self.load_to_redis(self.shows_redis_engine, f"shows_episode_query:{key}", redis_conv)
-        
+
     def redis_delete_shows_episode_keys(self) -> None:
         self.redis_delete_keys_pipe(self.shows_redis_engine, [f"shows_episode_query:*"]).execute()
 
     def shows_saga_redis_update(self, keys: list[bytes]) -> tuple[list, list]:
         return keys, [
             self.shows_state_saga_update(self.get_key(key, 2), **json.loads(state))
-            for key,state in zip(keys, self.shows_redis_engine.mget(keys)) if state
+            for key, state in zip(keys, self.shows_redis_engine.mget(keys))
+            if state
         ]
 
     def process_shows_info(self, imdb_id: str, season: Optional[str] = None, episode: Optional[str] = None) -> dict:

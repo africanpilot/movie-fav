@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 
 # imports
 location=admin/tools
@@ -11,23 +11,23 @@ validate_service_todo_env
 
 function do_subdirs
 {
-    topdir="$1"
-    command="$2"
+    local topdir="$1"
+    local command="$2"
     shift 2
 
     for d in $(echo ${SERVICES_TODO} | sed "s/,/ /g"); do
-        announce "ENTERING $d"
+        announce "PROCESSING HELM CHART: $d"
 
         # check helm chart exists
         if [ ! -d "deployment/helm/$d" ]; then
-            echo "CRITICAL ERROR: Please add the directory depployment/helm/$d"
+            echo "CRITICAL ERROR: Please add the directory deployment/helm/$d" >&2
             return 1
         fi
 
         if [ "$command" = "dry" ]; then
-            helm_check "$d" "$command" $*
+            helm_check "$d" "$command" "$@"
         else
-            do_helm_deployment "$d" "$command" $*
+            do_helm_deployment "$d" "$command" "$@"
         fi
     done
 }
@@ -35,20 +35,20 @@ function do_subdirs
 
 function main
 {
-    top_dirs=`ls -d */| tr -d "/"`
     if [ $# -lt 2 ]; then
-        top_dirs=`echo -n "$top_dirs" | tr "\n" "|"`
-        echo "Use $0 [ENVIRONMENT] [COMMAND] [COMPOSER  ARGS:args..]"
-	    return 1
+        echo "ERROR: Insufficient arguments" >&2
+        echo "Usage: $0 [ENVIRONMENT] [COMMAND] [ARGS...]" >&2
+        echo "Example: $0 dev dry" >&2
+        return 1
     fi
 
-    environment="$1"
-    command="$2"
-    shift 3
+    local environment="$1"
+    local command="$2"
+    shift 2
 
-    set_environment $environment
+    set_environment "$environment"
 
-    do_subdirs `pwd` $command $*
-
+    do_subdirs "$(pwd)" "$command" "$@"
 }
-main $*
+
+main "$@"

@@ -3,8 +3,9 @@
 
 from datetime import datetime
 from typing import Optional
+
+from sqlalchemy import Column, ForeignKey, Integer
 from sqlmodel import Field, SQLModel
-from sqlalchemy import Integer, ForeignKey, Column
 
 
 class ShowsSeasonBase(SQLModel):
@@ -18,7 +19,7 @@ class ShowsSeasonBase(SQLModel):
     total_episodes: Optional[int] = Field(default=None)
     created: Optional[datetime] = Field(default=datetime.now())
     updated: Optional[datetime] = Field(default=datetime.now())
-    
+
 
 class ShowsSeason(ShowsSeasonBase, table=True):
     """_summary_
@@ -28,7 +29,7 @@ class ShowsSeason(ShowsSeasonBase, table=True):
     """
 
     __tablename__ = "shows_season"
-    __table_args__ = {'extend_existing': True, 'schema': 'shows'}
+    __table_args__ = {"extend_existing": True, "schema": "shows"}
 
     shows_info_id: Optional[int] = Field(
         sa_column=Column(Integer, ForeignKey("shows.shows_info.id", ondelete="CASCADE"))

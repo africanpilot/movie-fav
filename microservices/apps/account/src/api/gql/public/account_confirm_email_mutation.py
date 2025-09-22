@@ -1,12 +1,12 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
+from account.src.domain.lib import AccountLib
 from account.src.models.account_info import AccountInfoResponse, AccountInfoUpdate, AccountInfoUpdateInput
-from link_models.enums import AccountRegistrationEnum, AccountStatusEnum
+from graphql import GraphQLResolveInfo
 from link_lib.microservice_controller import ApolloTypes
 from link_lib.microservice_graphql_model import GraphQLModel
-from account.src.domain.lib import AccountLib
-from graphql import GraphQLResolveInfo
+from link_models.enums import AccountRegistrationEnum, AccountStatusEnum
 
 
 class AccountConfirmEmailMutation(GraphQLModel, AccountLib, AccountInfoUpdate):
@@ -25,9 +25,9 @@ class AccountConfirmEmailMutation(GraphQLModel, AccountLib, AccountInfoUpdate):
                 account_info_id=token_decode.account_info_id,
                 verified_email=True,
                 registration_status=AccountRegistrationEnum.APPROVED,
-                status=AccountStatusEnum.ACTIVE
+                status=AccountStatusEnum.ACTIVE,
             )
-            
+
             with self.get_session("psqldb_account") as db:
 
                 # update user to confirmed email

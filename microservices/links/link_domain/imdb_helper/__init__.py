@@ -3,7 +3,4 @@
 
 from link_domain.imdb_helper.base import ImdbHelper
 
-
-__all__ = (
-  "ImdbHelper",
-)
+__all__ = ("ImdbHelper",)

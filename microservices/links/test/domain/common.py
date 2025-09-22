@@ -1,6 +1,5 @@
-from unittest.mock import MagicMock
-
 import typing
+from unittest.mock import MagicMock
 
 
 class FakeCeleryApp:
@@ -11,8 +10,7 @@ class FakeCeleryApp:
     def __init__(self):
         self._tasks_handlers = {}
 
-    def task(self, name: str, bind: bool = True,
-             *decorator_args, **decorator_kwargs) -> callable:
+    def task(self, name: str, bind: bool = True, *decorator_args, **decorator_kwargs) -> callable:
         def wrapper(task_handler: callable):
             self._tasks_handlers[name] = FakeCeleryTask(self, name, task_handler, bind)
 

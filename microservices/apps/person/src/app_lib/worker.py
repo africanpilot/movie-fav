@@ -2,7 +2,6 @@
 # All Rights Reserved. Proprietary and confidential.
 
 import link  # noqa: F401
-
 from person.src.controller.controller_worker import WorkerController, worker
 
 WorkerController()

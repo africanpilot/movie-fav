@@ -2,13 +2,13 @@
 # All Rights Reserved. Proprietary and confidential.
 
 from datetime import datetime
-from typing import List, Set, Optional
-from pydantic import BaseModel
-from sqlmodel import Field, SQLModel
-from sqlalchemy import Integer, ForeignKey, Column, String, VARCHAR
-from sqlalchemy.dialects import postgresql
+from typing import List, Optional, Set
+
 from link_models.base import PageInfoInput
 from link_models.enums import ShowsEpisodeSortByEnum
+from sqlalchemy import VARCHAR, Column, ForeignKey, Integer, String
+from sqlalchemy.dialects import postgresql
+from sqlmodel import Field, SQLModel
 
 
 class ShowsEpisodeBase(SQLModel):
@@ -39,6 +39,7 @@ class ShowsEpisodeBase(SQLModel):
     created: Optional[datetime] = Field(default=datetime.now())
     updated: Optional[datetime] = Field(default=datetime.now())
 
+
 class ShowsEpisode(ShowsEpisodeBase, table=True):
     """_summary_
     Args:
@@ -47,8 +48,8 @@ class ShowsEpisode(ShowsEpisodeBase, table=True):
     """
 
     __tablename__ = "shows_episode"
-    __table_args__ = {'extend_existing': True, 'schema': 'shows'}
-    
+    __table_args__ = {"extend_existing": True, "schema": "shows"}
+
     shows_info_id: Optional[int] = Field(
         sa_column=Column(Integer, ForeignKey("shows.shows_info.id", ondelete="CASCADE"))
     )
@@ -61,7 +62,8 @@ class ShowsEpisode(ShowsEpisodeBase, table=True):
 
 
 class ShowsEpisodePageInfoInput(PageInfoInput):
-	sortBy: list[ShowsEpisodeSortByEnum] = [ShowsEpisodeSortByEnum.ID]
+    sortBy: list[ShowsEpisodeSortByEnum] = [ShowsEpisodeSortByEnum.ID]
+
 
 class ShowsEpisodeFilterInput(SQLModel):
     id: Optional[list[int]] = None

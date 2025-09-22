@@ -3,21 +3,22 @@
 
 
 def get_public_models():
-  return [
-    "DebugQuery",
-    "DebugMutation",
-  ]
+    return [
+        "DebugQuery",
+        "DebugMutation",
+    ]
+
 
 def get_private_models():
-  return [
-    "GetLoginQuery",
-    "RedisDeleteMutation",
-  ]
+    return [
+        "GetLoginQuery",
+        "RedisDeleteMutation",
+    ]
+
 
 def get_public_routes_to_load():
-  return [
-    "LinkBaseRouter"
-  ]
-  
+    return ["LinkBaseRouter"]
+
+
 def get_private_routes_to_load():
-  return []
+    return []

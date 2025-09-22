@@ -4,23 +4,22 @@
 
 # future must be the first instruction in the file!
 from __future__ import print_function
-from select     import select
-from subprocess import Popen, PIPE
 
 import os
 import sys
-import signal
 import time
+from select import select
+from subprocess import PIPE, Popen
 
+from link_lib.microservice_generic_model import microservice_name
 from link_lib.microservice_logger import MicroserviceLogger
 from link_lib.microservice_signals import MicroservciceSignalHandler
-from link_lib.microservice_generic_model import microservice_name
 
 
 class MicroserviceMultiprocessing:
     is_multiprocess_controller = True
-    
-    microservice_path = ''
+
+    microservice_path = ""
     processes = []
     pid_to_role_map = {}
     old_pid_to_role_map = {}
@@ -28,28 +27,23 @@ class MicroserviceMultiprocessing:
 
     def launch_one(self, role):
         route = "app.py" if role == "api" else "unary_server.py"
-        args = ['python', self.microservice_path + f"/{route}"]
-        proc = Popen(
-            args,
-            stdout=PIPE,
-            bufsize=1,
-            close_fds=True,
-            universal_newlines=True)
+        args = ["python", self.microservice_path + f"/{route}"]
+        proc = Popen(args, stdout=PIPE, bufsize=1, close_fds=True, universal_newlines=True)
         pid = proc.pid
         self.pid_to_role_map[pid] = role
         self.processes.append(proc)
         self.log.debug(f"Launching PID {pid} for process {role}")
 
     def launch_all(self):
-        self.log.info('Launching all processes.')
+        self.log.info("Launching all processes.")
         for role in {"api", "grpc"}:
-            self.log.info(f'Launching {role}...')
+            self.log.info(f"Launching {role}...")
             self.launch_one(role)
-            if 'api' == role:
+            if "api" == role:
                 self.log.debug("Delaying start of non-api procs...")
                 time.sleep(5)
 
-            if 'grpc' == role:
+            if "grpc" == role:
                 self.log.debug("Delaying start of non-grpc procs...")
                 time.sleep(5)
 
@@ -59,12 +53,12 @@ class MicroserviceMultiprocessing:
 
     def __init__(self, path):
         self.microservice_path = path
-        
+
         self.microservice_name = microservice_name()
-        id = f"{self.microservice_name} controller"            
+        id = f"{self.microservice_name} controller"
         self.log = MicroserviceLogger.instance(id)
         self.signal_handler = MicroservciceSignalHandler(self)
-        
+
         required_base = {
             f"/home/svc/microservices/apps/{self.microservice_name}/src/app_lib",
         }
@@ -77,15 +71,15 @@ class MicroserviceMultiprocessing:
         pid = os.getpid()
         self.log.debug(f"PID {pid}")
         self.launch_all_with_nanny()
-    
+
     def message_from_child(self, message):
-        print(message, end='')
+        print(message, end="")
         sys.stdout.flush()
 
     def health_check(self):
         pass
 
-    def kill(self, proc, signal_number = 0):
+    def kill(self, proc, signal_number=0):
         pid = proc.pid
         self.log.debug(f"Killing PID {pid} with signal {signal_number}")
         self.processes.remove(proc)
@@ -97,19 +91,19 @@ class MicroserviceMultiprocessing:
         self.old_pid_to_role_map[pid] = self.pid_to_role_map[pid]
         del self.pid_to_role_map[pid]
 
-    def kill_all(self, signal_number = 0):
+    def kill_all(self, signal_number=0):
         for p in self.processes[:]:
             self.kill(p, signal_number)
 
-    def shutdown(self, mode, signal_number = 0):
+    def shutdown(self, mode, signal_number=0):
         self.shutdown_mode = True
-        self.log.critical('Passing shutdown signal to children - in case they didn\'t receive it already')
+        self.log.critical("Passing shutdown signal to children - in case they didn't receive it already")
         self.kill_all(signal_number)
 
     def restart(self, pid):
         if self.shutdown_mode:
             return True
-        
+
         role = self.old_pid_to_role_map[pid]
         del self.old_pid_to_role_map[pid]
 
@@ -147,11 +141,11 @@ class MicroserviceMultiprocessing:
                 else:
                     todo.append(p.stdout)
 
-            ready = select(todo, [],[], timeout)[0]
+            ready = select(todo, [], [], timeout)[0]
             for fp in ready:
                 self.message_from_child(fp.readline())
 
             if not (i % health_check_interval):
                 self.health_check()
-                i=0
-            i = i+1
+                i = 0
+            i = i + 1

@@ -3,7 +3,4 @@
 
 from link_domain.stripe.base import LinkStripe
 
-
-__all__ = (
-  "LinkStripe",
-)
+__all__ = ("LinkStripe",)

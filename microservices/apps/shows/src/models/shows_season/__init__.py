@@ -8,11 +8,11 @@ from shows.src.models.shows_season.read import ShowsSeasonRead
 from shows.src.models.shows_season.update import ShowsSeasonUpdate
 
 __all__ = (
-  "ShowsSeason",
-  "ShowsSeasonBase",
-  "ShowsSeasonCreate",
-  "ShowsSeasonCreateInput",
-  "ShowsSeasonDelete",
-  "ShowsSeasonRead",
-  "ShowsSeasonUpdate",
+    "ShowsSeason",
+    "ShowsSeasonBase",
+    "ShowsSeasonCreate",
+    "ShowsSeasonCreateInput",
+    "ShowsSeasonDelete",
+    "ShowsSeasonRead",
+    "ShowsSeasonUpdate",
 )

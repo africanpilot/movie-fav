@@ -6,8 +6,8 @@ from account.src.models.account_saga_state.create import AccountSagaStateCreate
 from account.src.models.account_saga_state.update import AccountSagaStateUpdate
 
 __all__ = (
-  "AccountSagaStateBase",
-  "AccountSagaState",
-  "AccountSagaStateCreate",
-  "AccountSagaStateUpdate",
+    "AccountSagaStateBase",
+    "AccountSagaState",
+    "AccountSagaStateCreate",
+    "AccountSagaStateUpdate",
 )

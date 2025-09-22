@@ -3,6 +3,4 @@
 
 from notifications.src.domain.sendgrid_helper.base import SendgridHelper
 
-__all__ = (
-  "SendgridHelper",
-)
+__all__ = ("SendgridHelper",)

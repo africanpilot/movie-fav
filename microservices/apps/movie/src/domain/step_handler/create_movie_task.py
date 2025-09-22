@@ -2,10 +2,12 @@
 # All Rights Reserved. Proprietary and confidential.
 
 from typing import Union
+
 from celery import Task
-from movie.src.controller.controller_worker import worker
 from link_lib.saga_framework import saga_step_handler
-from link_models.messaging import create_movie_message as message, CREATE_MOVIE_SAGA_RESPONSE_QUEUE
+from link_models.messaging import CREATE_MOVIE_SAGA_RESPONSE_QUEUE
+from link_models.messaging import create_movie_message as message
+from movie.src.controller.controller_worker import worker
 from movie.src.domain.lib import MovieLib
 
 

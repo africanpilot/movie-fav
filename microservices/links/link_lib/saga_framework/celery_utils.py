@@ -1,4 +1,4 @@
-__all__ = ['auto_retry_then_reraise', 'close_sqlalchemy_db_connection_after_celery_task_ends']
+__all__ = ["auto_retry_then_reraise", "close_sqlalchemy_db_connection_after_celery_task_ends"]
 
 import functools
 
@@ -20,6 +20,7 @@ def auto_retry_then_reraise(max_retries: int = 3, **retry_kwargs):
     Note: it's important to set bind=True in @task
       because this decorator will need access to celery task instance
     """
+
     def inner(func):
 
         @functools.wraps(func)
@@ -33,6 +34,7 @@ def auto_retry_then_reraise(max_retries: int = 3, **retry_kwargs):
                     raise exc
 
         return wrapper
+
     return inner
 
 

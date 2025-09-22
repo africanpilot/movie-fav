@@ -1,19 +1,19 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
-from link_lib.microservice_controller import ApolloTypes
-from link_lib.microservice_graphql_model import GraphQLModel
 from account.src.domain.lib import AccountLib
-from graphql import GraphQLResolveInfo
 from account.src.models.account_company import (
     AccountCompany,
-    AccountCompanyUpdateInput,
-    AccountCompanyResponse,
-    AccountCompanyUpdate,
-    AccountCompanyResponses,
+    AccountCompanyFilterInput,
     AccountCompanyPageInfoInput,
-    AccountCompanyFilterInput
+    AccountCompanyResponse,
+    AccountCompanyResponses,
+    AccountCompanyUpdate,
+    AccountCompanyUpdateInput,
 )
+from graphql import GraphQLResolveInfo
+from link_lib.microservice_controller import ApolloTypes
+from link_lib.microservice_graphql_model import GraphQLModel
 from link_models.enums import AccountRoleEnum
 
 
@@ -26,13 +26,16 @@ class AccountCompanyUpdateMutation(GraphQLModel, AccountLib, AccountCompanyRespo
 
         @mutation.field("accountCompanyUpdate")
         def resolve_account_company_update(
-            _, info: GraphQLResolveInfo,
+            _,
+            info: GraphQLResolveInfo,
             updateInput: AccountCompanyUpdateInput,
             pageInfo: AccountCompanyPageInfoInput = None,
-            filterInput: AccountCompanyFilterInput = None
+            filterInput: AccountCompanyFilterInput = None,
         ) -> AccountCompanyResponse:
-        
-            token_decode = self.general_validation_process(info, company=True, roles=[AccountRoleEnum.ADMIN, AccountRoleEnum.COMPANY])
+
+            token_decode = self.general_validation_process(
+                info, company=True, roles=[AccountRoleEnum.ADMIN, AccountRoleEnum.COMPANY]
+            )
 
             pageInfo = pageInfo or {}
             filterInput = filterInput or {}
@@ -44,9 +47,9 @@ class AccountCompanyUpdateMutation(GraphQLModel, AccountLib, AccountCompanyRespo
             updateInput = AccountCompanyUpdateInput(account_company_id=token_decode.account_company_id, **updateInput)
 
             with self.get_session("psqldb_account") as db:
-                
+
                 self.account_company_update(db, updateInput)
-                
+
                 response = self.account_company_response(
                     info=info,
                     db=db,
@@ -55,7 +58,7 @@ class AccountCompanyUpdateMutation(GraphQLModel, AccountLib, AccountCompanyRespo
                     query_context=query_context,
                     filterInputExtra=[AccountCompany.id == token_decode.account_company_id],
                 )
-                
+
             self.redis_delete_account_company_query_keys(token_decode.account_company_id)
 
             return response

@@ -1,7 +1,8 @@
 import json
+
 import grpc
-import link_lib.grpc_unary.unary_pb2_grpc as pb2_grpc
 import link_lib.grpc_unary.unary_pb2 as pb2
+import link_lib.grpc_unary.unary_pb2_grpc as pb2_grpc
 from link_lib.microservice_general import GeneralJSONEncoder
 from link_lib.microservice_response import LinkResponse
 
@@ -21,7 +22,7 @@ class UnaryClient(object):
 
         # bind the client to the server channel
         self.stub = pb2_grpc.UnaryStub(self.channel)
-        
+
     @property
     def sterilized_message(self):
         return json.dumps(self.message, cls=GeneralJSONEncoder)

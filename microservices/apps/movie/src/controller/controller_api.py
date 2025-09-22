@@ -16,14 +16,14 @@ class APIController(ControllerToApollo):
         "MovieFederations",
         "MovieUpdateMutation",
     ]
-    
+
     private_models_to_load = [
         "MovieInfoPopulateMutation",
         "MovieResetPopularMutation",
         "MovieImportMutation",
         "MovieInfoUpdateMutation",
     ]
-    
+
     public_routes_to_load = []
 
     private_routes_to_load = []
@@ -34,7 +34,7 @@ class APIController(ControllerToApollo):
         self._microservice = microservice
 
         self.set_models_to_load(self.public_models_to_load)
-        
+
         if self._schema_type == SchemaTypeEnum.PRIVATE:
             self.set_models_to_load(self.private_models_to_load)
 

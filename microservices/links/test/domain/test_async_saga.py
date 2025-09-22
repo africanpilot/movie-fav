@@ -1,9 +1,8 @@
-import typing
-from unittest.mock import MagicMock, patch
+from test.domain.common import FakeCeleryApp
+from unittest.mock import MagicMock
 
-from link_lib.saga_framework.base_saga import SyncStep
 from link_lib.saga_framework.async_saga import AsyncSaga, AsyncStep
-from test.domain.common import FakeCeleryTask, FakeCeleryApp
+from link_lib.saga_framework.base_saga import SyncStep
 
 
 def test_saga_run_success():
@@ -23,23 +22,16 @@ def test_saga_run_success():
             super().__init__(*args, **kwargs)
 
             self.steps = [
-                SyncStep(
-                    name='step_1',
-                    compensation=step_1_compensation_mock
-                ),
+                SyncStep(name="step_1", compensation=step_1_compensation_mock),
                 AsyncStep(
-                    name='step_2',
+                    name="step_2",
                     action=step_2_action_mock,
-
-                    queue='some_queue',
-                    base_task_name='step_2_task',
+                    queue="some_queue",
+                    base_task_name="step_2_task",
                     on_success=step_2_on_success_mock,
-                    on_failure=step_2_on_failure_mock
+                    on_failure=step_2_on_failure_mock,
                 ),
-                SyncStep(
-                    name='step_3',
-                    action=step_3_action_mock
-                ),
+                SyncStep(name="step_3", action=step_3_action_mock),
             ]
 
         on_saga_success = on_saga_success_mock
@@ -68,11 +60,8 @@ def test_saga_run_success():
 
     # emulate that Step Handler service successfully handled step 2
     #  and triggered corresponding Celery task on Saga Orchestrator
-    celery_task_params = dict(
-        saga_id=fake_saga_id,
-        payload={'ticket_id': '111'}
-    )
-    fake_celery_app.emulate_celery_task_launch('step_2_task.response.success', **celery_task_params)
+    celery_task_params = dict(saga_id=fake_saga_id, payload={"ticket_id": "111"})
+    fake_celery_app.emulate_celery_task_launch("step_2_task.response.success", **celery_task_params)
 
     # finally, validate
     step_2_on_success_mock.assert_called_once()
@@ -101,23 +90,16 @@ def test_saga_run_failure():
             super().__init__(*args, **kwargs)
 
             self.steps = [
-                SyncStep(
-                    name='step_1',
-                    compensation=step_1_compensation_mock
-                ),
+                SyncStep(name="step_1", compensation=step_1_compensation_mock),
                 AsyncStep(
-                    name='step_2',
+                    name="step_2",
                     action=step_2_action_mock,
-
-                    queue='some_queue',
-                    base_task_name='step_2_task',
+                    queue="some_queue",
+                    base_task_name="step_2_task",
                     on_success=step_2_on_success_mock,
-                    on_failure=step_2_on_failure_mock
+                    on_failure=step_2_on_failure_mock,
                 ),
-                SyncStep(
-                    name='step_3',
-                    action=step_3_action_mock
-                )
+                SyncStep(name="step_3", action=step_3_action_mock),
             ]
 
         on_saga_success = on_saga_success_mock
@@ -144,11 +126,8 @@ def test_saga_run_failure():
 
     # emulate that Step Handler service successfully handled step 2
     #  and triggered corresponding Celery task on Saga Orchestrator
-    celery_task_params = dict(
-        saga_id=fake_saga_id,
-        payload={'ticket_id': '111'}
-    )
-    fake_celery_app.emulate_celery_task_launch('step_2_task.response.failure', **celery_task_params)
+    celery_task_params = dict(saga_id=fake_saga_id, payload={"ticket_id": "111"})
+    fake_celery_app.emulate_celery_task_launch("step_2_task.response.failure", **celery_task_params)
 
     # finally, validate
     step_2_on_failure_mock.assert_called_once()
@@ -158,4 +137,3 @@ def test_saga_run_failure():
     step_2_on_success_mock.assert_not_called()
     step_3_action_mock.assert_not_called()
     on_saga_success_mock.assert_not_called()
-

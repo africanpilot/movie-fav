@@ -15,15 +15,14 @@ class APIController(ControllerToApollo):
         "PersonInfoQuery",
         "PersonFederations",
     ]
-    
+
     private_models_to_load = [
         "PersonInfoPopulateMutation",
         "PersonImportMutation",
     ]
-    
+
     public_routes_to_load = []
     private_routes_to_load = []
-    
 
     def __init__(self, schema_type: SchemaTypeEnum = SchemaTypeEnum.PUBLIC, microservice: str = "person"):
         super().__init__(schema_type)
@@ -31,7 +30,7 @@ class APIController(ControllerToApollo):
         self._microservice = microservice
 
         self.set_models_to_load(self.public_models_to_load)
-        
+
         if self._schema_type == SchemaTypeEnum.PRIVATE:
             self.set_models_to_load(self.private_models_to_load)
 

@@ -1,12 +1,23 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
-from functools import cached_property
-from shows.src.models.shows_info import ShowsInfo, ShowsInfoCreate, ShowsInfoRead, ShowsInfoUpdate, ShowsInfoResponses
-from shows.src.models.shows_saga_state import ShowsSagaState, ShowsSagaStateCreate, ShowsSagaStateRead, ShowsSagaStateUpdate
-from shows.src.models.shows_season import ShowsSeason, ShowsSeasonCreate, ShowsSeasonRead, ShowsSeasonUpdate
-from shows.src.models.shows_episode import ShowsEpisode, ShowsEpisodeCreate, ShowsEpisodeRead, ShowsEpisodeUpdate, ShowsEpisodeResponses
+
 from link_lib.microservice_request import LinkRequest
+from shows.src.models.shows_episode import (
+    ShowsEpisode,
+    ShowsEpisodeCreate,
+    ShowsEpisodeRead,
+    ShowsEpisodeResponses,
+    ShowsEpisodeUpdate,
+)
+from shows.src.models.shows_info import ShowsInfo, ShowsInfoCreate, ShowsInfoRead, ShowsInfoResponses, ShowsInfoUpdate
+from shows.src.models.shows_saga_state import (
+    ShowsSagaState,
+    ShowsSagaStateCreate,
+    ShowsSagaStateRead,
+    ShowsSagaStateUpdate,
+)
+from shows.src.models.shows_season import ShowsSeason, ShowsSeasonCreate, ShowsSeasonRead, ShowsSeasonUpdate
 
 
 class ShowsModels(LinkRequest):
@@ -20,7 +31,7 @@ class ShowsModels(LinkRequest):
     @property
     def shows_info_create(self):
         return ShowsInfoCreate()
-    
+
     @property
     def shows_info_read(self):
         return ShowsInfoRead()

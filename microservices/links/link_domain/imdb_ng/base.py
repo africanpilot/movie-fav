@@ -1,18 +1,17 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
-from functools import cached_property
 from typing import Optional
-from link_lib.microservice_request import LinkRequest
 
 from cinemagoerng import web
-from cinemagoerng.model import Movie, TVMovie, TVEpisode
+from cinemagoerng.model import Movie, TVEpisode
+from link_lib.microservice_request import LinkRequest
 
 
 class ImdbNg(LinkRequest):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-    
+
     def convert_imdb_id(self, imdbId: str) -> str:
         if imdbId.startswith("tt"):
             imdbId = imdbId[2:]
@@ -22,7 +21,7 @@ class ImdbNg(LinkRequest):
         if not imdbId.startswith("tt"):
             imdbId = "tt" + imdbId
         return web.get_title(imdbId)
-    
+
     def get_movie_info(self, imdbId: str, movie: Movie) -> dict:
         return dict(
             imdb_id=self.convert_imdb_id(imdbId),
@@ -47,12 +46,12 @@ class ImdbNg(LinkRequest):
     def get_shows_by_id(self, imdbId: str, season: Optional[str] = None) -> Movie:
         if not imdbId.startswith("tt"):
             imdbId = "tt" + imdbId
-        
+
         if not season:
             return web.get_title(imdbId)
         return web.get_title(imdbId, page="episodes", season=season)
 
-    def get_episode_info(self, show: Movie, episode: TVEpisode): 
+    def get_episode_info(self, show: Movie, episode: TVEpisode):
         return dict(
             imdb_id=self.convert_imdb_id(episode.imdb_id),
             shows_imdb_id=self.convert_imdb_id(show.imdb_id),
@@ -75,23 +74,28 @@ class ImdbNg(LinkRequest):
         for s in range_season:
             try:
                 show = self.get_shows_by_id(show.imdb_id, str(s))
-                show_season_episodes = list(show.episodes[str(s)].values())[:int(episode)] if episode else list(show.episodes[str(s)].values())
+                show_season_episodes = (
+                    list(show.episodes[str(s)].values())[: int(episode)]
+                    if episode
+                    else list(show.episodes[str(s)].values())
+                )
                 if show.episodes:
-                    seasons.append(dict(
-                        season=s,
-                        imdb_id=self.convert_imdb_id(show.imdb_id) + "_" + str(s),
-                        total_episodes=len(show.episodes[str(s)]),
-                        release_date=None,
-                        shows_episode=[
-                            self.get_episode_info(show, episode)
-                            for episode in show_season_episodes
-                        ]
-                    ))
-            except Exception as e:
+                    seasons.append(
+                        dict(
+                            season=s,
+                            imdb_id=self.convert_imdb_id(show.imdb_id) + "_" + str(s),
+                            total_episodes=len(show.episodes[str(s)]),
+                            release_date=None,
+                            shows_episode=[self.get_episode_info(show, episode) for episode in show_season_episodes],
+                        )
+                    )
+            except Exception:
                 break
         return seasons
-    
-    def get_shows_info(self, imdbId: str, show: Movie, season: Optional[str] = None, episode: Optional[str] = None) -> dict:
+
+    def get_shows_info(
+        self, imdbId: str, show: Movie, season: Optional[str] = None, episode: Optional[str] = None
+    ) -> dict:
         shows_info = dict(
             imdb_id=self.convert_imdb_id(imdbId),
             title=show.title,

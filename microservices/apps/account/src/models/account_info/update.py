@@ -3,46 +3,54 @@
 
 from datetime import datetime
 from typing import Optional
-from sqlmodel import Session
-from pydantic import BaseModel, model_validator
+
 from account.src.models.account_info.base import AccountInfo, AccountInfoBase
 from account.src.models.account_info.validate import AccountInfoValidate
 from link_lib.microservice_general import LinkGeneral
+from pydantic import BaseModel, model_validator
 from sqlalchemy import update
 from sqlalchemy.sql.dml import Update
+from sqlmodel import Session
 
 
 class AccountInfoUpdateInput(AccountInfoBase):
-  account_info_id: int
+    account_info_id: int
+
 
 class AccountInfoUpdatePasswordInput(BaseModel):
-  password: str
-  password_retype: str
-  
-  @model_validator(mode='before')
-  def _validate_account_create_input(cls, values):
+    password: str
+    password_retype: str
 
-    if values["password"]:
-      validate = AccountInfoValidate()
+    @model_validator(mode="before")
+    def _validate_account_create_input(cls, values):
 
-      validate.validate_password(values["password"])
-    
-      validate.validate_retype_password(values["password"], values["password_retype"])
-    
-    return values
+        if values["password"]:
+            validate = AccountInfoValidate()
+
+            validate.validate_password(values["password"])
+
+            validate.validate_retype_password(values["password"], values["password_retype"])
+
+        return values
+
 
 class AccountInfoUpdate(LinkGeneral):
-  def __init__(self, **kwargs):
-    super().__init__(**kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-  def account_info_update(self, db: Optional[Session], updateInput: AccountInfoUpdateInput, commit: bool = True) -> Optional[Update]:
-    sql_query = (update(AccountInfo)
-      .where(AccountInfo.id == updateInput.account_info_id)
-      .values(**updateInput.model_dump(exclude_unset=True, exclude={"id", "account_info_id"}), updated=datetime.now())
-    )
-                     
-    if commit:
-        db.exec(sql_query)
-        db.commit()
+    def account_info_update(
+        self, db: Optional[Session], updateInput: AccountInfoUpdateInput, commit: bool = True
+    ) -> Optional[Update]:
+        sql_query = (
+            update(AccountInfo)
+            .where(AccountInfo.id == updateInput.account_info_id)
+            .values(
+                **updateInput.model_dump(exclude_unset=True, exclude={"id", "account_info_id"}), updated=datetime.now()
+            )
+        )
 
-    return sql_query
+        if commit:
+            db.exec(sql_query)
+            db.commit()
+
+        return sql_query

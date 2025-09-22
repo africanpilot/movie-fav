@@ -3,6 +3,4 @@
 
 from shows.src.domain.step_handler.create_shows_task import create_shows_task
 
-__all__ = (
-  "create_shows_task",
-)
+__all__ = ("create_shows_task",)

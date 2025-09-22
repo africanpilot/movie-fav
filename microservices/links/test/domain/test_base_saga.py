@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from link_lib.saga_framework.base_saga import BaseSaga, SyncStep
 
@@ -16,14 +16,8 @@ def test_saga_run_success():
             super().__init__(*args, **kwargs)
 
             self.steps = [
-                SyncStep(
-                    name='step_1',
-                    compensation=step_1_compensation_mock
-                ),
-                SyncStep(
-                    name='step_2',
-                    action=step_2_action_mock
-                )
+                SyncStep(name="step_1", compensation=step_1_compensation_mock),
+                SyncStep(name="step_2", action=step_2_action_mock),
             ]
 
         on_saga_success = on_saga_success_mock
@@ -47,8 +41,7 @@ def test_saga_action_fails():
     step_2_action_mock = MagicMock()
     step_2_compensation_mock = MagicMock()
 
-    failing_action_mock = MagicMock(
-        side_effect=KeyError('some error that may happend in step action'))
+    failing_action_mock = MagicMock(side_effect=KeyError("some error that may happend in step action"))
 
     on_saga_success_mock = MagicMock()
     on_saga_failure_mock = MagicMock()
@@ -58,19 +51,9 @@ def test_saga_action_fails():
             super().__init__(*args, **kwargs)
 
             self.steps = [
-                SyncStep(
-                    name='step_1',
-                    compensation=step_1_compensation_mock
-                ),
-                SyncStep(
-                    name='step_that_fails',
-                    action=failing_action_mock
-                ),
-                SyncStep(
-                    name='step_2',
-                    action=step_2_action_mock,
-                    compensation=step_2_compensation_mock
-                )
+                SyncStep(name="step_1", compensation=step_1_compensation_mock),
+                SyncStep(name="step_that_fails", action=failing_action_mock),
+                SyncStep(name="step_2", action=step_2_action_mock, compensation=step_2_compensation_mock),
             ]
 
         on_saga_success = on_saga_success_mock

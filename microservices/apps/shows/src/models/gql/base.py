@@ -3,6 +3,7 @@
 
 from pydantic import BaseModel
 
+
 class ShowsDownloadInput(BaseModel):
     imdb_id: str
     shows_imdb_id: str

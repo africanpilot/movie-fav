@@ -7,10 +7,10 @@ from person.src.models.person_saga_state.read import PersonSagaStateRead
 from person.src.models.person_saga_state.update import PersonSagaStateUpdate
 
 __all__ = (
-  "PersonSagaStateBase",
-  "PersonSagaState",
-  "PersonSagaStateCreate",
-  "PersonSagaStateUpdate",
-  "PersonSagaStateRead",
-  "PersonSagaStateCreateInput",
+    "PersonSagaStateBase",
+    "PersonSagaState",
+    "PersonSagaStateCreate",
+    "PersonSagaStateUpdate",
+    "PersonSagaStateRead",
+    "PersonSagaStateCreateInput",
 )

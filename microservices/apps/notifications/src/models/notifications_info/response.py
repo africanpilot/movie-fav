@@ -6,4 +6,4 @@ from link_models.base import BaseResponse
 
 
 class NotificationsInfoResponse(BaseResponse):
-  pass
+    pass

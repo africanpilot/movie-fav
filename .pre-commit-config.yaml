@@ -1,22 +1,77 @@
 repos:
-- repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.1.0
-  hooks:
-  - id: end-of-file-fixer
-  - id: trailing-whitespace
-- repo: https://github.com/pycqa/isort
-  rev: 5.10.1
-  hooks:
-  - id: isort
-    args: ["--profile", "black"]
-    exclude: ^bin/
-- repo: https://github.com/psf/black
-  rev: 22.3.0
-  hooks:
-  - id: black
-    args: [--config=microservices/pyproject.toml, microservices/]
-- repo: https://github.com/pycqa/flake8
-  rev: 5.0.4  # Keep this sync'd with requirements-test.txt
-  hooks:
-  - id: flake8
-    args: [--config=microservices/.flake8, microservices/]
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+  - repo: https://github.com/PyCQA/autoflake
+    rev: v2.3.1
+    hooks:
+      - id: autoflake
+        args:
+          - --remove-all-unused-imports
+          - --remove-unused-variables
+          - --in-place
+          - --recursive
+        files: ^microservices/.*\.py$
+        exclude: '^(microservices/\.local/|microservices/node_modules/)'
+  - repo: https://github.com/hhatto/autopep8
+    rev: v2.3.1
+    hooks:
+      - id: autopep8
+        args:
+          - --in-place
+          - --aggressive
+          - --aggressive
+        files: ^microservices/.*\.py$
+        exclude: '^(microservices/\.local/|microservices/node_modules/)'
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: ["--profile", "black", "--line-length", "120"]
+        exclude: ^bin/
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
+    hooks:
+      - id: black
+        args: [--config=microservices/pyproject.toml, microservices/]
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.3.0 # Keep this sync'd with poetry
+    hooks:
+      - id: flake8
+        args: [--config=microservices/.flake8, microservices/]
+        exclude: '^(microservices/\.local/|microservices/node_modules/)'
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.10
+    hooks:
+      - id: bandit
+        args: ["-c", "microservices/.bandit"]
+        files: microservices/.*\.py$
+        exclude: '^(microservices/\.local/|microservices/node_modules/)'
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.12.0
+    hooks:
+      - id: hadolint-docker
+        args: ["--ignore", "DL3008"]
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        types_or: [javascript, jsx, ts, tsx, json, yaml, markdown]
+        exclude: |
+          (?x)^(
+              .*\.lock$|
+              .*package-lock\.json$|
+              .*\.min\.(js|css)$
+          )$

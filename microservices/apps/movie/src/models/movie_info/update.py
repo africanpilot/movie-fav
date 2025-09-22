@@ -3,59 +3,61 @@
 
 from datetime import datetime
 from typing import Optional
-from sqlalchemy.engine.base import Connection
-from movie.src.models.movie_info.base import MovieInfo
+
 from link_lib.microservice_general import LinkGeneral
+from movie.src.models.movie_info.base import MovieInfo
 from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.sql.dml import Update, Insert
+from sqlalchemy.engine.base import Connection
+from sqlalchemy.sql.dml import Insert, Update
 from sqlmodel import Session, update
 
 
 class MovieInfoUpdate(LinkGeneral):
-  def __init__(self, **kwargs):
-    super().__init__(**kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-  def movie_info_update(self, db: Connection, movie_id: int, commit: bool = True, **fields_to_update) -> Optional[Update]:
-    sql_query = (
-      update(MovieInfo)
-      .where(MovieInfo.id == movie_id)
-      .values(**fields_to_update, updated=datetime.now())
-    )
+    def movie_info_update(
+        self, db: Connection, movie_id: int, commit: bool = True, **fields_to_update
+    ) -> Optional[Update]:
+        sql_query = update(MovieInfo).where(MovieInfo.id == movie_id).values(**fields_to_update, updated=datetime.now())
 
-    if commit:
-      db.execute(sql_query)
-    return sql_query
+        if commit:
+            db.execute(sql_query)
+        return sql_query
 
-  def movie_info_update_popular_id(self, db: Session, commit: bool = True, **fields_to_update) -> Optional[Update]:
-    sql_query = (
-      update(MovieInfo)
-      .where(MovieInfo.popular_id.isnot(None))
-      .values(**fields_to_update, updated=datetime.now())
-    )
-    
-    if commit:
-      db.exec(sql_query)
-      db.commit()
-    return sql_query
-      
-  def movie_info_update_imdb(self, db: Optional[Connection], imdbId: str, commit: bool = True, **fields_to_update) -> Optional[Insert]:
-    sql_query = (
-      insert(MovieInfo)
-      .values(**MovieInfo(imdb_id=imdbId, **fields_to_update, updated=datetime.now()).dict(exclude_unset=True))
-    ).on_conflict_do_update(constraint='movie_info_imdb_id_key', set_=dict(**fields_to_update, updated=datetime.now()))
+    def movie_info_update_popular_id(self, db: Session, commit: bool = True, **fields_to_update) -> Optional[Update]:
+        sql_query = (
+            update(MovieInfo).where(MovieInfo.popular_id.isnot(None)).values(**fields_to_update, updated=datetime.now())
+        )
 
-    if commit:
-      db.execute(sql_query)
-    return sql_query
+        if commit:
+            db.exec(sql_query)
+            db.commit()
+        return sql_query
 
-  def movie_info_update_by_imdb_id(self, db: Session, imdbId: str, commit: bool = True, **fields_to_update) -> Optional[Update]:
-    sql_query = (
-      update(MovieInfo)
-      .where(MovieInfo.imdb_id == imdbId)
-      .values(**fields_to_update, updated=datetime.now())
-    )
+    def movie_info_update_imdb(
+        self, db: Optional[Connection], imdbId: str, commit: bool = True, **fields_to_update
+    ) -> Optional[Insert]:
+        sql_query = (
+            insert(MovieInfo).values(
+                **MovieInfo(imdb_id=imdbId, **fields_to_update, updated=datetime.now()).dict(exclude_unset=True)
+            )
+        ).on_conflict_do_update(
+            constraint="movie_info_imdb_id_key", set_=dict(**fields_to_update, updated=datetime.now())
+        )
 
-    if commit:
-      db.exec(sql_query)
-      db.commit()
-    return sql_query
+        if commit:
+            db.execute(sql_query)
+        return sql_query
+
+    def movie_info_update_by_imdb_id(
+        self, db: Session, imdbId: str, commit: bool = True, **fields_to_update
+    ) -> Optional[Update]:
+        sql_query = (
+            update(MovieInfo).where(MovieInfo.imdb_id == imdbId).values(**fields_to_update, updated=datetime.now())
+        )
+
+        if commit:
+            db.exec(sql_query)
+            db.commit()
+        return sql_query

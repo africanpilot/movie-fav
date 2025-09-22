@@ -2,13 +2,14 @@
 # All Rights Reserved. Proprietary and confidential.
 
 from datetime import datetime
-from typing import List, Set, Optional
-from sqlmodel import Field, SQLModel
+from typing import List, Optional, Set
+
 from link_models.base import PageInfoInput
 from link_models.enums import MovieInfoSortByEnum
+from pydantic import BaseModel
 from sqlalchemy import Column, String
 from sqlalchemy.dialects import postgresql
-from pydantic import BaseModel
+from sqlmodel import Field, SQLModel
 
 
 class MovieInfoBase(SQLModel):
@@ -44,18 +45,22 @@ class MovieInfo(MovieInfoBase, table=True):
     """
 
     __tablename__ = "movie_info"
-    __table_args__ = {'extend_existing': True, 'schema': 'movie'}
-    
+    __table_args__ = {"extend_existing": True, "schema": "movie"}
+
+
 class MovieInfoPageInfoInput(PageInfoInput):
-	sortBy: list[MovieInfoSortByEnum] = [MovieInfoSortByEnum.ID]
+    sortBy: list[MovieInfoSortByEnum] = [MovieInfoSortByEnum.ID]
+
 
 class MovieInfoFilterInput(SQLModel):
     id: Optional[list[int]] = None
     title: Optional[list[str]] = None
     year: Optional[list[int]] = None
 
+
 class MovieInfoUpdateFilterInput(SQLModel):
     imdb_ids: list[str]
+
 
 class MovieInfoDownloadInput(BaseModel):
     imdb_id: str

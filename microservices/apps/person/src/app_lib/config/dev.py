@@ -3,7 +3,6 @@
 
 from link_config.config.base import *
 
-
 if not APP_CELERY_BROKER:
     raise NameError("APP_CELERY_BROKER must be specified")
 

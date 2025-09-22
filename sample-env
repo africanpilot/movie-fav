@@ -12,27 +12,17 @@ APP_SENDGRID_API_KEY=<>
 STRIPE_API_KEY=test
 APP_DEFAULT_PHONE=<>
 
-# auth 
+# auth
 AUTH0_CLIENT_ID=<>
 AUTH0_CLIENT_SECRET=<>
 AUTH0_DOMAIN=<>
 APP_SECRET_KEY=<>
 
-# deployment env
-AWS_ACCOUNT_ID=<>
-AWS_REGION=<>
-AWS_SERVER_IMAGE=<>
-AWS_CLIENT_IMAGE=<>
-AWS_APOLLO_IMAGE=<>
-AWS_NGINX_APOLLO_IMAGE=<>
-AWS_NGINX_APOLLO_CERT_INIT_IMAGE=<>
-AWS_PEM_FILE_LOCATION=<>
-
 # postgres db env
 DB_POSTGRES_DEFAULT=postgresql://trackstar:test@postgres:5432/dev_secure_postgresql_trackstar
 DB_POSTGRES_ACCOUNT=postgresql://trackstar:test@postgres:5432/dev_secure_postgresql_trackstar
-DB_POSTGRES_NOTIFICATIONS=postgresql://trackstar:test@postgres:5432/dev_secure_postgresql_trackstar
 
+DB_POSTGRES_NOTIFICATIONS=postgresql://trackstar:test@postgres:5432/dev_secure_postgresql_trackstar
 
 # redis db env
 DB_REDIS_DEFAULT=redis://:JJDKJGKUGKJBKJD88343JKIIURTVBS@redis:6379/0
@@ -57,4 +47,4 @@ DB_PORT=5432
 DB_USERNAME=trackstar
 PGADMIN_DEFAULT_EMAIL=admin@admin.com
 PGADMIN_DEFAULT_PASSWORD=test
-SERVICES_TODO='monxt,apollo,labelle,nginx'
+SERVICES_TODO='monxt,apollo,theater,nginx'

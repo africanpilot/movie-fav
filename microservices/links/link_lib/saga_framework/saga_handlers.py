@@ -1,34 +1,22 @@
-__all__ = ['saga_step_handler', 'no_response_saga_step_handler',
-           'send_saga_response']
+__all__ = ["saga_step_handler", "no_response_saga_step_handler", "send_saga_response"]
 
 
 import functools
 import logging
-from dataclasses import dataclass, asdict
-
 import typing
+from dataclasses import asdict
 
 import celery
 from celery import Celery, Task
-
-from link_lib.saga_framework.utils import success_task_name, failure_task_name, serialize_saga_error
+from link_lib.saga_framework.utils import failure_task_name, serialize_saga_error, success_task_name
 
 logger = logging.getLogger(__name__)
 
 
-def send_saga_response(celery_app: Celery,
-                       response_task_name: str,
-                       response_queue_name: str,
-                       saga_id: int,
-                       payload):  # assuming payload is a @dataclass
-    return celery_app.send_task(
-        response_task_name,
-        args=[
-            saga_id,
-            payload
-        ],
-        queue=response_queue_name
-    )
+def send_saga_response(
+    celery_app: Celery, response_task_name: str, response_queue_name: str, saga_id: int, payload
+):  # assuming payload is a @dataclass
+    return celery_app.send_task(response_task_name, args=[saga_id, payload], queue=response_queue_name)
 
 
 def _saga_step_handler(response_queue: typing.Union[str, None]):
@@ -41,6 +29,7 @@ def _saga_step_handler(response_queue: typing.Union[str, None]):
     Note: it's important to set bind=True in @task
       because @saga_handler will need access to celery task instance
     """
+
     def inner(func):
         @functools.wraps(func)
         def wrapper(celery_task: Task, saga_id: int, payload: dict):
@@ -61,11 +50,8 @@ def _saga_step_handler(response_queue: typing.Union[str, None]):
                 task_name = failure_task_name(celery_task.name)
 
             if response_queue:
-                send_saga_response(celery_task.app,
-                                   task_name,
-                                   response_queue,
-                                   saga_id,
-                                   response_payload)
+                send_saga_response(celery_task.app, task_name, response_queue, saga_id, response_payload)
+
         return wrapper
 
     return inner
@@ -87,5 +73,3 @@ no_response_saga_step_handler = _saga_step_handler(response_queue=None)
 It's assumed that you will use this decorator with
  @task decorator, see docstring for _saga_step_handler
 """
-
-

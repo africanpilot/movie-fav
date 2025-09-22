@@ -2,12 +2,13 @@
 # All Rights Reserved. Proprietary and confidential.
 
 from datetime import datetime
-from typing import List, Set, Optional
-from sqlmodel import Field, SQLModel
+from typing import Optional, Set
+
 from link_models.base import PageInfoInput
 from link_models.enums import PersonInfoSortByEnum
 from sqlalchemy import Column, String
 from sqlalchemy.dialects import postgresql
+from sqlmodel import Field, SQLModel
 
 
 class PersonInfoBase(SQLModel):
@@ -33,11 +34,12 @@ class PersonInfo(PersonInfoBase, table=True):
     """
 
     __tablename__ = "person_info"
-    __table_args__ = {'extend_existing': True, 'schema': 'person'}
+    __table_args__ = {"extend_existing": True, "schema": "person"}
 
- 
+
 class PersonInfoPageInfoInput(PageInfoInput):
-	sortBy: list[PersonInfoSortByEnum] = [PersonInfoSortByEnum.ID]
+    sortBy: list[PersonInfoSortByEnum] = [PersonInfoSortByEnum.ID]
+
 
 class PersonInfoFilterInput(SQLModel):
     id: Optional[list[int]] = None

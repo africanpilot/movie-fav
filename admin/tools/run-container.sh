@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 
 # imports
 location=admin/tools
@@ -15,18 +15,18 @@ ORPHANS="--remove-orphans"
 
 function do_subdirs
 {
-    topdir="$1"
-    command="$2"
+    local topdir="$1"
+    local command="$2"
     shift 2
 
     for d in $(echo ${SERVICES_TODO} | sed "s/,/ /g"); do
-        announce "ENTERING $d"
+        announce "PROCESSING SERVICE: $d"
 
-        # check docker file exsit before running commands
+        # check docker file exists before running commands
         if [ -f "${DOCKER_COMPOSE_FILE_NAME}" ]; then
-            do_dir "$d" "$command" $*
+            do_dir "$d" "$command" "$@"
         else
-            echo "Did not find any expected Docker files in $d"
+            echo "CRITICAL ERROR: Docker compose file not found: ${DOCKER_COMPOSE_FILE_NAME}" >&2
             return 1
         fi
     done
@@ -35,20 +35,20 @@ function do_subdirs
 
 function main
 {
-    top_dirs=`ls -d */| tr -d "/"`
     if [ $# -lt 2 ]; then
-        top_dirs=`echo -n "$top_dirs" | tr "\n" "|"`
-        echo "Use $0 [ENVIRONMENT] [COMMAND] [COMPOSER  ARGS:args..]"
-	    return 1
+        echo "ERROR: Insufficient arguments" >&2
+        echo "Usage: $0 [ENVIRONMENT] [COMMAND] [ARGS...]" >&2
+        echo "Example: $0 dev up" >&2
+        return 1
     fi
 
-    environment="$1"
-    command="$2"
-    shift 3
+    local environment="$1"
+    local command="$2"
+    shift 2
 
-    set_environment $environment
+    set_environment "$environment"
 
-    do_subdirs `pwd` $command $*
-
+    do_subdirs "$(pwd)" "$command" "$@"
 }
-main $*
+
+main "$@"

@@ -16,7 +16,7 @@ class APIController(ControllerToApollo):
         "ShowsFederations",
         "ShowsEpisodeQuery",
     ]
-    
+
     private_models_to_load = [
         "ShowsInfoPopulateMutation",
         "ShowsResetPopularMutation",
@@ -34,7 +34,7 @@ class APIController(ControllerToApollo):
         self._microservice = microservice
 
         self.set_models_to_load(self.public_models_to_load)
-        
+
         if self._schema_type == SchemaTypeEnum.PRIVATE:
             self.set_models_to_load(self.private_models_to_load)
 

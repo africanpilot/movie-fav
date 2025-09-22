@@ -12,9 +12,9 @@ def microservice_name():
     Discover the name of the Microservice based on environment variable or source code directory.
     """
     # Check environment variable first (used in Docker containers)
-    if os.environ.get('MICROSERVICE_NAME'):
-        return os.environ.get('MICROSERVICE_NAME')
-    
+    if os.environ.get("MICROSERVICE_NAME"):
+        return os.environ.get("MICROSERVICE_NAME")
+
     # Fallback to directory-based detection
     cwd = os.getcwd() + "/../.."
     abs = os.path.abspath(cwd)
@@ -32,6 +32,7 @@ class GenericLinkModel:
             "person",
             "shows",
         ]
+
 
 class GenericModel:
     def __init__(self):

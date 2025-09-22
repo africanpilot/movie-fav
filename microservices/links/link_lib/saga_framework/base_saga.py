@@ -1,25 +1,22 @@
-__all__ = ['BaseStep', 'SyncStep', 'BaseSaga', 'NO_ACTION']
+__all__ = ["BaseStep", "SyncStep", "BaseSaga", "NO_ACTION"]
 
 import logging
 import typing
 from abc import ABC
 from dataclasses import asdict
 
-from link_lib.saga_framework.utils import (
-    serialize_saga_error,
-    format_exception_as_python_does,
-    NO_ACTION,
-)
+from link_lib.saga_framework.utils import NO_ACTION, format_exception_as_python_does, serialize_saga_error
 
 logger = logging.getLogger(__name__)
 
 
 class BaseStep(ABC):
-    def __init__(self,
-                 name: str,
-                 action: typing.Callable = NO_ACTION,
-                 compensation: typing.Callable = NO_ACTION,
-                 ):
+    def __init__(
+        self,
+        name: str,
+        action: typing.Callable = NO_ACTION,
+        compensation: typing.Callable = NO_ACTION,
+    ):
         self.name = name
         self.action = action
         self.compensation = compensation
@@ -44,14 +41,14 @@ class BaseSaga:
             if step.name == step_name:
                 return step
 
-        raise KeyError(f'no step found with name {step_name}')
+        raise KeyError(f"no step found with name {step_name}")
 
     def _get_step_index(self, step: BaseStep) -> int:
         for i in range(len(self.steps)):
             if self.steps[i].name == step.name:
                 return i
 
-        raise IndexError(f'step wasn\'t found')
+        raise IndexError(f"step wasn't found")
 
     def _get_next_step(self, step: typing.Union[BaseStep, None]) -> typing.Union[BaseStep, None]:
         if not step:
@@ -59,7 +56,7 @@ class BaseSaga:
 
         step_index = self._get_step_index(step)
 
-        its_last_step = (step_index == len(self.steps) - 1)
+        its_last_step = step_index == len(self.steps) - 1
 
         if its_last_step:
             return None
@@ -69,7 +66,7 @@ class BaseSaga:
     def _get_previous_step(self, step: typing.Union[BaseStep, None]) -> typing.Union[BaseStep, None]:
         step_index = self._get_step_index(step)
 
-        its_first_step = (step_index == 0)
+        its_first_step = step_index == 0
 
         if its_first_step:
             return None
@@ -84,8 +81,7 @@ class BaseSaga:
         step.action(step)
 
     def compensate_step(self, step: BaseStep, initial_failure_payload: dict):
-        logger.info(f'Saga {self.saga_id}: '
-                    f'compensating "{step.name}" step')
+        logger.info(f"Saga {self.saga_id}: " f'compensating "{step.name}" step')
         step.compensation(step)
 
     def compensate(self, failed_step: BaseStep, initial_failure_payload: dict = None):
@@ -102,7 +98,7 @@ class BaseSaga:
                 initially_failed_step=failed_step,
                 initial_failure_payload=initial_failure_payload,
                 compensation_failed_step=failed_step,
-                compensation_exception=exception
+                compensation_exception=exception,
             )
 
     def execute(self, starting_step: BaseStep = None):
@@ -131,10 +127,7 @@ class BaseSaga:
 
         # if error occured, compensate saga
         if exception:
-            self.compensate(
-                step,
-                initial_failure_payload=asdict(serialize_saga_error(exception))
-            )
+            self.compensate(step, initial_failure_payload=asdict(serialize_saga_error(exception)))
         # if we ended on a last step, run on_saga_success
         elif step is None:
             self.on_saga_success()
@@ -144,24 +137,29 @@ class BaseSaga:
         This method runs when saga is fully completed with success
         """
 
-        logger.info(f'Saga {self.saga_id} succeeded')
+        logger.info(f"Saga {self.saga_id} succeeded")
 
     def on_saga_failure(self, failed_step: BaseStep, initial_failure_payload: dict):
         """
         This method runs when saga is failed (after all compensations finished)
         """
-        logger.info(f'Saga {self.saga_id} failed on "{failed_step.name}" step. \n'
-                    f'Failure details: {initial_failure_payload}')
+        logger.info(
+            f'Saga {self.saga_id} failed on "{failed_step.name}" step. \n' f"Failure details: {initial_failure_payload}"
+        )
 
-    def on_compensation_failure(self, initially_failed_step: BaseStep,
-                                initial_failure_payload: dict,
-                                compensation_failed_step: BaseStep,
-                                compensation_exception: BaseException):
+    def on_compensation_failure(
+        self,
+        initially_failed_step: BaseStep,
+        initial_failure_payload: dict,
+        compensation_failed_step: BaseStep,
+        compensation_exception: BaseException,
+    ):
         """
         This method runs when compensation step unexpectedly failed,
           i.e. saga wasn't able to successfully rollback
         """
-        logger.info(f'Saga {self.saga_id} failed while compensating "{compensation_failed_step.name}" step.\n'
-                    f'Error details: {format_exception_as_python_does(compensation_exception)} \n \n'
-                    f'Initial failure details: {initial_failure_payload}')
-
+        logger.info(
+            f'Saga {self.saga_id} failed while compensating "{compensation_failed_step.name}" step.\n'
+            f"Error details: {format_exception_as_python_does(compensation_exception)} \n \n"
+            f"Initial failure details: {initial_failure_payload}"
+        )
