@@ -11,8 +11,26 @@ NOTIFICATIONS_SAGA_STATE_FRAGMENT = gql("""
     failed_at
     failure_details
     account_store_id
-    body
-    modified_body
+    body{
+      email
+      template
+      name
+      message
+      number
+      subject
+      date
+      status
+    }
+    modified_body{
+      email
+      template
+      name
+      message
+      number
+      subject
+      date
+      status
+    }
   }
 """)
 

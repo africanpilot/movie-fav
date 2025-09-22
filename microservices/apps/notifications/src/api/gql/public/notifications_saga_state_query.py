@@ -33,24 +33,22 @@ class NotificationsSagaStateQuery(GraphQLModel, NotificationsLib):
             
             token_decode = self.general_validation_process(info)
             
-            pageInfo = pageInfo or {}
             filterInput = filterInput or {}
-            query_context = self.get_query_request(selections=info.field_nodes, fragments=info.fragments)
-            filterInputExtra = [NotificationsSagaState.account_store_id == token_decode.account_store_id]
-        
-            redis_filter_info = json.dumps({"account_store_id": token_decode.account_store_id, **pageInfo, **filterInput, **dict(query_context=query_context)}, cls=GeneralJSONEncoder)
-            
-            # redis_response = self.notifications_saga_state_query_redis_load(token_decode.account_store_id, redis_filter_info)
-            # if redis_response and redis_response.response.success:
-            #     return redis_response
+            pageInfo = pageInfo or {}
 
-            filterInput = NotificationsSagaStateFilterInput(**filterInput)
-            pageInfo = NotificationsSagaStatePageInfoInput(**pageInfo)
-            
+            query_context = self.get_query_request(selections=info.field_nodes, fragments=info.fragments)
             with self.get_session("psqldb_account") as db:
                 account_user = AccountInfoRead().get_user(db, token_decode.account_info_id)
-                
-            filterInputExtra = [NotificationsSagaState.account_store_id == token_decode.account_store_id, text(f"notifications_saga_state.body->>'email' = '{account_user.email}'")]
+                filterInputExtra = [NotificationsSagaState.account_store_id == token_decode.account_store_id, text(f"notifications_saga_state.body->>'email' = '{account_user.email}'")]
+
+            redis_filter_info = json.dumps({"account_store_id": token_decode.account_store_id, "account_info_id": token_decode.account_info_id, **pageInfo, **filterInput, **dict(query_context=query_context)}, cls=GeneralJSONEncoder)
+
+            redis_response = self.notifications_saga_state_query_redis_load(token_decode.account_store_id, redis_filter_info)
+            if redis_response and redis_response.response.success:
+                return redis_response
+            
+            filterInput = NotificationsSagaStateFilterInput(**filterInput)
+            pageInfo = NotificationsSagaStatePageInfoInput(**pageInfo)
 
             with self.get_connection("psqldb_notifications") as db:
     
@@ -66,6 +64,4 @@ class NotificationsSagaStateQuery(GraphQLModel, NotificationsLib):
             
             self.notifications_saga_state_query_redis_dump(token_decode.account_store_id, redis_filter_info, response)
             
-            # self.log.info("notifications_saga_state_query: by postgres")
-
             return response

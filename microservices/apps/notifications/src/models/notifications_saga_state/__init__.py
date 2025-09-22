@@ -5,7 +5,7 @@ from notifications.src.models.notifications_saga_state.base import (
   NotificationsSagaState, NotificationsSagaStateBase,
   NotificationsSagaStateFilterInput, NotificationsSagaStatePageInfoInput
 )
-from notifications.src.models.notifications_saga_state.create import NotificationsSagaStateCreate
+from notifications.src.models.notifications_saga_state.create import NotificationsSagaStateCreate, NotificationsBodyCreateInput, NotificationsSagaStateCreateInput
 from notifications.src.models.notifications_saga_state.update import NotificationsSagaStateUpdate, NotificationsSagaStateUpdateInput, NotificationsUpdate, NotificationsSagaStateBodyUpdateInput
 from notifications.src.models.notifications_saga_state.response import NotificationsSagaStateResponses, NotificationsSagaStateResponse
 
@@ -21,4 +21,6 @@ __all__ = (
   "NotificationsSagaStateUpdateInput",
   "NotificationsUpdate",
   "NotificationsSagaStateBodyUpdateInput",
+  "NotificationsBodyCreateInput",
+  "NotificationsSagaStateCreateInput",
 )

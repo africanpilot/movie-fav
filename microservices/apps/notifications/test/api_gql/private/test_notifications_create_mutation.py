@@ -1,7 +1,7 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
-from link_models.enums import NotifyTemplateEnum
+from link_models.enums import NotifyTemplateEnum, NotifyStatusEnum
 import pytest
 import time
 from unittest.mock import patch
@@ -32,7 +32,16 @@ def test_notifications_create_mutation(benchmark, test_database: Session, flush_
 
   _, auth_1 = create_account(test_database)
 
-  variables = dict(createInput=dict(email="test@example.com", template=NotifyTemplateEnum.THEATER_CONTACT.name))
+  variables = dict(createInput=dict(
+    email="test@example.com",
+    template=NotifyTemplateEnum.THEATER_CONTACT.name,
+    name="Test User",
+    message="This is a test message",
+    number="1234567890",
+    subject="Test Subject",
+    date="2025-01-01",
+    status=NotifyStatusEnum.OPEN.name
+  ))
 
   success, result = graphql_sync(private_schema, {"query": qgl_query, "variables": variables}, context_value=auth_1["context_value"])
 
@@ -49,12 +58,14 @@ def test_notifications_create_mutation(benchmark, test_database: Session, flush_
   notification_1: NotificationsSagaState = test_database.query(NotificationsSagaState).get(1)
   assert notification_1.id == 1
   assert notification_1.status == "succeeded"
-  assert notification_1.body['date'] is None
-  assert notification_1.body['name'] is None
+  assert notification_1.body['name'] == 'Test User'
+  assert notification_1.body['message'] == 'This is a test message'
+  assert notification_1.body['number'] == '1234567890'
+  assert notification_1.body['subject'] == 'Test Subject'
+  assert notification_1.body['date'] == '2025-01-01'
   assert notification_1.body['email'] == 'test@example.com'
-  assert notification_1.body['status'] == 'open'
-  assert notification_1.body['template'] == 'theater_contact'
-  assert notification_1.body['service_name'] == 'moviefav'
+  assert notification_1.body['status'] == 'OPEN'
+  assert notification_1.body['template'] == 'THEATER_CONTACT'
 
   # run benchmark
   benchmark(graphql_sync, private_schema, {"query": qgl_query, "variables": variables}, context_value=auth_1["context_value"])

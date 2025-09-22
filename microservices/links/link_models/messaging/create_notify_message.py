@@ -11,7 +11,6 @@ TASK_NAME = 'notifications.create_notify'
 class CreateNotifyMessage(BaseModel):
   email: str
   template: str
-  service_name: str
   name: Optional[str] = None
   message: Optional[str] = None
   number: Optional[str] = None

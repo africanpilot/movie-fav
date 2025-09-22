@@ -272,16 +272,8 @@ class StripeMethodEnum(Enum):
     VERIFICATION_ID_CHECK = "verification_id_check"
 
 class NotifyTemplateEnum(Enum):
-    THEATER_CONTACT = "theater_contact"
-    LABELLE_APPOINTMENT = "labelle_appointment"
-    ALL_NATION_CONTACT = "all_nation_contact"
-    LABELLE_CONTACT = "labelle_contact"
-    LABELLE_RSVP = "labelle_rsvp"
-    PROMEDEXPRESS_CONTACT = "promedexpress_contact"
-    SUMEXUS_CONTACT = "sumexus_contact"
-    PROMEDEXPRESS_REQUEST_TRANSPORT = "promedexpress_request_transport"
-    SUMEXUS_REQUEST_TRANSPORT = "sumexus_request_transport"
-    
+    THEATER_CONTACT = "THEATER_CONTACT"
+
     @property
     def is_gql():
         return True
@@ -307,8 +299,8 @@ class NotificationsSagaStateSortByEnum(Enum):
         return True
     
 class NotifyStatusEnum(Enum):
-    OPEN = "open"
-    CLOSED = "closed"
+    OPEN = "OPEN"
+    CLOSED = "CLOSED"
     
     @property
     def is_gql():

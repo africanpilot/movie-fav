@@ -3,12 +3,12 @@
 
 import pytest
 from notifications.src.domain.lib import NotificationsLib
-from notifications.src.models.notifications_saga_state import NotificationsSagaState
+from notifications.src.models.notifications_saga_state import NotificationsSagaState, NotificationsSagaStateCreateInput
 
 
 NOTIFICATIONS_PAYLOAD = {
   "email": "test@example.com",
-  "template": "theater_contact",
+  "template": "THEATER_CONTACT",
 }
 
 
@@ -19,8 +19,14 @@ def notifications_lib() -> NotificationsLib:
 
 @pytest.fixture
 def create_notifications_saga_state(notifications_lib: NotificationsLib) -> NotificationsSagaState:
-  def create(db) -> NotificationsSagaState:
+  def create(db, payload: dict = None) -> NotificationsSagaState:
+    default_payload = NOTIFICATIONS_PAYLOAD
     return notifications_lib.notifications_saga_state_create.notifications_saga_state_create(db,
-      payload=dict(NOTIFICATIONS_PAYLOAD)
+      createInput=[
+        NotificationsSagaStateCreateInput(
+          body={**default_payload, **(payload or {})},
+          account_store_id=1,
+        )
+      ]
     )
   return create

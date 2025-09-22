@@ -11,6 +11,7 @@ from notifications.src.models.notifications_saga_state.base import Notifications
 
 class NotificationsSagaStateBaseResponse(NotificationsSagaStateBase):
   id: Optional[int] = None
+  account_store_id: Optional[int] = None
 
 class NotificationsSagaStateResponse(BaseResponse):
   result: Optional[list[NotificationsSagaStateBaseResponse]] = None
