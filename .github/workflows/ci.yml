@@ -35,6 +35,7 @@ jobs:
         env:
           CICD_MODE: "True"
         run: |
+          set -e  # Exit on any command failure
           chmod +x ./run.sh
           ./run.sh docker test up ${{ matrix.service }}
 
@@ -64,6 +65,7 @@ jobs:
         env:
           CICD_MODE: "True"
         run: |
+          set -e  # Exit on any command failure
           chmod +x ./run.sh
           ./run.sh docker test up theater
 

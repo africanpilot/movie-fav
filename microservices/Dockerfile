@@ -17,7 +17,8 @@ ENV \
   # poetry:
   POETRY_VERSION=2.1.4 \
   POETRY_NO_INTERACTION=1 \
-  POETRY_VIRTUALENVS_IN_PROJECT=true \
+  POETRY_VIRTUALENVS_IN_PROJECT=false \
+  POETRY_VIRTUALENVS_CREATE=false \
   POETRY_HOME="/opt/poetry" \
   PYSETUP_PATH="/opt/pysetup" \
   VENV_PATH="/opt/pysetup/.venv"

@@ -6,6 +6,9 @@
 Dockerfile
 docker-compose.*
 admin/
+# Virtual environments
+.venv/
+**/.venv/
 # GIT
 .git/
 *.yml
