@@ -2,14 +2,14 @@
 # All Rights Reserved. Proprietary and confidential.
 
 from account.src.domain.lib import AccountLib
-from account.src.models.account_info import AccountInfoResponse, AccountInfoUpdate, AccountInfoUpdateInput
+from account.src.models.account_info import AccountInfoResponse, AccountInfoUpdateInput
 from graphql import GraphQLResolveInfo
 from link_lib.microservice_controller import ApolloTypes
 from link_lib.microservice_graphql_model import GraphQLModel
 from link_models.enums import AccountRegistrationEnum, AccountStatusEnum
 
 
-class AccountConfirmEmailMutation(GraphQLModel, AccountLib, AccountInfoUpdate):
+class AccountConfirmEmailMutation(GraphQLModel, AccountLib):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -31,7 +31,7 @@ class AccountConfirmEmailMutation(GraphQLModel, AccountLib, AccountInfoUpdate):
             with self.get_session("psqldb_account") as db:
 
                 # update user to confirmed email
-                self.account_info_update(db, updateInput)
+                self.account_info_update.account_info_update(db, updateInput)
 
             self.redis_delete_account_query_keys(token_decode.account_info_id)
             self.redis_delete_account_token_keys(token_decode.account_info_id)

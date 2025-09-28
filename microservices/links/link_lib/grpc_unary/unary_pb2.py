@@ -21,10 +21,10 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, "unary_pb2", globals())
 if not _descriptor._USE_C_DESCRIPTORS:
 
     DESCRIPTOR._options = None
-    _MESSAGE._serialized_start = 22
-    _MESSAGE._serialized_end = 48
-    _MESSAGERESPONSE._serialized_start = 50
-    _MESSAGERESPONSE._serialized_end = 102
-    _UNARY._serialized_start = 104
-    _UNARY._serialized_end = 174
+    # _MESSAGE._serialized_start = 22
+    # _MESSAGE._serialized_end = 48
+    # _MESSAGERESPONSE._serialized_start = 50
+    # _MESSAGERESPONSE._serialized_end = 102
+    # _UNARY._serialized_start = 104
+    # _UNARY._serialized_end = 174
 # @@protoc_insertion_point(module_scope)

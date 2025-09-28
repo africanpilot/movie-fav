@@ -10,7 +10,9 @@ __all__ = [
 import traceback
 from dataclasses import dataclass
 
-NO_ACTION = lambda *args: None
+
+def NO_ACTION(*args):
+    """A no-operation function that accepts any arguments and does nothing."""
 
 
 def success_task_name(task_name: str):

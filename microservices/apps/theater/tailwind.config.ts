@@ -9,25 +9,25 @@ const config: Config = {
   theme: {
     container: {
       padding: {
-        DEFAULT: '15px',
+        DEFAULT: "15px",
       },
     },
     screens: {
-      sm: '640px',
-      md: '768px',
-      lg: '960px',
-      xl: '1200px',
+      sm: "640px",
+      md: "768px",
+      lg: "960px",
+      xl: "1200px",
       "2xsm": "375px",
     },
     extend: {
       colors: {
-        primary: '#101828',
-        secondary: '#667085',
+        primary: "#101828",
+        secondary: "#667085",
         accent: {
-          DEFAULT: '#ed1d24',
-          hover: '#dd242a',
+          DEFAULT: "#ed1d24",
+          hover: "#dd242a",
         },
-        body: '#dedede',
+        body: "#dedede",
         whiten: "#F1F5F9",
         bodydark: "#AEB7C0",
         bodydark1: "#DEE4EE",
@@ -41,15 +41,16 @@ const config: Config = {
         white: "#FFFFFF",
       },
       backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+        "gradient-conic":
+          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       animation: {
-        'spin-slow': 'spin 6s linear infinite',
+        "spin-slow": "spin 6s linear infinite",
       },
       fontFamily: {
-        poppins: [`var(--font-poppins)`, 'sans-serif'],
-        sora: [`var(--font-sora)`, 'sans-serif'],
+        poppins: [`var(--font-poppins)`, "sans-serif"],
+        sora: [`var(--font-sora)`, "sans-serif"],
         satoshi: ["Satoshi", "sans-serif"],
       },
       zIndex: {
@@ -72,12 +73,9 @@ const config: Config = {
   },
   container: {
     padding: {
-      DEFAULT: '15px',
+      DEFAULT: "15px",
     },
   },
-  plugins: [
-    require("tailwind-scrollbar"),
-    require("tailwind-scrollbar-hide")
-  ],
+  plugins: [require("tailwind-scrollbar"), require("tailwind-scrollbar-hide")],
 };
 export default config;

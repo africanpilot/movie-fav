@@ -13,43 +13,44 @@ import { onError } from "@apollo/client/link/error";
 function makeClient() {
   // configure error handlers
   const errorLink = onError(({ graphQLErrors, networkError }) => {
-      if (networkError) {
-          console.log("networkError!!", networkError);
-          console.log(typeof networkError);
-          console.log(JSON.stringify(networkError, null, 2));
-      }
-  })
+    if (networkError) {
+      console.log("networkError!!", networkError);
+      console.log(typeof networkError);
+      console.log(JSON.stringify(networkError, null, 2));
+    }
+  });
 
   const gateway =
-      process.env.NEXT_PUBLIC_APP_DEFAULT_ENV !== "prod"
+    process.env.NEXT_PUBLIC_APP_DEFAULT_ENV !== "prod"
       ? process.env.NEXT_PUBLIC_REACT_APP_GATEWAY_DEVELOPMENT
-      : process.env.NEXT_PUBLIC_REACT_APP_GATEWAY_PRODUCTION
+      : process.env.NEXT_PUBLIC_REACT_APP_GATEWAY_PRODUCTION;
 
-  const link = from([errorLink, new HttpLink({ 
-    uri: gateway,
-    fetchOptions: { cache: "no-store" },
-  })]);
+  const link = from([
+    errorLink,
+    new HttpLink({
+      uri: gateway,
+      fetchOptions: { cache: "no-store" },
+    }),
+  ]);
 
   const authLink = setContext((_, { headers }) => {
-      // get the authentication token from local storage if it exists
-      const appToken = localStorage.getItem("theater-app-token");
-      const emailToken = localStorage.getItem("theater-email-token");
-      const guestToken = localStorage.getItem("theater-guest-token");
+    // get the authentication token from local storage if it exists
+    const appToken = localStorage.getItem("theater-app-token");
+    const emailToken = localStorage.getItem("theater-email-token");
+    const guestToken = localStorage.getItem("theater-guest-token");
 
-      const token = appToken ? appToken
-      : emailToken ? emailToken
-      : guestToken;
-      
-      // return the headers to the context so httpLink can read them
-      // console.log("token: ", token)
-      return {
-          headers: {
-          ...headers,
-          ["service"]: "theater",
-          authorization: token ? `Bearer ${token}` : "",
-          },
-      }
-  })
+    const token = appToken ? appToken : emailToken ? emailToken : guestToken;
+
+    // return the headers to the context so httpLink can read them
+    // console.log("token: ", token)
+    return {
+      headers: {
+        ...headers,
+        ["service"]: "theater",
+        authorization: token ? `Bearer ${token}` : "",
+      },
+    };
+  });
 
   // use the `ApolloClient` from "@apollo/experimental-nextjs-app-support"
   return new ApolloClient({

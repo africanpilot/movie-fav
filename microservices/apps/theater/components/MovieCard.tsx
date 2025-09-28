@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { MovieInfo, ShowsInfo } from '@/graphql/schema';
+import { MovieInfo, ShowsInfo } from "@/graphql/schema";
 
 type Props = {
   movie: MovieInfo | ShowsInfo;
@@ -18,18 +18,21 @@ function MovieCard({ movie, category }: Props) {
   };
 
   return (
-        <>
-        {movie?.cover || movie?.full_cover ? (
-          <div className="overflow-visible cursor-pointer" onClick={() => navigatePage()}>
-              <Image 
-                className="rounded-3xl shadow-lg"
-                src={movie?.cover || movie?.full_cover!}
-                alt={movie?.title!}
-                width={500}
-                height={500}
-                loading="lazy"
-              />
-          </div>
+    <>
+      {movie?.cover || movie?.full_cover ? (
+        <div
+          className="overflow-visible cursor-pointer"
+          onClick={() => navigatePage()}
+        >
+          <Image
+            className="rounded-3xl shadow-lg"
+            src={movie?.cover || movie?.full_cover!}
+            alt={movie?.title!}
+            width={500}
+            height={500}
+            loading="lazy"
+          />
+        </div>
       ) : (
         <div
           role="status"
@@ -47,8 +50,7 @@ function MovieCard({ movie, category }: Props) {
             </svg>
           </div>
         </div>
-      ) 
-    }
+      )}
     </>
   );
 }

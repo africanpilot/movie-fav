@@ -19,7 +19,7 @@ from sqlmodel import Session
 
 
 class AccountInfoBaseResponse(AccountInfoBase):
-    pass
+    id: Optional[int] = None
 
 
 class AccountInfoResponse(BaseResponse):

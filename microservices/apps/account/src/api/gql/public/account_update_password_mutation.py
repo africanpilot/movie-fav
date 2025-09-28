@@ -5,20 +5,15 @@ from account.src.domain.lib import AccountLib
 from account.src.models.account_info import (
     AccountInfo,
     AccountInfoResponse,
-    AccountInfoResponses,
-    AccountInfoUpdate,
     AccountInfoUpdateInput,
     AccountInfoUpdatePasswordInput,
-    AccountInfoValidate,
 )
 from graphql import GraphQLResolveInfo
 from link_lib.microservice_controller import ApolloTypes
 from link_lib.microservice_graphql_model import GraphQLModel
 
 
-class AccountUpdatePasswordMutation(
-    GraphQLModel, AccountLib, AccountInfoUpdate, AccountInfoResponses, AccountInfoValidate
-):
+class AccountUpdatePasswordMutation(GraphQLModel, AccountLib):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -38,15 +33,15 @@ class AccountUpdatePasswordMutation(
                 # check password change expire time
                 self.verify_password_change_window(db, token_decode.account_info_id)
 
-                self.account_info_update(
+                self.account_info_update.account_info_update(
                     db,
                     AccountInfoUpdateInput(
                         account_info_id=token_decode.account_info_id,
-                        password=self.hash_password(updateInput.password).decode("utf-8"),
+                        password=self.account_info_validate.hash_password(updateInput.password).decode("utf-8"),
                     ),
                 )
 
-                response = self.account_info_response(
+                response = self.account_info_responses.account_info_response(
                     info=info,
                     db=db,
                     filterInputExtra=[AccountInfo.id == token_decode.account_info_id],

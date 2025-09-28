@@ -2,9 +2,9 @@
 # All Rights Reserved. Proprietary and confidential.
 
 import pytest
+from account.src.domain.lib import AccountLib
 from account.src.models.account_info import AccountInfo
 from account.test.fixtures.models import ACCOUNT_RESPONSE_FRAGMENT
-from account.test.fixtures.models.account_lib import GeneralAccountLib
 from ariadne import gql, graphql_sync
 from link_lib.microservice_general import LinkGeneral
 from sqlalchemy import select
@@ -37,11 +37,11 @@ def test_account_delete_mutation(
     private_schema,
     create_account,
     flush_redis_db,
-    link_account_lib: GeneralAccountLib,
+    account_lib: AccountLib,
 ):
 
     account_1, auth_1 = create_account(test_database)
-    link_account_lib.account_me_token_redis_dump(account_1.id, auth_1.get("token"))
+    account_lib.account_me_token_redis_dump(account_1.id, auth_1.get("token"))
 
     def setup():
         graphql_info = {"query": gql_query}
@@ -61,7 +61,7 @@ def test_account_delete_mutation(
         assert response["pageInfo"] is None
         assert response["result"] is None
 
-        with link_account_lib.get_session("psqldb_account") as db:
+        with account_lib.get_session("psqldb_account") as db:
             account = db.exec(select(AccountInfo).where(AccountInfo.email == auth["rand_login"])).all()
             assert account == []
 

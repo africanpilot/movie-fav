@@ -3,7 +3,7 @@ FROM python:3.13.7-slim AS base-deps
 
 # Default environment
 ENV \
-  # docker 
+  # docker
   DOCKER_BUILDKIT=1 \
   # python:
   PYTHONFAULTHANDLER=1 \
@@ -27,7 +27,7 @@ ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    apt-get update && apt-get install -y make libpq-dev postgresql-client
+    apt-get update && apt-get install -y --no-install-recommends make libpq-dev postgresql-client
 
 WORKDIR /home/svc/microservices
 
@@ -39,8 +39,9 @@ FROM base-deps AS builder-base
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    apt-get update && apt-get install -y build-essential curl
+    apt-get update && apt-get install -y --no-install-recommends build-essential curl
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN --mount=type=cache,target=/root/.cache/pip \
     curl -sSL https://install.python-poetry.org | python3 -
 
@@ -127,9 +128,9 @@ ENV NODE_ENV='production'
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    apt update && \
-    apt install -y net-tools && \
-    apt install -y iputils-ping && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends net-tools && \
+    apt-get install -y --no-install-recommends iputils-ping && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -164,8 +165,8 @@ FROM node:24.7.0-slim AS node-base
 # #######################################################################
 FROM node-base AS theater-base
 RUN --mount=type=cache,target=/var/cache/apk,sharing=locked \
-    apk update \ 
-  && apk add --no-cache libc6-compat \
+    apk update \
+  && apk add --no-cache libc6-compat=1.2.5-r0 \
   && rm -rf /etc/apk/cache/*
 WORKDIR /app
 RUN --mount=type=cache,target=/usr/local/share/.cache/yarn \
@@ -175,8 +176,8 @@ RUN turbo prune theater --docker
 
 FROM node-base AS theater-installer
 RUN --mount=type=cache,target=/var/cache/apk,sharing=locked \
-    apk update \ 
-  && apk add --no-cache libc6-compat \
+    apk update \
+  && apk add --no-cache libc6-compat=1.2.5-r0 \
   && rm -rf /etc/apk/cache/*
 WORKDIR /app
 COPY --from=theater-base /app/out/json/ .
@@ -192,8 +193,8 @@ RUN --mount=type=cache,target=/usr/local/share/.cache/yarn \
 
 FROM node-base AS theater-production
 WORKDIR /app
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN addgroup --system --gid 1001 nodejs \
+    && adduser --system --uid 1001 nextjs
 USER nextjs
 
 COPY --from=theater-installer --chown=nextjs:nodejs /app/apps/theater/next.config.mjs .

@@ -5,23 +5,19 @@ from account.src.controller.controller_worker import worker
 from account.src.domain.lib import AccountLib
 from account.src.domain.orchestrator import CreateAccountSaga
 from account.src.models.account_company import (
-    AccountCompanyCreate,
     AccountCompanyCreateInput,
     AccountCompanyFilterInput,
     AccountCompanyPageInfoInput,
     AccountCompanyResponse,
-    AccountCompanyResponses,
 )
-from account.src.models.account_saga_state import AccountSagaStateCreate, AccountSagaStateUpdate
+from account.src.models.account_saga_state import AccountSagaStateUpdate
 from graphql import GraphQLResolveInfo
 from link_lib.microservice_controller import ApolloTypes
 from link_lib.microservice_graphql_model import GraphQLModel
 from link_models.enums import AccountRegistrationEnum, AccountRoleEnum
 
 
-class AccountCompanyCreateMutation(
-    GraphQLModel, AccountLib, AccountSagaStateCreate, AccountCompanyResponses, AccountCompanyCreate
-):
+class AccountCompanyCreateMutation(GraphQLModel, AccountLib):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -50,10 +46,10 @@ class AccountCompanyCreateMutation(
 
             with self.get_session("psqldb_account") as db:
 
-                self.account_company_create(db, token_decode.account_info_id, createInput)
+                self.account_company_create.account_company_create(db, token_decode.account_info_id, createInput)
 
                 # send create account emails if needed
-                acount_users = self.get_users_by_email(
+                acount_users = self.account_info_read.get_users_by_email(
                     db,
                     [
                         employee.email.strip()
@@ -95,7 +91,7 @@ class AccountCompanyCreateMutation(
                         )
                     )
 
-                all_saga_state = self.account_saga_state_create_all(db, create_saga_payload)
+                all_saga_state = self.account_saga_state_create.account_saga_state_create_all(db, create_saga_payload)
 
                 # send new employee added email
                 for saga in all_saga_state:
@@ -111,7 +107,7 @@ class AccountCompanyCreateMutation(
                             f"Unable to schedule create account saga: {saga.id} for account {saga.account_info_id}"
                         )
 
-                response = self.account_company_response(
+                response = self.account_company_responses.account_company_response(
                     info=info,
                     db=db,
                     pageInfo=pageInfo,

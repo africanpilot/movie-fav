@@ -1,17 +1,21 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
-from datetime import datetime
-from typing import Optional, Union
+from __future__ import annotations
 
-from account.src.models.account_company.create import AccountCompanyCreate, AccountCompanyCreateInput
+from datetime import datetime
+from typing import TYPE_CHECKING, Optional, Union
+
 from account.src.models.account_info.base import AccountInfo
 from account.src.models.account_info.validate import AccountInfoValidate
 from link_models.enums import AccountRegistrationEnum, AccountStatusEnum
 from pydantic import BaseModel, model_validator
 from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import insert
-from sqlmodel import Session
+from sqlmodel import Session, select
+
+if TYPE_CHECKING:
+    from account.src.models.account_company.create import AccountCompanyCreateInput
 
 
 class AccountInfoCreateInput(BaseModel):
@@ -68,6 +72,8 @@ class AccountInfoCreate(AccountInfoValidate):
         account_info_id = text("currval('account.account_info_id_seq')")
 
         if createInput.account_company:
+            from account.src.models.account_company.create import AccountCompanyCreate
+
             sql_query += AccountCompanyCreate().account_company_create(
                 db, account_info_id, createInput.account_company, True, False
             )
@@ -77,8 +83,6 @@ class AccountInfoCreate(AccountInfoValidate):
                 db.exec(r)
             db.commit()
 
-            return db.execute(
-                self.query_filter(self.query_cols([AccountInfo]), [AccountInfo.email == createInput.email])
-            ).one()[0]
+            return db.exec(select(AccountInfo).where(AccountInfo.email == createInput.email)).one()
 
         return sql_query

@@ -43,7 +43,7 @@ class AccountAuthZeroRouter:
                 data = json.dumps(user, indent=4)
                 html = f"<pre>{data}</pre>" + '<a href="/v1.0/account/logout">logout</a>'
                 return HTMLResponse(html)
-            return HTMLResponse(f'<a href="/v1.0/account/login">login</a>')
+            return HTMLResponse('<a href="/v1.0/account/login">login</a>')
 
         @router.get("/callback")
         async def callback(request: Request):

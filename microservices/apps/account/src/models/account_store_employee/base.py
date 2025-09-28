@@ -7,7 +7,7 @@ from typing import Optional
 from link_models.base import PageInfoInput
 from link_models.enums import AccountRoleEnum, AccountStoreEmployeeSortByEnum
 from pydantic import BaseModel
-from sqlalchemy import Column, Enum, ForeignKey, Integer
+from sqlalchemy import Column, Enum, ForeignKey, Integer, UniqueConstraint
 from sqlmodel import Field, SQLModel
 
 
@@ -35,7 +35,12 @@ class AccountStoreEmployee(AccountStoreEmployeeBase, table=True):
     """
 
     __tablename__ = "account_store_employee"
-    __table_args__ = {"extend_existing": True, "schema": "account"}
+    __table_args__ = (
+        UniqueConstraint(
+            "account_company_id", "account_store_id", "account_info_id", name="uq_account_store_employee_combination"
+        ),
+        {"extend_existing": True, "schema": "account"},
+    )
 
     account_company_id: Optional[int] = Field(
         sa_column=Column(Integer, ForeignKey("account.account_company.id", ondelete="CASCADE"))

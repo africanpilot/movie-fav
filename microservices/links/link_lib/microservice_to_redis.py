@@ -46,8 +46,8 @@ class LinkRedis(LinkGeneral, DbConn):
     def redis_delete_keys_pipe(self, db: Redis, search: Union[str, list], n: int = 50) -> object:
         pipe = db.pipeline()
 
-
-if isinstance(search,         if )            search = [search]
+        if isinstance(search, str):
+            search = [search]
 
         for item in search:
             for keybatch in self.batcher(db.scan_iter(item), n):

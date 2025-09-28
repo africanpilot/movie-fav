@@ -5,7 +5,6 @@ import pytest
 from account.test.fixtures.models import ACCOUNT_RESPONSE_FRAGMENT
 from ariadne import gql, graphql_sync
 from link_lib.microservice_general import LinkGeneral
-from link_test.fixtures.link_domain import GeneralBase
 
 QUERY_NAME = "accountCreate"
 
@@ -28,13 +27,7 @@ GENERAL_PYTEST_MARK = LinkGeneral().compose_decos([pytest.mark.account_create_mu
 @GENERAL_PYTEST_MARK
 @pytest.mark.account_bench
 def test_account_create_mutation(
-    benchmark,
-    test_database,
-    create_account,
-    reset_database,
-    private_schema,
-    create_auth_info,
-    link_general: GeneralBase,
+    benchmark, test_database, create_account, reset_database, private_schema, create_auth_info
 ):
     reset_database()
     _, _ = create_account(test_database)
@@ -67,6 +60,5 @@ def test_account_create_mutation(
         assert response["result"][0]["email"] == auth["rand_login"]
         assert response["result"][0]["registration_status"] == "NOT_COMPLETE"
 
-        # run benchmark
-
+    # run benchmark
     benchmark.pedantic(bench_func, setup=setup, rounds=5)

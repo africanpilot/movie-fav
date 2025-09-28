@@ -7,11 +7,15 @@ import { BsPlayFill } from "react-icons/bs";
 import CastSlide from "@/components/CastSlide";
 import CircularRate from "@/components/CircularRate";
 import Container from "@/components/Container";
-import { MovieInfo, PersonInfo, ShowsInfo, ShowsEpisode } from "@/graphql/schema";
+import {
+  MovieInfo,
+  PersonInfo,
+  ShowsInfo,
+  ShowsEpisode,
+} from "@/graphql/schema";
 import { useMovie } from "@/graphql";
 import Link from "next/link";
 import { toast } from "react-toastify";
-
 
 type Props = {
   movieDetails: MovieInfo | ShowsInfo | ShowsEpisode | any;
@@ -67,7 +71,9 @@ function DetailsBanner({ movieDetails }: Props) {
               <Box
                 sx={{
                   paddingTop: "140%",
-                  ...uiConfigs.style.backgroundImage(movieDetails?.cover || movieDetails?.full_cover!),
+                  ...uiConfigs.style.backgroundImage(
+                    movieDetails?.cover || movieDetails?.full_cover!,
+                  ),
                 }}
               />
             </Box>
@@ -87,7 +93,12 @@ function DetailsBanner({ movieDetails }: Props) {
                 >
                   {movieDetails?.title}
                 </Typography>
-                <Stack direction="row" spacing={1} alignItems="center" className="flex-wrap">
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  alignItems="center"
+                  className="flex-wrap"
+                >
                   <CircularRate
                     value={movieDetails?.popular_id || 1}
                     isPoster={false}

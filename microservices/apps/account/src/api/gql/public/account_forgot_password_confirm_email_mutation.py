@@ -2,13 +2,13 @@
 # All Rights Reserved. Proprietary and confidential.
 
 from account.src.domain.lib import AccountLib
-from account.src.models.account_info import AccountInfoResponse, AccountInfoUpdate, AccountInfoUpdateInput
+from account.src.models.account_info import AccountInfoResponse, AccountInfoUpdateInput
 from graphql import GraphQLResolveInfo
 from link_lib.microservice_controller import ApolloTypes
 from link_lib.microservice_graphql_model import GraphQLModel
 
 
-class AccountForgotPasswordConfirmEmailMutation(GraphQLModel, AccountLib, AccountInfoUpdate):
+class AccountForgotPasswordConfirmEmailMutation(GraphQLModel, AccountLib):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -25,7 +25,7 @@ class AccountForgotPasswordConfirmEmailMutation(GraphQLModel, AccountLib, Accoun
             )
 
             with self.get_session("psqldb_account") as db:
-                self.account_info_update(db, updateInput)
+                self.account_info_update.account_info_update(db, updateInput)
 
             self.redis_delete_account_keys(token_decode.account_info_id)
             self.redis_delete_account_token_keys(token_decode.account_info_id)

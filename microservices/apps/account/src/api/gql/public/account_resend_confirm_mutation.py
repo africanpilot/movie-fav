@@ -4,19 +4,15 @@
 from account.src.controller.controller_worker import worker
 from account.src.domain.lib import AccountLib
 from account.src.domain.orchestrator import CreateAccountSaga
-from account.src.models.account_info import AccountInfoResponse, AccountInfoValidate
-from account.src.models.account_saga_state import AccountSagaStateCreate, AccountSagaStateUpdate
-from account.src.models.account_store import AccountStoreRead
-from account.src.models.account_store_employee import AccountStoreEmployeeRead
+from account.src.models.account_info import AccountInfoResponse
+from account.src.models.account_saga_state import AccountSagaStateUpdate
 from graphql import GraphQLResolveInfo
 from link_lib.microservice_controller import ApolloTypes
 from link_lib.microservice_graphql_model import GraphQLModel
 from link_models.enums import AccountRoleEnum
 
 
-class AccountResendConfirmMutation(
-    GraphQLModel, AccountLib, AccountInfoValidate, AccountSagaStateCreate, AccountStoreRead, AccountStoreEmployeeRead
-):
+class AccountResendConfirmMutation(GraphQLModel, AccountLib):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -30,15 +26,17 @@ class AccountResendConfirmMutation(
             service_name = self.check_service_authorized(info)
 
             # validate email input
-            self.validate_email(accountLogin)
+            self.account_info_validate.validate_email(accountLogin)
 
             with self.get_session("psqldb_account") as db:
 
                 # verify credentials exists
                 account = self.verify_resend_email(db, accountLogin)
 
-                store = self.get_account_store_by_name(db, service_name.value)
-                employee = self.get_store_employee_user(db, store.account_company_id, store.id, account.id)
+                store = self.account_store_read.get_account_store_by_name(db, service_name.value)
+                employee = self.account_store_employee_read.get_store_employee(
+                    db, store.account_company_id, store.id, account.id
+                )
                 user_role = employee.user_role if employee else AccountRoleEnum.CUSTOMER
 
                 # create token
@@ -53,7 +51,7 @@ class AccountResendConfirmMutation(
                     user_role=user_role,
                 )
 
-                saga_state = self.account_saga_state_create(
+                saga_state = self.account_saga_state_create.account_saga_state_create(
                     db,
                     dict(
                         account_info_id=account.id,

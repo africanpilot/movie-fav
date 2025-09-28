@@ -2,8 +2,8 @@
 # All Rights Reserved. Proprietary and confidential.
 
 import pytest
+from account.src.domain.lib import AccountLib
 from account.test.fixtures.models import ACCOUNT_AUTHENTICATION_RESPONSE_FRAGMENT
-from account.test.fixtures.models.account_lib import GeneralAccountLib
 from ariadne import gql, graphql_sync
 from link_lib.microservice_general import LinkGeneral
 
@@ -29,13 +29,13 @@ GENERAL_PYTEST_MARK = LinkGeneral().compose_decos(
 @GENERAL_PYTEST_MARK
 @pytest.mark.account_bench
 def test_account_authentication_logout_mutation(
-    benchmark, test_database, private_schema, create_account, link_account_lib: GeneralAccountLib
+    benchmark, test_database, private_schema, create_account, account_lib: AccountLib
 ):
 
     account_1, auth_1 = create_account(test_database)
 
     def setup():
-        link_account_lib.account_me_token_redis_dump(account_1.id, auth_1.get("token"))
+        account_lib.account_me_token_redis_dump(account_1.id, auth_1.get("token"))
         graphql_info = {"query": gql_query}
         return (), {"graphql_info": graphql_info, "auth": auth_1}
 

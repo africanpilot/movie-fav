@@ -23,7 +23,7 @@ def test_saga_run_success():
         on_saga_success = on_saga_success_mock
         on_saga_failure = on_saga_failure_mock
 
-    ###### preparation ended #####
+        # preparation ended
 
     fake_saga_id = 123
     Saga(fake_saga_id).execute()
@@ -59,7 +59,8 @@ def test_saga_action_fails():
         on_saga_success = on_saga_success_mock
         on_saga_failure = on_saga_failure_mock
 
-    ###### preparation ended #####
+        # preparation ended
+
     fake_saga_id = 123
     Saga(fake_saga_id).execute()
 

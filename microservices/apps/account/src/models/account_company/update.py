@@ -7,12 +7,12 @@ from typing import Optional
 from account.src.models.account_company.base import AccountCompany
 from account.src.models.account_store.base import AccountStore
 from account.src.models.account_store.update import AccountStoreUpdateInput
-from link_lib.microservice_general import LinkGeneral
+from link_lib.microservice_response import LinkResponse
 from link_models.enums import AccountBusinessTypeEnum, AccountClassificationEnum
 from pydantic import BaseModel
 from sqlalchemy import update
 from sqlalchemy.sql.dml import Update
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 
 class AccountCompanyUpdateInput(BaseModel):
@@ -48,7 +48,7 @@ class AccountCompanyUpdateInput(BaseModel):
     account_store: Optional[AccountStoreUpdateInput] = None
 
 
-class AccountCompanyUpdate(LinkGeneral):
+class AccountCompanyUpdate(LinkResponse):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -84,10 +84,6 @@ class AccountCompanyUpdate(LinkGeneral):
             for r in sql_query:
                 db.exec(r)
             db.commit()
-            return db.execute(
-                self.query_filter(
-                    self.query_cols([AccountCompany.id]), [AccountCompany.id == updateInput.account_company_id]
-                )
-            ).one()
+            return db.exec(select(AccountCompany).where(AccountCompany.id == updateInput.account_company_id)).one()
 
         return sql_query

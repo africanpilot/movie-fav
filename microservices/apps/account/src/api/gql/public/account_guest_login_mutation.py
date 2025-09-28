@@ -3,20 +3,14 @@
 
 from account.src.app_lib import config
 from account.src.domain.lib import AccountLib
-from account.src.models.account_info import (
-    AccountAuthenticationResponse,
-    AccountInfo,
-    AccountInfoResponses,
-    AccountInfoValidate,
-)
-from account.src.models.account_store import AccountStoreRead
+from account.src.models.account_info import AccountAuthenticationResponse, AccountInfo
 from graphql import GraphQLResolveInfo
 from link_lib.microservice_controller import ApolloTypes
 from link_lib.microservice_graphql_model import GraphQLModel
 from link_models.enums import AccountRegistrationEnum, AccountRoleEnum, AccountStatusEnum
 
 
-class AccountGuestLoginMutation(GraphQLModel, AccountLib, AccountInfoValidate, AccountInfoResponses, AccountStoreRead):
+class AccountGuestLoginMutation(GraphQLModel, AccountLib):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -31,7 +25,7 @@ class AccountGuestLoginMutation(GraphQLModel, AccountLib, AccountInfoValidate, A
 
             with self.get_session("psqldb_account") as db:
 
-                store = self.get_account_store_by_name(db, service_name.value)
+                store = self.account_store_read.get_account_store_by_name(db, service_name.value)
 
                 # generate token
                 token = self.token_gen(
@@ -45,7 +39,7 @@ class AccountGuestLoginMutation(GraphQLModel, AccountLib, AccountInfoValidate, A
                     hr=config.APP_TOKEN_EXP,
                 )
 
-                response = self.account_authentication_response(
+                response = self.account_info_responses.account_authentication_response(
                     info=info,
                     db=db,
                     token=token,

@@ -3,8 +3,8 @@
 
 
 import pytest
+from account.src.domain.lib import AccountLib
 from account.test.fixtures.models import ACCOUNT_RESPONSE_FRAGMENT
-from account.test.fixtures.models.account_lib import GeneralAccountLib
 from ariadne import gql, graphql_sync
 from link_lib.microservice_general import LinkGeneral
 
@@ -28,13 +28,13 @@ GENERAL_PYTEST_MARK = LinkGeneral().compose_decos([pytest.mark.account_update_pa
 @GENERAL_PYTEST_MARK
 @pytest.mark.account_bench
 def test_account_update_password_mutation(
-    benchmark, test_database, flush_redis_db, private_schema, create_account, link_account_lib: GeneralAccountLib
+    benchmark, test_database, flush_redis_db, private_schema, create_account, account_lib: AccountLib
 ):
     flush_redis_db()
 
     account_1, auth_1 = create_account(test_database, jwt_data=dict(email=True))
 
-    link_account_lib.account_me_token_redis_dump(account_1.id, auth_1.get("token"))
+    account_lib.account_me_token_redis_dump(account_1.id, auth_1.get("token"))
 
     variables = dict(
         updateInput=dict(

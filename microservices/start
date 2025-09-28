@@ -2,11 +2,12 @@
 # Copyright © 2025 by Richard Maku
 # All Rights Reserved. Proprietary and confidential.
 
-import os
 import argparse
+import os
 from typing import Optional
 
 os.chdir(os.path.abspath(os.path.dirname(__file__)))
+
 
 def change_dir(service_name: str, path: str):
     target_dir = "apps/" + service_name + path
@@ -14,7 +15,8 @@ def change_dir(service_name: str, path: str):
         print("No such service: " + service_name)
         exit(1)
     os.chdir(os.path.abspath(target_dir))
-    
+
+
 def run_migrations(microservices: Optional[list[str]] = None):
     ms = microservices if microservices else ["account", "notifications", "movie", "shows", "person"]
     for d in ms:
@@ -22,7 +24,7 @@ def run_migrations(microservices: Optional[list[str]] = None):
 
 
 if __name__ == "__main__":
-    
+
     parser = argparse.ArgumentParser()
     parser.add_argument("app", type=str, help="specify the microservice to run")
     parser.add_argument("--api", action="store_true", help="Start the api server")
@@ -39,11 +41,11 @@ if __name__ == "__main__":
     if not args.api and not args.grpc and not args.celery and not args.migration and not args.allmigration:
         run_migrations()
         os.execlp("python", "python", "services.py")
-    
+
     if args.api:
         run_migrations()
         os.execlp("python", "python", "app.py")
-   
+
     if args.grpc:
         run_migrations()
         os.execlp("python", "python", "unary_server.py")
@@ -51,9 +53,9 @@ if __name__ == "__main__":
     if args.celery:
         run_migrations()
         os.execlp("python", "python", "worker.py")
-        
+
     if args.migration:
         run_migrations([args.app])
-        
+
     if args.allmigration:
         run_migrations()

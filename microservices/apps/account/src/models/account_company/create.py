@@ -1,11 +1,15 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
+from __future__ import annotations
+
 from datetime import datetime
 from typing import Optional, Union
 
 from account.src.models.account_company.base import AccountCompany
-from account.src.models.account_store.create import AccountStoreCreate, AccountStoreCreateInput
+
+# Import after to avoid circular import issues
+from account.src.models.account_store.create import AccountStoreCreateInput
 from link_models.enums import AccountBusinessTypeEnum, AccountClassificationEnum, AccountStatusEnum
 from pydantic import BaseModel
 from sqlalchemy import text
@@ -69,6 +73,8 @@ class AccountCompanyCreate:
         )
 
         account_company_id = text("currval('account.account_company_id_seq')")
+
+        from account.src.models.account_store.create import AccountStoreCreate
 
         sql_query += AccountStoreCreate().account_store_create(
             db, account_info_id, account_company_id, createInput.account_store, company_user, False

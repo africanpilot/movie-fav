@@ -51,7 +51,7 @@ def test_rand_word_gen_range(benchmark, link_general: GeneralBase):
 
 
 @GENERAL_PYTEST_MARK
-def test_rand_word_gen_range(benchmark, link_general: GeneralBase):
+def test_rand_word_gen_range_alt(benchmark, link_general: GeneralBase):
     # test works
     result = link_general.rand_word_gen_range(start=5, end=15)
 

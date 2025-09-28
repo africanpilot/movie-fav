@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import CircularRate from "@/components/CircularRate";
-import { MovieInfo, ShowsInfo } from '@/graphql/schema';
+import { MovieInfo, ShowsInfo } from "@/graphql/schema";
 
 type Props = {
   movie: MovieInfo | ShowsInfo;
@@ -57,12 +57,8 @@ function SubMovieLine({ movie, category }: Props) {
                 }}
               >
                 <CircularRate value={movie?.popular_id || 1} isPoster={true} />
-                <p className="text-xs">
-                  {movie.release_date}
-                </p>
-                <p className="text-sm font-medium truncate">
-                  {movie?.title!}
-                </p>
+                <p className="text-xs">{movie.release_date}</p>
+                <p className="text-sm font-medium truncate">{movie?.title!}</p>
               </motion.div>
               <div className="absolute w-full h-[200px] bg-gradient-to-t from-black to-transparent bottom-0 z-20" />
             </>

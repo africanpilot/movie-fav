@@ -5,7 +5,7 @@ import { BiChevronLeftCircle, BiChevronRightCircle } from "react-icons/bi";
 import Container from "@/components/Container";
 import MoviesLine from "@/components/MoviesLine";
 import SubMovieLine from "@/components/SubMovieLine";
-import { MovieInfo, ShowsInfo } from '@/graphql/schema';
+import { MovieInfo, ShowsInfo } from "@/graphql/schema";
 
 type Props = {
   movies: MovieInfo[] | ShowsInfo[];
@@ -40,7 +40,7 @@ function Row({ movies, title, isMain, category }: Props) {
         <Container header={title} isTop={false}>
           <div className="group relative md:-ml-2">
             <BiChevronLeftCircle
-            color="white"
+              color="white"
               className={`absolute top-0 bottom-0 left-2 z-40 m-auto h-9 w-9 cursor-pointer opacity-0 transition hover:scale-125 group-hover:opacity-100 ${
                 !isMoved && "hidden"
               }`}
@@ -53,13 +53,21 @@ function Row({ movies, title, isMain, category }: Props) {
               {isMain ? (
                 <>
                   {movies?.map((movie) => (
-                    <MoviesLine key={movie.id} movie={movie} category={category} />
+                    <MoviesLine
+                      key={movie.id}
+                      movie={movie}
+                      category={category}
+                    />
                   ))}
                 </>
               ) : (
                 <>
                   {movies?.map((movie) => (
-                    <SubMovieLine key={movie.id} movie={movie} category={category}/>
+                    <SubMovieLine
+                      key={movie.id}
+                      movie={movie}
+                      category={category}
+                    />
                   ))}
                 </>
               )}

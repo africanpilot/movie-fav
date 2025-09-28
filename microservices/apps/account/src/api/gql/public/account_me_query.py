@@ -4,14 +4,14 @@
 import json
 
 from account.src.domain.lib import AccountLib
-from account.src.models.account_info import AccountInfo, AccountInfoResponse, AccountInfoResponses
+from account.src.models.account_info import AccountInfo, AccountInfoResponse
 from graphql import GraphQLResolveInfo
 from link_lib.microservice_controller import ApolloTypes
 from link_lib.microservice_general import GeneralJSONEncoder
 from link_lib.microservice_graphql_model import GraphQLModel
 
 
-class AccountMeQuery(GraphQLModel, AccountLib, AccountInfoResponses):
+class AccountMeQuery(GraphQLModel, AccountLib):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -36,7 +36,7 @@ class AccountMeQuery(GraphQLModel, AccountLib, AccountInfoResponses):
 
             with self.get_session("psqldb_account") as db:
 
-                response = self.account_info_response(
+                response = self.account_info_responses.account_info_response(
                     info=info,
                     db=db,
                     filterInputExtra=[AccountInfo.id == token_decode.account_info_id],

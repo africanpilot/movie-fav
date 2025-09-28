@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { baseURL } from "@/util/baseUrl";
 import { motion } from "framer-motion";
@@ -61,7 +61,7 @@ function SearchComponent({}: Props) {
     try {
       const [searchData] = await Promise.all([
         fetch(
-          `https://api.themoviedb.org/3/search/${type}?api_key=${process.env.NEXT_PUBLIC_API_KEY}&language=en-US&query=${search}&page=1&include_adult=false`
+          `https://api.themoviedb.org/3/search/${type}?api_key=${process.env.NEXT_PUBLIC_API_KEY}&language=en-US&query=${search}&page=1&include_adult=false`,
         ).then((res) => res.json()),
       ]);
 
@@ -81,17 +81,16 @@ function SearchComponent({}: Props) {
     } else if (option === "person") {
       router.push(`/cast/${navigateId}`);
     } else return;
-  
+
     if (option === "movie" || option === "tv") {
       toast.error(
-        "You Need to Sign In to Look Up More Information About This Movie"
+        "You Need to Sign In to Look Up More Information About This Movie",
       );
     } else {
       toast.error(
-        "You Need to Sign In to Look Up More Information About This Person"
+        "You Need to Sign In to Look Up More Information About This Person",
       );
     }
-    
   };
 
   useEffect(() => {
@@ -145,9 +144,7 @@ function SearchComponent({}: Props) {
                 value={option}
                 onChange={(e) => setOption(e.target.value)}
               >
-                <option value="movie">
-                  Movie
-                </option>
+                <option value="movie">Movie</option>
                 <option value="tv">TV Shows</option>
                 <option value="person">Person</option>
               </select>

@@ -1,25 +1,41 @@
-import { 
-  useAccountCreateMutation, AccountInfoCreateInput,
-  useAccountAuthenticationLoginMutation, AccountLoginInput,
-  useAccountResendConfirmMutation, useAccountConfirmEmailMutation,
-  useAccountForgotPasswordMutation, useAccountForgotPasswordConfirmEmailMutation,
-  useAccountUpdatePasswordMutation, AccountInfoUpdatePasswordInput,
-  useAccountAuthenticationLogoutMutation, useAccountGuestLoginMutation,
+import {
+  useAccountCreateMutation,
+  AccountInfoCreateInput,
+  useAccountAuthenticationLoginMutation,
+  AccountLoginInput,
+  useAccountResendConfirmMutation,
+  useAccountConfirmEmailMutation,
+  useAccountForgotPasswordMutation,
+  useAccountForgotPasswordConfirmEmailMutation,
+  useAccountUpdatePasswordMutation,
+  AccountInfoUpdatePasswordInput,
+  useAccountAuthenticationLogoutMutation,
+  useAccountGuestLoginMutation,
   // useAccountAuthenticationAuthZeroLoginMutation
 } from "./schema";
 
-
 export const useAccount = () => {
   // const mutationOptions = { refetchQueries: ['AccountMeQuery'] };
-  const [createAccount, { loading: isCreateAccount }] = useAccountCreateMutation();
-  const [signInUser, { loading: isSignIn }] = useAccountAuthenticationLoginMutation();
-  const [accountGuestLogin, { loading: isGuestLogin }] = useAccountGuestLoginMutation();
-  const [resendEmail, { loading: isResendEmail }] = useAccountResendConfirmMutation();
-  const [confirmEmail, { loading: isConfirmEmail }] = useAccountConfirmEmailMutation();
-  const [accountAuthenticationLogout, { loading: isAccountAuthenticationLogout }] = useAccountAuthenticationLogoutMutation();
-  const [forgotPassword, { loading: isForgotPassword }] = useAccountForgotPasswordMutation();
-  const [forgotPasswordConfirm, { loading: isForgotPasswordConfirm }] = useAccountForgotPasswordConfirmEmailMutation();
-  const [updatePassword, { loading: isUpdatePassword }] = useAccountUpdatePasswordMutation();
+  const [createAccount, { loading: isCreateAccount }] =
+    useAccountCreateMutation();
+  const [signInUser, { loading: isSignIn }] =
+    useAccountAuthenticationLoginMutation();
+  const [accountGuestLogin, { loading: isGuestLogin }] =
+    useAccountGuestLoginMutation();
+  const [resendEmail, { loading: isResendEmail }] =
+    useAccountResendConfirmMutation();
+  const [confirmEmail, { loading: isConfirmEmail }] =
+    useAccountConfirmEmailMutation();
+  const [
+    accountAuthenticationLogout,
+    { loading: isAccountAuthenticationLogout },
+  ] = useAccountAuthenticationLogoutMutation();
+  const [forgotPassword, { loading: isForgotPassword }] =
+    useAccountForgotPasswordMutation();
+  const [forgotPasswordConfirm, { loading: isForgotPasswordConfirm }] =
+    useAccountForgotPasswordConfirmEmailMutation();
+  const [updatePassword, { loading: isUpdatePassword }] =
+    useAccountUpdatePasswordMutation();
   // const [accountAuthZeroLogin, { loading: isAccountAuthZeroLogin }] = useAccountAuthenticationAuthZeroLoginMutation();
 
   const handleCreateAccount = async (createInput: AccountInfoCreateInput) => {
@@ -27,7 +43,11 @@ export const useAccount = () => {
       const { data } = await createAccount({ variables: { createInput } });
       return data?.accountCreate;
     } catch (error: any) {
-      try { return JSON.parse(error.message) } catch (error: any) { throw error;};
+      try {
+        return JSON.parse(error.message);
+      } catch (error: any) {
+        throw error;
+      }
     }
   };
 
@@ -37,7 +57,11 @@ export const useAccount = () => {
 
       return data?.accountAuthenticationLogin;
     } catch (error: any) {
-      try { return JSON.parse(error.message) } catch (error: any) { throw error;};
+      try {
+        return JSON.parse(error.message);
+      } catch (error: any) {
+        throw error;
+      }
     }
   };
 
@@ -46,7 +70,11 @@ export const useAccount = () => {
       const { data } = await resendEmail({ variables: { accountLogin } });
       return data?.accountResendConfirm;
     } catch (error: any) {
-      try { return JSON.parse(error.message) } catch (error: any) { throw error;};
+      try {
+        return JSON.parse(error.message);
+      } catch (error: any) {
+        throw error;
+      }
     }
   };
 
@@ -55,7 +83,11 @@ export const useAccount = () => {
       const { data } = await confirmEmail();
       return data?.accountConfirmEmail;
     } catch (error: any) {
-      try { return JSON.parse(error.message) } catch (error: any) { throw error;};
+      try {
+        return JSON.parse(error.message);
+      } catch (error: any) {
+        throw error;
+      }
     }
   };
 
@@ -64,7 +96,11 @@ export const useAccount = () => {
       const { data } = await forgotPassword({ variables: { accountLogin } });
       return data?.accountForgotPassword;
     } catch (error: any) {
-      try { return JSON.parse(error.message) } catch (error: any) { throw error;};
+      try {
+        return JSON.parse(error.message);
+      } catch (error: any) {
+        throw error;
+      }
     }
   };
 
@@ -73,16 +109,26 @@ export const useAccount = () => {
       const { data } = await forgotPasswordConfirm();
       return data?.accountForgotPasswordConfirmEmail;
     } catch (error: any) {
-      try { return JSON.parse(error.message) } catch (error: any) { throw error;};
+      try {
+        return JSON.parse(error.message);
+      } catch (error: any) {
+        throw error;
+      }
     }
   };
 
-  const handleUpdatePassword = async (updateInput: AccountInfoUpdatePasswordInput) => {
+  const handleUpdatePassword = async (
+    updateInput: AccountInfoUpdatePasswordInput,
+  ) => {
     try {
       const { data } = await updatePassword({ variables: { updateInput } });
       return data?.accountUpdatePassword;
     } catch (error: any) {
-      try { return JSON.parse(error.message) } catch (error: any) { throw error;};
+      try {
+        return JSON.parse(error.message);
+      } catch (error: any) {
+        throw error;
+      }
     }
   };
 
@@ -91,7 +137,11 @@ export const useAccount = () => {
       const { data } = await accountAuthenticationLogout();
       return data?.accountAuthenticationLogout;
     } catch (error: any) {
-      try { return JSON.parse(error.message) } catch (error: any) { throw error;};
+      try {
+        return JSON.parse(error.message);
+      } catch (error: any) {
+        throw error;
+      }
     }
   };
 
@@ -100,7 +150,11 @@ export const useAccount = () => {
       const { data } = await accountGuestLogin();
       return data?.accountGuestLogin;
     } catch (error: any) {
-      try { return JSON.parse(error.message) } catch (error: any) { throw error;};
+      try {
+        return JSON.parse(error.message);
+      } catch (error: any) {
+        throw error;
+      }
     }
   };
 
@@ -113,10 +167,16 @@ export const useAccount = () => {
   //   }
   // };
 
-  const isSaving = (isCreateAccount || isSignIn || isResendEmail || isConfirmEmail 
-    || isForgotPassword || isForgotPasswordConfirm || isUpdatePassword 
-    || isAccountAuthenticationLogout || isGuestLogin
-  );
+  const isSaving =
+    isCreateAccount ||
+    isSignIn ||
+    isResendEmail ||
+    isConfirmEmail ||
+    isForgotPassword ||
+    isForgotPasswordConfirm ||
+    isUpdatePassword ||
+    isAccountAuthenticationLogout ||
+    isGuestLogin;
 
   return {
     createAccount: handleCreateAccount,
@@ -129,6 +189,6 @@ export const useAccount = () => {
     accountAuthenticationLogout: handleLogout,
     accountGuestLogin: handleGuestLogin,
     // accountAuthZeroLogin: handleAccountAuthZeroLogin,
-    isSaving
+    isSaving,
   };
 };

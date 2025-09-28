@@ -4,30 +4,30 @@
 from datetime import datetime
 
 from account.src.app_lib import config
+from account.src.models import AccountModels
 from account.src.models.account_company import AccountCompanyResponse
-from account.src.models.account_info import AccountInfo, AccountInfoRead, AccountInfoResponse
-from link_lib.microservice_request import LinkRequest
-from link_lib.microservice_to_redis import LinkRedis
+from account.src.models.account_info import AccountInfo, AccountInfoResponse
+from link_domain.base import LinkDomain
 from link_models.enums import AccountStatusEnum
 from sqlmodel import Session
 
 
-class AccountLib(LinkRequest, LinkRedis, AccountInfoRead):
+class AccountLib(LinkDomain, AccountModels):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
     def verify_login_does_not_exist(self, db: Session, email: str) -> None:
-        if self.get_user_credentials(db, email):
+        if self.account_info_read.get_user_credentials(db, email):
             self.http_401_unauthorized_response(msg=f"Account already exists: {email}")
 
     def verify_login_exists(self, db: Session, email: str) -> AccountInfo:
-        login_exists = self.get_user_credentials(db, email)
+        login_exists = self.account_info_read.get_user_credentials(db, email)
         if not login_exists:
             self.http_401_unauthorized_response(msg=f"Account does not exists: {email}")
         return login_exists
 
     def verify_resend_email(self, db: Session, email: str) -> AccountInfo:
-        account = self.get_user_credentials(db, email)
+        account = self.account_info_read.get_user_credentials(db, email)
         if account.verified_email:
             self.http_401_unauthorized_response(msg="Email already verified")
 
@@ -45,7 +45,9 @@ class AccountLib(LinkRequest, LinkRedis, AccountInfoRead):
             self.http_401_unauthorized_response(msg="Account not active")
 
     def verify_password_change_window(self, db: Session, account_id: int) -> None:
-        exp_date = self.get_password_expire_date(db=db, account_id=account_id).forgot_password_expire_date
+        exp_date = self.account_info_read.get_password_expire_date(
+            db=db, account_id=account_id
+        ).forgot_password_expire_date
         if exp_date and exp_date < datetime.now():
             self.http_401_unauthorized_response(msg="Please confirm forgot password email")
 

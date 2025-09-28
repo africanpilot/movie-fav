@@ -27,7 +27,7 @@ class ShowsLib(LinkDomain, ShowsModels):
         self.load_to_redis(self.shows_redis_engine, f"shows_info_query:{key}", redis_conv)
 
     def redis_delete_shows_info_keys(self) -> None:
-        self.redis_delete_keys_pipe(self.shows_redis_engine, [f"shows_info_query:*"]).execute()
+        self.redis_delete_keys_pipe(self.shows_redis_engine, ["shows_info_query:*"]).execute()
 
     def shows_episode_query_redis_load(self, key) -> ShowsEpisodeResponse:
         redis_result = self.shows_redis_engine.get(f"""shows_episode_query:{key}""")
@@ -42,7 +42,7 @@ class ShowsLib(LinkDomain, ShowsModels):
         self.load_to_redis(self.shows_redis_engine, f"shows_episode_query:{key}", redis_conv)
 
     def redis_delete_shows_episode_keys(self) -> None:
-        self.redis_delete_keys_pipe(self.shows_redis_engine, [f"shows_episode_query:*"]).execute()
+        self.redis_delete_keys_pipe(self.shows_redis_engine, ["shows_episode_query:*"]).execute()
 
     def shows_saga_redis_update(self, keys: list[bytes]) -> tuple[list, list]:
         return keys, [

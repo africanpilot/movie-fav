@@ -36,7 +36,12 @@ function Container({ header, children, isTop }: Props) {
               },
             }}
           >
-            <Typography variant="h5" fontWeight="700" textTransform="uppercase" className="text-secondary">
+            <Typography
+              variant="h5"
+              fontWeight="700"
+              textTransform="uppercase"
+              className="text-secondary"
+            >
               {header}
             </Typography>
           </Box>

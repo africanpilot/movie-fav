@@ -23,7 +23,7 @@ class MovieLib(LinkDomain, MovieModels):
         self.load_to_redis(self.movie_redis_engine, f"movie_info_query:{key}", redis_conv)
 
     def redis_delete_movie_info_keys(self) -> None:
-        self.redis_delete_keys_pipe(self.movie_redis_engine, [f"movie_info_query:*"]).execute()
+        self.redis_delete_keys_pipe(self.movie_redis_engine, ["movie_info_query:*"]).execute()
 
     def process_movie_info(self, imdb_id: str) -> dict:
         movie_info = self.imdb_ng_helper.get_movie_by_id(imdb_id)

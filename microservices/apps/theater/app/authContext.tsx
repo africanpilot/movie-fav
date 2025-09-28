@@ -1,4 +1,4 @@
-'use client'
+"use client";
 // https://www.youtube.com/watch?v=_DqPiZPKkgY&list=PLMhAeHCz8S3_pgb-j51QnCEhXNj5oyl8n
 
 // https://www.youtube.com/watch?v=ewLrGMt7MQY&ab_channel=Classsed
@@ -8,21 +8,30 @@ export const AuthContext = createContext({
   user: null,
   token: null,
   registerCompleted: null,
-  login: (userData: any, token: string | null | undefined, role: string | null | undefined) => {},
+  login: (
+    userData: any,
+    token: string | null | undefined,
+    role: string | null | undefined,
+  ) => {},
   logout: () => {},
   verifyEmailToken: (token: string | null | undefined) => {},
 });
 
-const authReducer = (state: any, action: { type: any; payload: { user: any; token: string, role: string}; }) => {  
+const authReducer = (
+  state: any,
+  action: { type: any; payload: { user: any; token: string; role: string } },
+) => {
   switch (action.type) {
     case "LOGIN":
-      var account_user = action.payload.user.length > 0 ? action.payload.user[0] : {}
-      account_user.user_role = action.payload.role
-      
+      var account_user =
+        action.payload.user.length > 0 ? action.payload.user[0] : {};
+      account_user.user_role = action.payload.role;
+
       localStorage.setItem("user", JSON.stringify(account_user));
       localStorage.setItem("theater-app-token", action.payload.token);
 
-      const user: any = typeof window !== "undefined" ? localStorage.getItem("user") : "{}"
+      const user: any =
+        typeof window !== "undefined" ? localStorage.getItem("user") : "{}";
       return {
         ...state,
         user: JSON.parse(user) || action.payload.user,
@@ -48,7 +57,8 @@ const authReducer = (state: any, action: { type: any; payload: { user: any; toke
 };
 
 const AuthContextProvider: any = (props: typeof AuthContextProvider) => {
-  const getUser: any = typeof window !== "undefined" ? localStorage.getItem("user") : "{}"
+  const getUser: any =
+    typeof window !== "undefined" ? localStorage.getItem("user") : "{}";
 
   const [state, dispatch] = useReducer(authReducer, {
     user: JSON.parse(getUser) || null,
@@ -72,18 +82,18 @@ const AuthContextProvider: any = (props: typeof AuthContextProvider) => {
       payload: {
         user: undefined,
         token: "",
-        role: ""
-      }
+        role: "",
+      },
     });
   };
 
   const verifyEmailToken = (token: string) => {
     dispatch({
       type: "VERIFYEMAIL",
-      payload: { 
+      payload: {
         user: undefined,
-        token: token, 
-        role: ""
+        token: token,
+        role: "",
       },
     });
   };

@@ -254,7 +254,7 @@ def test_success_response(benchmark, link_response: GeneralLinkResponse):
 
     base_response: BaseResponse = e.value.args[0]
     assert base_response.response.code == 404
-    assert base_response.response.success == False
+    assert base_response.response.success is False
     assert base_response.pageInfo == PageInfo()
     assert base_response.result == []
 
@@ -286,7 +286,7 @@ def test_http_400_bad_request_response(benchmark, link_response: GeneralLinkResp
 
     base_response: BaseResponse = e.value.args[0]
     assert base_response.response.code == 400
-    assert base_response.response.success == False
+    assert base_response.response.success is False
     assert base_response.response.message == "http_400_bad_request: test error"
     assert base_response.pageInfo == PageInfo()
     assert base_response.result == []
@@ -304,7 +304,7 @@ def test_http_401_unauthorized_response(benchmark, link_response: GeneralLinkRes
 
     base_response: BaseResponse = e.value.args[0]
     assert base_response.response.code == 401
-    assert base_response.response.success == False
+    assert base_response.response.success is False
     assert base_response.response.message == "http_401_unauthorized: test error"
     assert base_response.pageInfo == PageInfo()
     assert base_response.result == []
@@ -322,7 +322,7 @@ def test_http_403_forbidden_response(benchmark, link_response: GeneralLinkRespon
 
     base_response: BaseResponse = e.value.args[0]
     assert base_response.response.code == 403
-    assert base_response.response.success == False
+    assert base_response.response.success is False
     assert base_response.response.message == "http_403_forbidden: test error"
     assert base_response.pageInfo == PageInfo()
     assert base_response.result == []
@@ -340,7 +340,7 @@ def test_http_404_not_found_response(benchmark, link_response: GeneralLinkRespon
 
     base_response: BaseResponse = e.value.args[0]
     assert base_response.response.code == 404
-    assert base_response.response.success == False
+    assert base_response.response.success is False
     assert base_response.response.message == "http_404_not_found: test error"
     assert base_response.pageInfo == PageInfo()
     assert base_response.result == []
@@ -358,7 +358,7 @@ def test_http_498_invalid_token_response(benchmark, link_response: GeneralLinkRe
 
     base_response: BaseResponse = e.value.args[0]
     assert base_response.response.code == 498
-    assert base_response.response.success == False
+    assert base_response.response.success is False
     assert base_response.response.message == "http_498_invalid_token: test error"
     assert base_response.pageInfo == PageInfo()
     assert base_response.result == []
@@ -376,7 +376,7 @@ def test_http_499_token_required_response(benchmark, link_response: GeneralLinkR
 
     base_response: BaseResponse = e.value.args[0]
     assert base_response.response.code == 499
-    assert base_response.response.success == False
+    assert base_response.response.success is False
     assert base_response.response.message == "http_499_token_required: test error"
     assert base_response.pageInfo == PageInfo()
     assert base_response.result == []
@@ -394,7 +394,7 @@ def test_http_500_internal_server_error(benchmark, link_response: GeneralLinkRes
 
     base_response: BaseResponse = e.value.args[0]
     assert base_response.response.code == 500
-    assert base_response.response.success == False
+    assert base_response.response.success is False
     assert base_response.response.message == "http_500_internal_server_error: test error"
     assert base_response.pageInfo == PageInfo()
     assert base_response.result == []

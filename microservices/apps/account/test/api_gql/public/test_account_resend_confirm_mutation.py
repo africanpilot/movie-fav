@@ -3,7 +3,6 @@
 
 import pytest
 from account.test.fixtures.models import ACCOUNT_RESPONSE_FRAGMENT
-from account.test.fixtures.models.account_lib import GeneralAccountLib
 from ariadne import gql, graphql_sync
 from link_lib.microservice_general import LinkGeneral
 from sqlmodel import Session
@@ -33,7 +32,6 @@ def test_account_resend_confirm_mutation(
     private_schema,
     create_account,
     flush_redis_db,
-    link_account_lib: GeneralAccountLib,
 ):
     flush_redis_db()
     _, auth_1 = create_account(test_database, approved=False, jwt_data=dict(email=True))

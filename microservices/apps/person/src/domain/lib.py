@@ -23,7 +23,7 @@ class PersonLib(LinkDomain, PersonModels):
         self.load_to_redis(self.person_redis_engine, f"person_info_query:{key}", redis_conv)
 
     def redis_delete_person_info_keys(self) -> None:
-        self.redis_delete_keys_pipe(self.person_redis_engine, [f"person_info_query:*"]).execute()
+        self.redis_delete_keys_pipe(self.person_redis_engine, ["person_info_query:*"]).execute()
 
     def process_person_info(self, imdb_id: str) -> dict:
         person_info = self.imdb_helper.get_person_by_id(imdb_id)

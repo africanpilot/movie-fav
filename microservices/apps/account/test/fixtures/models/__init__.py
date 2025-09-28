@@ -1,7 +1,7 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
-from account.test.fixtures.models.account_lib import link_account_lib, private_schema
+from account.test.fixtures.models.account_lib import account_lib, private_schema
 from account.test.fixtures.models.fragments import (
     ACCOUNT_AUTHENTICATION_FRAGMENT,
     ACCOUNT_AUTHENTICATION_RESPONSE_FRAGMENT,
@@ -16,7 +16,7 @@ from account.test.fixtures.models.fragments import (
 )
 
 __all__ = (
-    "link_account_lib",
+    "account_lib",
     "private_schema",
     "ACCOUNT_INFO_FRAGMENT",
     "ACCOUNT_COMPANY_FRAGMENT",

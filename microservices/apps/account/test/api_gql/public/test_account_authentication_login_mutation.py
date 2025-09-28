@@ -3,7 +3,6 @@
 
 import pytest
 from account.test.fixtures.models import ACCOUNT_AUTHENTICATION_RESPONSE_FRAGMENT
-from account.test.fixtures.models.account_lib import GeneralAccountLib
 from ariadne import gql, graphql_sync
 from link_lib.microservice_general import LinkGeneral
 
@@ -29,7 +28,7 @@ GENERAL_PYTEST_MARK = LinkGeneral().compose_decos(
 @GENERAL_PYTEST_MARK
 @pytest.mark.account_bench
 def test_account_authentication_login_mutation(
-    benchmark, test_database, private_schema, create_auth_info, create_account, link_account_lib: GeneralAccountLib
+    benchmark, test_database, private_schema, create_auth_info, create_account
 ):
 
     auth_1 = create_auth_info(dict(account_info_id=1))

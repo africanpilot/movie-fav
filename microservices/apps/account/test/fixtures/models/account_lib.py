@@ -8,7 +8,7 @@ from link_models.enums import SchemaTypeEnum
 
 
 @pytest.fixture
-def link_account_lib() -> AccountLib:
+def account_lib() -> AccountLib:
     return AccountLib()
 
 

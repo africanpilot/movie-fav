@@ -24,18 +24,4 @@ class AccountStoreEmployeeRead(LinkResponse):
                 AccountStoreEmployee.account_store_id == account_store_id,
                 AccountStoreEmployee.account_info_id == account_info_id,
             )
-        ).one()
-
-    def get_store_employee_user(
-        self, db: Session, account_company_id: int, account_store_id: int, account_info_id: int
-    ) -> Optional[AccountStoreEmployee]:
-        try:
-            return db.exec(
-                select(AccountStoreEmployee).where(
-                    AccountStoreEmployee.account_company_id == account_company_id,
-                    AccountStoreEmployee.account_store_id == account_store_id,
-                    AccountStoreEmployee.account_info_id == account_info_id,
-                )
-            ).one()
-        except Exception:
-            return None
+        ).one_or_none()

@@ -4,13 +4,13 @@
 from datetime import datetime
 
 from account.src.domain.lib import AccountLib
-from account.src.models.account_info import AccountAuthenticationResponse, AccountInfoUpdate, AccountInfoUpdateInput
+from account.src.models.account_info import AccountAuthenticationResponse, AccountInfoUpdateInput
 from graphql import GraphQLResolveInfo
 from link_lib.microservice_controller import ApolloTypes
 from link_lib.microservice_graphql_model import GraphQLModel
 
 
-class AccountAuthenticationLogoutMutation(GraphQLModel, AccountLib, AccountInfoUpdate):
+class AccountAuthenticationLogoutMutation(GraphQLModel, AccountLib):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -27,7 +27,7 @@ class AccountAuthenticationLogoutMutation(GraphQLModel, AccountLib, AccountInfoU
             )
 
             with self.get_session("psqldb_account") as db:
-                self.account_info_update(db, updateInput)
+                self.account_info_update.account_info_update(db, updateInput)
 
             self.redis_delete_account_query_keys(token_decode.account_info_id)
             self.redis_delete_account_token_keys(token_decode.account_info_id)

@@ -48,7 +48,7 @@ class BaseSaga:
             if self.steps[i].name == step.name:
                 return i
 
-        raise IndexError(f"step wasn't found")
+        raise IndexError("step wasn't found")
 
     def _get_next_step(self, step: typing.Union[BaseStep, None]) -> typing.Union[BaseStep, None]:
         if not step:

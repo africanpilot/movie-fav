@@ -21,8 +21,4 @@ class AccountStoreRead(LinkResponse):
         ).all()
 
     def get_account_store_by_name(self, db: Session, name: str) -> AccountStore:
-        return db.execute(
-            self.query_filter(
-                self.query_cols([AccountStore.id, AccountStore.account_company_id]), [AccountStore.name == name]
-            )
-        ).one()
+        return db.exec(select(AccountStore).where(AccountStore.name == name)).one()

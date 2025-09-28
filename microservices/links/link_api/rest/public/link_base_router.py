@@ -22,10 +22,10 @@ class LinkBaseRouter:
 
         @router.get("/")
         async def home(request: Request):
-            return HTMLResponse(f'<a href="/docs">documentation</a>')
+            return HTMLResponse('<a href="/docs">documentation</a>')
 
         @router.get("/health")
         async def health(request: Request):
-            return HTMLResponse(f"<p>OK</p>")
+            return HTMLResponse("<p>OK</p>")
 
         return router

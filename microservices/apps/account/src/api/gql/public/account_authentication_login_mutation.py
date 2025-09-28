@@ -3,24 +3,14 @@
 
 from account.src.app_lib import config
 from account.src.domain.lib import AccountLib
-from account.src.models.account_info import (
-    AccountAuthenticationResponse,
-    AccountInfo,
-    AccountInfoResponses,
-    AccountInfoValidate,
-    AccountLoginInput,
-)
-from account.src.models.account_store import AccountStoreRead
-from account.src.models.account_store_employee import AccountStoreEmployeeRead
+from account.src.models.account_info import AccountAuthenticationResponse, AccountInfo, AccountLoginInput
 from graphql import GraphQLResolveInfo
 from link_lib.microservice_controller import ApolloTypes
 from link_lib.microservice_graphql_model import GraphQLModel
 from link_models.enums import AccountRoleEnum
 
 
-class AccountAuthenticationLoginMutation(
-    GraphQLModel, AccountLib, AccountInfoValidate, AccountInfoResponses, AccountStoreRead, AccountStoreEmployeeRead
-):
+class AccountAuthenticationLoginMutation(GraphQLModel, AccountLib):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -43,7 +33,7 @@ class AccountAuthenticationLoginMutation(
                 account = self.verify_email_confirmed(db, accountLoginInput.login.lower())
 
                 # verify password
-                self.verify_hash_password(
+                self.account_info_validate.verify_hash_password(
                     password=accountLoginInput.password.encode("utf8"),
                     hashed=account.password.encode("utf8"),
                 )
@@ -51,8 +41,10 @@ class AccountAuthenticationLoginMutation(
                 # check active account
                 self.verify_active_account(account.status)
 
-                store = self.get_account_store_by_name(db, service_name.value)
-                employee = self.get_store_employee_user(db, store.account_company_id, store.id, account.id)
+                store = self.account_store_read.get_account_store_by_name(db, service_name.value)
+                employee = self.account_store_employee_read.get_store_employee(
+                    db, store.account_company_id, store.id, account.id
+                )
                 user_role = employee.user_role if employee else AccountRoleEnum.CUSTOMER
 
                 # generate token
@@ -67,7 +59,7 @@ class AccountAuthenticationLoginMutation(
                     hr=config.APP_TOKEN_EXP,
                 )
 
-                response = self.account_authentication_response(
+                response = self.account_info_responses.account_authentication_response(
                     info=info,
                     db=db,
                     token=token,

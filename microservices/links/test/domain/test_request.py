@@ -68,7 +68,7 @@ def test_check_service_authorized(benchmark, gql_info, link_request: GeneralRequ
 
     base_response: BaseResponse = e.value.args[0]
     assert base_response.response.code == 401
-    assert base_response.response.success == False
+    assert base_response.response.success is False
     assert base_response.pageInfo == PageInfo()
     assert base_response.result == []
 
@@ -104,14 +104,14 @@ def test_get_query_request(benchmark, link_request: GeneralRequest, gql_info: Gr
     token = ("Bearer " + link_request.rand_word_gen_range(20, 30)).encode("utf-8")
     context_value_1 = {"request": {"headers": {b"authorization": token, b"service": b"moviefav"}}}
     request_context = """{
-		response{ success code message version }
-		pageInfo{ page_info_count }
-		result{ email
-  		account_contact{ id account_info_id first_name }
-			account_address{ id address city }
-			registration_status
+        response{ success code message version }
+        pageInfo{ page_info_count }
+        result{ email
+          account_contact{ id account_info_id first_name }
+            account_address{ id address city }
+            registration_status
     }
-	}"""
+    }"""
     info = gql_info(context_value_1, request_context)
     response = link_request.get_query_request(selections=info.field_nodes)
 
@@ -141,14 +141,14 @@ def test_convert_to_db_cols(benchmark, link_request: GeneralRequest, gql_info: G
     token = ("Bearer " + link_request.rand_word_gen_range(20, 30)).encode("utf-8")
     context_value_1 = {"request": {"headers": {b"authorization": token, b"service": b"moviefav"}}}
     request_context_1 = """{
-		response{ success code message version }
-		pageInfo{ page_info_count }
-		result{ email
-  		account_contact{ id account_info_id first_name }
-			account_address{ id address city }
-			registration_status
+        response{ success code message version }
+        pageInfo{ page_info_count }
+        result{ email
+          account_contact{ id account_info_id first_name }
+            account_address{ id address city }
+            registration_status
     }
-	}"""
+    }"""
     info_1 = gql_info(context_value_1, request_context_1)
     query_context_1 = link_request.get_query_request(selections=info_1.field_nodes)
     response = link_request.convert_to_db_cols(root_node="result", query_context=query_context_1)
@@ -166,7 +166,7 @@ def test_convert_to_db_cols(benchmark, link_request: GeneralRequest, gql_info: G
 
     base_response: BaseResponse = e.value.args[0]
     assert base_response.response.code == 400
-    assert base_response.response.success == False
+    assert base_response.response.success is False
     assert base_response.pageInfo == PageInfo()
     assert base_response.result == []
 
@@ -182,15 +182,15 @@ def test_convert_to_db_cols_with_attr(benchmark, link_request: GeneralRequest, g
     # test works
     token = ("Bearer " + link_request.rand_word_gen_range(20, 30)).encode("utf-8")
     context_value_1 = {"request": {"headers": {b"authorization": token, b"service": b"moviefav"}}}
-    request_context_1 = """{
-		response{ success code message version }
-		pageInfo{ page_info_count }
-		result{ email
-			account_contact{ id account_info_id first_name }
-			account_address{ id address city }
-			registration_status
-		}
-	}"""
+    request_context_1 = """    request_context = \"\"\"{
+        response{ success code message version }
+        pageInfo{ page_info_count }
+        result{ email
+            account_contact{ id account_info_id first_name }
+            account_address{ id address city }
+            registration_status
+        }
+    }\"\"\""""
     info_1 = gql_info(context_value_1, request_context_1)
     query_context_1 = link_request.get_query_request(selections=info_1.field_nodes)
     get_cols_attr = link_request.convert_to_db_cols_with_attr(
@@ -272,7 +272,7 @@ def test_get_token(benchmark, gql_info, link_request: GeneralRequest):
 
     base_response: BaseResponse = e.value.args[0]
     assert base_response.response.code == 401
-    assert base_response.response.success == False
+    assert base_response.response.success is False
     assert base_response.pageInfo == PageInfo()
     assert base_response.result == []
 
@@ -284,7 +284,7 @@ def test_get_token(benchmark, gql_info, link_request: GeneralRequest):
 
     base_response: BaseResponse = e.value.args[0]
     assert base_response.response.code == 401
-    assert base_response.response.success == False
+    assert base_response.response.success is False
     assert base_response.pageInfo == PageInfo()
     assert base_response.result == []
 
@@ -330,7 +330,7 @@ def test_decode_token(benchmark, gql_info, link_request: GeneralRequest):
 
     base_response: BaseResponse = e.value.args[0]
     assert base_response.response.code == 401
-    assert base_response.response.success == False
+    assert base_response.response.success is False
     assert base_response.pageInfo == PageInfo()
     assert base_response.result == []
 
@@ -345,7 +345,7 @@ def test_decode_token(benchmark, gql_info, link_request: GeneralRequest):
 
     base_response: BaseResponse = e.value.args[0]
     assert base_response.response.code == 401
-    assert base_response.response.success == False
+    assert base_response.response.success is False
     assert base_response.pageInfo == PageInfo()
     assert base_response.result == []
 
@@ -399,7 +399,7 @@ def test_general_validation_process(benchmark, gql_info, link_request: GeneralRe
 
     base_response: BaseResponse = e.value.args[0]
     assert base_response.response.code == 499
-    assert base_response.response.success == False
+    assert base_response.response.success is False
     assert base_response.pageInfo == PageInfo()
     assert base_response.result == []
 
@@ -421,7 +421,7 @@ def test_general_validation_process(benchmark, gql_info, link_request: GeneralRe
 
     base_response: BaseResponse = e.value.args[0]
     assert base_response.response.code == 401
-    assert base_response.response.success == False
+    assert base_response.response.success is False
     assert base_response.pageInfo == PageInfo()
     assert base_response.result == []
 
@@ -443,7 +443,7 @@ def test_general_validation_process(benchmark, gql_info, link_request: GeneralRe
 
     base_response: BaseResponse = e.value.args[0]
     assert base_response.response.code == 401
-    assert base_response.response.success == False
+    assert base_response.response.success is False
     assert base_response.pageInfo == PageInfo()
     assert base_response.result == []
 
@@ -465,7 +465,7 @@ def test_general_validation_process(benchmark, gql_info, link_request: GeneralRe
 
     base_response: BaseResponse = e.value.args[0]
     assert base_response.response.code == 401
-    assert base_response.response.success == False
+    assert base_response.response.success is False
     assert base_response.pageInfo == PageInfo()
     assert base_response.result == []
 

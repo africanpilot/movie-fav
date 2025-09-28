@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
-import { ShowsEpisode } from '@/graphql/schema';
+import { ShowsEpisode } from "@/graphql/schema";
 
 type Props = {
   episode: ShowsEpisode;
@@ -13,23 +13,28 @@ function EpisodeCard({ episode }: Props) {
   const router = useRouter();
 
   const navigatePage = async () => {
-    router.push(`/shows/${episode?.shows_info_id}/season/${episode?.season}/episode/${episode?.episode}`);
+    router.push(
+      `/shows/${episode?.shows_info_id}/season/${episode?.season}/episode/${episode?.episode}`,
+    );
   };
 
   return (
     <>
-        {episode?.cover || episode?.full_cover ? (
-          <div className="overflow-visible cursor-pointer" onClick={() => navigatePage()}>
-              <Image 
-                className="rounded-3xl shadow-lg"
-                src={episode?.cover || episode?.full_cover!}
-                alt={episode?.title!}
-                width={500}
-                height={500}
-                loading="lazy"
-              />
-              <p className="text-xs">{episode?.episode}</p>
-          </div>
+      {episode?.cover || episode?.full_cover ? (
+        <div
+          className="overflow-visible cursor-pointer"
+          onClick={() => navigatePage()}
+        >
+          <Image
+            className="rounded-3xl shadow-lg"
+            src={episode?.cover || episode?.full_cover!}
+            alt={episode?.title!}
+            width={500}
+            height={500}
+            loading="lazy"
+          />
+          <p className="text-xs">{episode?.episode}</p>
+        </div>
       ) : (
         <div
           role="status"
@@ -47,8 +52,7 @@ function EpisodeCard({ episode }: Props) {
             </svg>
           </div>
         </div>
-      ) 
-    }
+      )}
     </>
   );
 }

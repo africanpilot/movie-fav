@@ -2,8 +2,8 @@
 # All Rights Reserved. Proprietary and confidential.
 
 import pytest
+from account.src.domain.lib import AccountLib
 from account.test.fixtures.models import ACCOUNT_RESPONSE_FRAGMENT
-from account.test.fixtures.models.account_lib import GeneralAccountLib
 from ariadne import gql, graphql_sync
 from link_lib.microservice_general import LinkGeneral
 
@@ -28,11 +28,11 @@ GENERAL_PYTEST_MARK = LinkGeneral().compose_decos([pytest.mark.account_confirm_e
 @GENERAL_PYTEST_MARK
 @pytest.mark.account_bench
 def test_account_confirm_email_mutation(
-    benchmark, test_database, create_account, private_schema, link_account_lib: GeneralAccountLib
+    benchmark, test_database, create_account, private_schema, account_lib: AccountLib
 ):
 
     account_1, auth_1 = create_account(test_database, approved=False, jwt_data=dict(email=True))
-    link_account_lib.account_me_token_redis_dump(account_1.id, auth_1.get("token"))
+    account_lib.account_me_token_redis_dump(account_1.id, auth_1.get("token"))
 
     def setup():
         graphql_info = {"query": gql_query}

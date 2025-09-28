@@ -206,8 +206,8 @@ class LinkRequest(LinkRedis, LinkResponse):
                 iat=token_decode["iat"],
                 exp=token_decode["exp"],
             )
-        except jwt.DecodeError as e:
-            self.http_401_unauthorized_response(msg=f"Invalid token")
+        except jwt.DecodeError:
+            self.http_401_unauthorized_response(msg="Invalid token")
         except jwt.ExpiredSignatureError:
             self.http_401_unauthorized_response(msg="Invalid token")
         except Exception as e:

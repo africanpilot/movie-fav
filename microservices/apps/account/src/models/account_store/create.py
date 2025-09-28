@@ -1,11 +1,15 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
+from __future__ import annotations
+
 from typing import Optional, Set, Union
 
 from account.src.models.account_store.base import AccountStore
 from account.src.models.account_store_employee.base import AccountStoreEmployee
-from account.src.models.account_store_employee.create import AccountStoreEmployeeCreate, AccountStoreEmployeeCreateInput
+
+# Import after to avoid circular import issues
+from account.src.models.account_store_employee.create import AccountStoreEmployeeCreateInput
 from link_models.enums import AccountRoleEnum
 from pydantic import BaseModel
 from sqlalchemy import text
@@ -73,6 +77,8 @@ class AccountStoreCreate:
         )
 
         if createInput.account_store_employee:
+            from account.src.models.account_store_employee.create import AccountStoreEmployeeCreate
+
             sql_query += AccountStoreEmployeeCreate().account_store_employee_create(
                 db, account_company_id, account_store_id, createInput.account_store_employee, False
             )

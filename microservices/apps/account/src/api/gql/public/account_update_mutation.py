@@ -2,19 +2,13 @@
 # All Rights Reserved. Proprietary and confidential.
 
 from account.src.domain.lib import AccountLib
-from account.src.models.account_info import (
-    AccountInfo,
-    AccountInfoResponse,
-    AccountInfoResponses,
-    AccountInfoUpdate,
-    AccountInfoUpdateInput,
-)
+from account.src.models.account_info import AccountInfo, AccountInfoResponse, AccountInfoUpdateInput
 from graphql import GraphQLResolveInfo
 from link_lib.microservice_controller import ApolloTypes
 from link_lib.microservice_graphql_model import GraphQLModel
 
 
-class AccountUpdateMutation(GraphQLModel, AccountLib, AccountInfoResponses, AccountInfoUpdate):
+class AccountUpdateMutation(GraphQLModel, AccountLib):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -32,9 +26,9 @@ class AccountUpdateMutation(GraphQLModel, AccountLib, AccountInfoResponses, Acco
 
             with self.get_session("psqldb_account") as db:
 
-                self.account_info_update(db, updateInput)
+                self.account_info_update.account_info_update(db, updateInput)
 
-                response = self.account_info_response(
+                response = self.account_info_responses.account_info_response(
                     info=info,
                     db=db,
                     filterInputExtra=[AccountInfo.id == token_decode.account_info_id],

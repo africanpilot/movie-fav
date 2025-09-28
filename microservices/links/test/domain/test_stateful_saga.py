@@ -59,7 +59,7 @@ def test_saga_run_success():
 
     fake_celery_app = FakeCeleryApp()
 
-    ############# Preraration ended. Launching a test #############
+    # Preraration ended. Launching a test
 
     fake_saga_id = 123
 
@@ -116,7 +116,7 @@ def test_saga_run_failure():
 
     fake_celery_app = FakeCeleryApp()
 
-    ############# Preraration ended. Launching a test #############
+    # Preraration ended. Launching a test
     fake_saga_id = 123
 
     repository = FakeRepository()

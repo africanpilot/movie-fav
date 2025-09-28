@@ -7,8 +7,6 @@ from account.src.models.account_company import (
     AccountCompanyFilterInput,
     AccountCompanyPageInfoInput,
     AccountCompanyResponse,
-    AccountCompanyResponses,
-    AccountCompanyUpdate,
     AccountCompanyUpdateInput,
 )
 from graphql import GraphQLResolveInfo
@@ -17,7 +15,7 @@ from link_lib.microservice_graphql_model import GraphQLModel
 from link_models.enums import AccountRoleEnum
 
 
-class AccountCompanyUpdateMutation(GraphQLModel, AccountLib, AccountCompanyResponses, AccountCompanyUpdate):
+class AccountCompanyUpdateMutation(GraphQLModel, AccountLib):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -48,9 +46,9 @@ class AccountCompanyUpdateMutation(GraphQLModel, AccountLib, AccountCompanyRespo
 
             with self.get_session("psqldb_account") as db:
 
-                self.account_company_update(db, updateInput)
+                self.account_company_update.account_company_update(db, updateInput)
 
-                response = self.account_company_response(
+                response = self.account_company_responses.account_company_response(
                     info=info,
                     db=db,
                     pageInfo=pageInfo,

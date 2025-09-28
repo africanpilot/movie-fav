@@ -1,7 +1,7 @@
 services:
-###################
-# Database
-###################
+  ###################
+  # Database
+  ###################
   postgres:
     image: postgres
     hostname: postgres
@@ -12,7 +12,7 @@ services:
       - ./microservices/apps/postgres/postgres.conf:/etc/postgresql/postgresql.conf
       - ./microservices/apps/postgres/dev/create_all_db.sql:/docker-entrypoint-initdb.d/001-create_all_db.sql
     healthcheck:
-      test: ["CMD-SHELL","pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE_INIT}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE_INIT}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -98,9 +98,9 @@ services:
     networks:
       - secms
 
-###################
-# Nginx Routing
-###################
+  ###################
+  # Nginx Routing
+  ###################
   nginx:
     image: nginx:test
     hostname: nginx
@@ -108,7 +108,7 @@ services:
     build:
       context: ./api/nginx
       dockerfile: Dockerfile
-    restart: 'on-failure'
+    restart: "on-failure"
     environment:
       APP_DEFAULT_ENV: test
     env_file:
@@ -119,9 +119,9 @@ services:
     networks:
       - secms
 
-###################
-# Apollo Gateway
-###################
+  ###################
+  # Apollo Gateway
+  ###################
   apollo:
     image: apollo:dev
     hostname: apollo
@@ -143,9 +143,9 @@ services:
     networks:
       - secms
 
-###################
-# Client
-###################
+  ###################
+  # Client
+  ###################
   theater:
     image: theater:dev
     hostname: theater
@@ -163,9 +163,9 @@ services:
     networks:
       - secms
 
-###################
-# Microservices
-###################
+  ###################
+  # Microservices
+  ###################
   account:
     image: microservices:dev
     hostname: account
@@ -203,9 +203,19 @@ services:
       context: ./microservices
       dockerfile: Dockerfile
       target: development
-    entrypoint: ["celery", "--workdir", "/home/svc/microservices/apps/account/src/app_lib", 
-          "-A", "worker", "worker", "-l", "INFO", "-E"]
-    restart: 'on-failure'
+    entrypoint:
+      [
+        "celery",
+        "--workdir",
+        "/home/svc/microservices/apps/account/src/app_lib",
+        "-A",
+        "worker",
+        "worker",
+        "-l",
+        "INFO",
+        "-E",
+      ]
+    restart: "on-failure"
     volumes:
       - "./microservices:/home/svc/microservices"
     depends_on:
@@ -286,9 +296,19 @@ services:
       context: ./microservices
       dockerfile: Dockerfile
       target: development
-    entrypoint: ["celery", "--workdir", "/home/svc/microservices/apps/monxt/src/app_lib", 
-          "-A", "worker", "worker", "-l", "INFO", "-E"]
-    restart: 'on-failure'
+    entrypoint:
+      [
+        "celery",
+        "--workdir",
+        "/home/svc/microservices/apps/monxt/src/app_lib",
+        "-A",
+        "worker",
+        "worker",
+        "-l",
+        "INFO",
+        "-E",
+      ]
+    restart: "on-failure"
     volumes:
       - "./microservices:/home/svc/microservices"
     depends_on:
@@ -342,9 +362,18 @@ services:
       context: ./microservices
       dockerfile: Dockerfile
       target: development
-    entrypoint: ["celery", "--workdir", "/home/svc/microservices/apps/movie/src/app_lib", 
-          "-A", "worker", "worker", "-l", "INFO"]
-    restart: 'on-failure'
+    entrypoint:
+      [
+        "celery",
+        "--workdir",
+        "/home/svc/microservices/apps/movie/src/app_lib",
+        "-A",
+        "worker",
+        "worker",
+        "-l",
+        "INFO",
+      ]
+    restart: "on-failure"
     volumes:
       - "./microservices:/home/svc/microservices"
     depends_on:
@@ -391,7 +420,7 @@ services:
       - .test.env
     networks:
       - secms
-      
+
   notifications-worker:
     image: microservices:dev
     hostname: notifications-worker
@@ -400,9 +429,18 @@ services:
       context: ./microservices
       dockerfile: Dockerfile
       target: development
-    entrypoint: ["celery", "--workdir", "/home/svc/microservices/apps/notifications/src/app_lib", 
-          "-A", "worker", "worker", "-l", "INFO"]
-    restart: 'on-failure'
+    entrypoint:
+      [
+        "celery",
+        "--workdir",
+        "/home/svc/microservices/apps/notifications/src/app_lib",
+        "-A",
+        "worker",
+        "worker",
+        "-l",
+        "INFO",
+      ]
+    restart: "on-failure"
     volumes:
       - "./microservices:/home/svc/microservices"
     depends_on:
@@ -456,9 +494,18 @@ services:
       context: ./microservices
       dockerfile: Dockerfile
       target: development
-    entrypoint: ["celery", "--workdir", "/home/svc/microservices/apps/person/src/app_lib", 
-          "-A", "worker", "worker", "-l", "INFO"]
-    restart: 'on-failure'
+    entrypoint:
+      [
+        "celery",
+        "--workdir",
+        "/home/svc/microservices/apps/person/src/app_lib",
+        "-A",
+        "worker",
+        "worker",
+        "-l",
+        "INFO",
+      ]
+    restart: "on-failure"
     volumes:
       - "./microservices:/home/svc/microservices"
     depends_on:
@@ -512,9 +559,18 @@ services:
       context: ./microservices
       dockerfile: Dockerfile
       target: development
-    entrypoint: ["celery", "--workdir", "/home/svc/microservices/apps/shows/src/app_lib", 
-          "-A", "worker", "worker", "-l", "INFO"]
-    restart: 'on-failure'
+    entrypoint:
+      [
+        "celery",
+        "--workdir",
+        "/home/svc/microservices/apps/shows/src/app_lib",
+        "-A",
+        "worker",
+        "worker",
+        "-l",
+        "INFO",
+      ]
+    restart: "on-failure"
     volumes:
       - "./microservices:/home/svc/microservices"
     depends_on:

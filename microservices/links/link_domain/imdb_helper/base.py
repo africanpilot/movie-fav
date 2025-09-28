@@ -57,7 +57,7 @@ class ImdbHelper(LinkRequest):
 
     @cached_property
     def session_id(self):
-        result = self.default_redis_engine.get(f"chrome_driver_session")
+        result = self.default_redis_engine.get("chrome_driver_session")
         return json.loads(result).get("session_id") if result else None
 
     @cached_property
@@ -96,7 +96,7 @@ class ImdbHelper(LinkRequest):
         try:
             ia.update(show, "episodes")
         except Exception:
-            self.log.critical(f"Failed to get episodes")
+            self.log.critical("Failed to get episodes")
         return show
 
     def get_popular_shows(self) -> list[Movie]:

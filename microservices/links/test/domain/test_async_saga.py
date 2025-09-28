@@ -46,7 +46,7 @@ def test_saga_run_success():
     # noinspection PyTypeChecker
     Saga.register_async_step_handlers(fake_celery_app)
 
-    ############# Preraration ended. Launching a test #############
+    # Preraration ended. Launching a test
 
     fake_saga_id = 123
 
@@ -114,7 +114,7 @@ def test_saga_run_failure():
     # noinspection PyTypeChecker
     Saga.register_async_step_handlers(fake_celery_app)
 
-    ############# Preraration ended. Launching a test #############
+    # Preraration ended. Launching a test
 
     fake_saga_id = 123
 

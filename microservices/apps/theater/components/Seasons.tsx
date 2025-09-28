@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -31,7 +31,7 @@ function Seasons({ showsDetails }: Props) {
               key={season?.id}
               className="relative h-28 min-w-[180px] cursor-pointer transition-transform duration-200 ease-out md:h-[400px] md:min-w-[200px] items-center"
               onClick={() =>
-                navigatePage((showsDetails?.id || 1), (season?.season || 1))
+                navigatePage(showsDetails?.id || 1, season?.season || 1)
               }
             >
               <p
@@ -61,9 +61,7 @@ function Seasons({ showsDetails }: Props) {
                 }`}
               >
                 Season Number:{" "}
-                <span className="">
-                  {season?.season || "Not Yet"}
-                </span>
+                <span className="">{season?.season || "Not Yet"}</span>
               </p>
               <p
                 className={`text-sm font-medium text-gray-400 text-start ${
@@ -71,9 +69,7 @@ function Seasons({ showsDetails }: Props) {
                 }`}
               >
                 Episode Count:{" "}
-                <span className="">
-                  {season?.total_episodes || "Not Yet"}
-                </span>
+                <span className="">{season?.total_episodes || "Not Yet"}</span>
               </p>
               <p
                 className={`text-sm font-medium text-gray-400 text-start ${
@@ -81,9 +77,7 @@ function Seasons({ showsDetails }: Props) {
                 }`}
               >
                 Air Date:{" "}
-                <span className="">
-                  {season?.release_date || "Not Yet"}
-                </span>
+                <span className="">{season?.release_date || "Not Yet"}</span>
               </p>
             </motion.div>
           ))}

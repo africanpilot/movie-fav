@@ -9,7 +9,6 @@ from account.src.models.account_company import (
     AccountCompanyFilterInput,
     AccountCompanyPageInfoInput,
     AccountCompanyResponse,
-    AccountCompanyResponses,
 )
 from graphql import GraphQLResolveInfo
 from link_lib.microservice_controller import ApolloTypes
@@ -17,7 +16,7 @@ from link_lib.microservice_general import GeneralJSONEncoder
 from link_lib.microservice_graphql_model import GraphQLModel
 
 
-class AccountCompanyQuery(GraphQLModel, AccountLib, AccountCompanyResponses):
+class AccountCompanyQuery(GraphQLModel, AccountLib):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -57,7 +56,7 @@ class AccountCompanyQuery(GraphQLModel, AccountLib, AccountCompanyResponses):
 
             with self.get_session("psqldb_account") as db:
 
-                response = self.account_company_response(
+                response = self.account_company_responses.account_company_response(
                     info=info,
                     db=db,
                     pageInfo=pageInfo,

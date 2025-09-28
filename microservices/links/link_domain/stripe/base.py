@@ -89,11 +89,6 @@ class LinkStripe(LinkResponse):
             stripe_account=payment["stripe_id"],
         )
 
-    def _stripe_payment_cancel(self, payment: dict):
-        return self.stripe_api.PaymentIntent.cancel(
-            payment["intent_id"],
-        )
-
     def _stripe_account_retrieve(self, payment: dict):
         return self.stripe_api.Account.retrieve(
             payment["account_id"],
@@ -137,79 +132,65 @@ class LinkStripe(LinkResponse):
             },
         )
 
-    def stripe_method(self, method: StripeMethodEnum, payment: dict):
+    def _get_method_handlers(self):
+        """Returns a dictionary mapping StripeMethodEnum values to their handler methods."""
+        return {
+            StripeMethodEnum.CREATE_CUSTOMER: self._stripe_create_customer,
+            StripeMethodEnum.CREATE_EPHEMERAL_KEY: self._stripe_ephemeral_key,
+            StripeMethodEnum.CREATE_INTENT: self._stripe_payment_intent,
+            StripeMethodEnum.CONFIRM_INTENT: self._stripe_payment_capture_intent,
+            StripeMethodEnum.CAPTURE_INTENT: self._stripe_payment_capture,
+            StripeMethodEnum.RETRIEVE_INTENT: self._stripe_payment_retrieve,
+            StripeMethodEnum.TRANSFER_INTENT: self._stripe_transfer_payment,
+            StripeMethodEnum.REFUND_INTENT: self._stripe_payment_refund,
+            StripeMethodEnum.PAYOUT: self._stripe_payment_payout,
+            StripeMethodEnum.CANCEL_INTENT: self._stripe_payment_cancel,
+            StripeMethodEnum.RETRIEVE_ACCOUNT: self._stripe_account_retrieve,
+            StripeMethodEnum.UPDATE_INTENT: self._stripe_intent_update,
+            StripeMethodEnum.PAYOUT_LIST: self._stripe_payment_balance_transaction_payout_list,
+            StripeMethodEnum.PAYOUT_TRANSACTION_LIST: self._stripe_payment_balance_transaction_payout_transaction_list,
+            StripeMethodEnum.VERIFICATION_ID_CHECK: self._stripe_payment_verification_session,
+        }
 
-        payment_info = None
-
-        try:
-            if method == StripeMethodEnum.CREATE_CUSTOMER:
-                payment_info = self._stripe_create_customer(payment)
-
-            if method == StripeMethodEnum.CREATE_EPHEMERAL_KEY:
-                payment_info = self._stripe_ephemeral_key(payment)
-
-            if method == StripeMethodEnum.CREATE_INTENT:
-                payment_info = self._stripe_payment_intent(payment)
-
-            if method == StripeMethodEnum.CONFIRM_INTENT:
-                payment_info = self._stripe_payment_capture_intent(payment)
-
-            if method == StripeMethodEnum.CAPTURE_INTENT:
-                payment_info = self._stripe_payment_capture(payment)
-
-            if method == StripeMethodEnum.RETRIEVE_INTENT:
-                payment_info = self._stripe_payment_retrieve(payment)
-
-            if method == StripeMethodEnum.TRANSFER_INTENT:
-                payment_info = self._stripe_transfer_payment(payment)
-
-            if method == StripeMethodEnum.REFUND_INTENT:
-                payment_info = self._stripe_payment_refund(payment)
-
-            if method == StripeMethodEnum.PAYOUT:
-                payment_info = self._stripe_payment_payout(payment)
-
-            if method == StripeMethodEnum.CANCEL_INTENT:
-                payment_info = self._stripe_payment_cancel(payment)
-
-            if method == StripeMethodEnum.RETRIEVE_ACCOUNT:
-                payment_info = self._stripe_account_retrieve(payment)
-
-            if method == StripeMethodEnum.UPDATE_INTENT:
-                payment_info = self._stripe_intent_update(payment)
-
-            if method == StripeMethodEnum.PAYOUT_LIST:
-                payment_info = self._stripe_payment_balance_transaction_payout_list(payment)
-
-            if method == StripeMethodEnum.PAYOUT_TRANSACTION_LIST:
-                payment_info = self._stripe_payment_balance_transaction_payout_transaction_list(payment)
-
-            if method == StripeMethodEnum.VERIFICATION_ID_CHECK:
-                payment_info = self._stripe_payment_verification_session(payment)
-
-        except self.stripe_api.error.CardError as e:
+    def _handle_stripe_exceptions(self, e):
+        """Handle different types of Stripe exceptions."""
+        if isinstance(e, self.stripe_api.error.CardError):
             self.http_400_bad_request_response("Stripe Card Error")
-        except self.stripe_api.error.RateLimitError as e:
+        elif isinstance(e, self.stripe_api.error.RateLimitError):
             # Too many requests made to the API too quickly
             self.http_500_internal_server_error("Stripe Rate Limit Error")
-        except self.stripe_api.error.InvalidRequestError as e:
+        elif isinstance(e, self.stripe_api.error.InvalidRequestError):
             # Invalid parameters were supplied to Stripe's API
             self.http_400_bad_request_response("Stripe Invalid Input Error")
-        except self.stripe_api.error.AuthenticationError as e:
+        elif isinstance(e, self.stripe_api.error.AuthenticationError):
             # Authentication with Stripe's API failed
             # (maybe you changed API keys recently)
             self.http_401_unauthorized_response("Stripe Authentication Error")
-        except self.stripe_api.error.APIConnectionError as e:
+        elif isinstance(e, self.stripe_api.error.APIConnectionError):
             # Network communication with Stripe failed
             self.http_500_internal_server_error("Stripe API Connection Error")
-        except self.stripe_api.error.StripeError as e:
+        elif isinstance(e, self.stripe_api.error.StripeError):
             # Display a very generic error to the user, and maybe send
             # yourself an email
             self.http_500_internal_server_error("Stripe Error")
-        except Exception as e:
+        else:
             self.log.info(f"Stripe unknown Exception: {e}")
             # Something else happened, completely unrelated to Stripe
             self.http_500_internal_server_error("Unknown Error while processing stripe request")
+
+    def stripe_method(self, method: StripeMethodEnum, payment: dict):
+        method_handlers = self._get_method_handlers()
+
+        if method not in method_handlers:
+            self.http_400_bad_request_response(f"Unsupported stripe method: {method}")
+            return None
+
+        try:
+            handler = method_handlers[method]
+            payment_info = handler(payment)
+        except Exception as e:
+            self._handle_stripe_exceptions(e)
+            return None
 
         if not payment_info:
             self.http_500_internal_server_error("Stripe did not return payment info")
@@ -256,22 +237,22 @@ class LinkStripe(LinkResponse):
                 },
             )
             return {"Success": True, "result": account_info}
-        except self.stripe_api.error.CardError as e:
+        except self.stripe_api.error.CardError:
             return {"Success": False, "result": "Card Error"}
-        except self.stripe_api.error.RateLimitError as e:
+        except self.stripe_api.error.RateLimitError:
             # Too many requests made to the API too quickly
             return {"Success": False, "result": "Rate Limit Error"}
-        except self.stripe_api.error.InvalidRequestError as e:
+        except self.stripe_api.error.InvalidRequestError:
             # Invalid parameters were supplied to Stripe's API
             return {"Success": False, "result": "Invalid Input Error"}
-        except self.stripe_api.error.AuthenticationError as e:
+        except self.stripe_api.error.AuthenticationError:
             # Authentication with Stripe's API failed
             # (maybe you changed API keys recently)
             return {"Success": False, "result": "Authentication Error"}
-        except self.stripe_api.error.APIConnectionError as e:
+        except self.stripe_api.error.APIConnectionError:
             # Network communication with Stripe failed
             return {"Success": False, "result": "API Connection Error"}
-        except self.stripe_api.error.StripeError as e:
+        except self.stripe_api.error.StripeError:
             # Display a very generic error to the user, and maybe send
             # yourself an email
             return {"Success": False, "result": "Stripe Error"}
@@ -321,22 +302,22 @@ class LinkStripe(LinkResponse):
                 },
             )
             return {"Success": True, "result": account_info}
-        except self.stripe_api.error.CardError as e:
+        except self.stripe_api.error.CardError:
             return {"Success": False, "result": "Card Error"}
-        except self.stripe_api.error.RateLimitError as e:
+        except self.stripe_api.error.RateLimitError:
             # Too many requests made to the API too quickly
             return {"Success": False, "result": "Rate Limit Error"}
-        except self.stripe_api.error.InvalidRequestError as e:
+        except self.stripe_api.error.InvalidRequestError:
             # Invalid parameters were supplied to Stripe's API
             return {"Success": False, "result": "Invalid Input Error"}
-        except self.stripe_api.error.AuthenticationError as e:
+        except self.stripe_api.error.AuthenticationError:
             # Authentication with Stripe's API failed
             # (maybe you changed API keys recently)
             return {"Success": False, "result": "Authentication Error"}
-        except self.stripe_api.error.APIConnectionError as e:
+        except self.stripe_api.error.APIConnectionError:
             # Network communication with Stripe failed
             return {"Success": False, "result": "API Connection Error"}
-        except self.stripe_api.error.StripeError as e:
+        except self.stripe_api.error.StripeError:
             # Display a very generic error to the user, and maybe send
             # yourself an email
             return {"Success": False, "result": "Stripe Error"}

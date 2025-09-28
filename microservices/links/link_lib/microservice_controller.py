@@ -183,37 +183,20 @@ class ControllerToFastApi(GenericLinkModel):
             error_formatter=self.my_format_error,
         )
 
-    def get_fastapi(self):
-        if not self._public_schema and self._private_schema:
-            raise ValueError("A public or private graphql schema is required")
-
-        app = FastAPI()
-
+    def _setup_graphql_endpoints(self, app):
+        """Setup GraphQL endpoints for the FastAPI app."""
         if self._public_schema:
             app.mount("/graphql", self.get_graphql(self._public_schema))
 
         if self._private_schema:
             app.mount("/internal/graphql", self.get_graphql(self._private_schema))
 
-        # add method for adding rest routes
-        # TODO: revisit this method
+    def _setup_middleware(self, app):
+        """Setup middleware for the FastAPI app."""
         app.add_middleware(SessionMiddleware, secret_key=os.getenv("APP_SECRET_KEY"))
 
-        # origins = [
-        #     "https://localhost",
-        #     "http://localhost",
-        #     "http://localhost:3000",
-        #     "http://localhost:8000",
-        # ]
-
-        # app.add_middleware(
-        #     CORSMiddleware,
-        #     allow_origins=origins,
-        #     allow_credentials=True,
-        #     allow_methods=["*"],
-        #     allow_headers=["*"],
-        # )
-
+    def _setup_dynamic_routes(self, app):
+        """Setup dynamic routes from configuration."""
         if get_public_routes_to_load():
             for route in get_public_routes_to_load():
                 app.include_router(
@@ -226,30 +209,51 @@ class ControllerToFastApi(GenericLinkModel):
                     MicroserviceDynamicLinkImport.fork(["../../../../links/link_api/rest/private/"], route).execute()
                 )
 
-        if self._public_routes:
-            for route in self._public_routes:
-                app.include_router(
-                    MicroserviceDynamicLinkImport.fork(
-                        [
-                            "../../src/api/rest/public/",
-                            "../../../../links/link_api/rest/public/",
-                        ]
-                        + [f"../../../{ms}/src/api/rest/public/" for ms in self.enabled_microservices],
-                        route,
-                    ).execute()
-                )
+    def _setup_public_routes(self, app):
+        """Setup public routes for the FastAPI app."""
+        if not self._public_routes:
+            return
 
-        if self._private_routes:
-            for route in self._private_routes:
-                app.include_router(
-                    MicroserviceDynamicLinkImport.fork(
-                        [
-                            "../../src/api/rest/private/",
-                            "../../../../links/link_api/rest/private/",
-                        ]
-                        + [f"../../../{ms}/src/api/rest/private/" for ms in self.enabled_microservices],
-                        route,
-                    ).execute()
-                )
+        for route in self._public_routes:
+            app.include_router(
+                MicroserviceDynamicLinkImport.fork(
+                    [
+                        "../../src/api/rest/public/",
+                        "../../../../links/link_api/rest/public/",
+                    ]
+                    + [f"../../../{ms}/src/api/rest/public/" for ms in self.enabled_microservices],
+                    route,
+                ).execute()
+            )
+
+    def _setup_private_routes(self, app):
+        """Setup private routes for the FastAPI app."""
+        if not self._private_routes:
+            return
+
+        for route in self._private_routes:
+            app.include_router(
+                MicroserviceDynamicLinkImport.fork(
+                    [
+                        "../../src/api/rest/private/",
+                        "../../../../links/link_api/rest/private/",
+                    ]
+                    + [f"../../../{ms}/src/api/rest/private/" for ms in self.enabled_microservices],
+                    route,
+                ).execute()
+            )
+
+    def get_fastapi(self):
+        if not self._public_schema and self._private_schema:
+            raise ValueError("A public or private graphql schema is required")
+
+        app = FastAPI()
+
+        # Setup all components
+        self._setup_graphql_endpoints(app)
+        self._setup_middleware(app)
+        self._setup_dynamic_routes(app)
+        self._setup_public_routes(app)
+        self._setup_private_routes(app)
 
         return app
