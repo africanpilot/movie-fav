@@ -34,7 +34,7 @@ if [ "$script" = "docker" ] || [ "$script" = "deploy" ]; then
     validate_environment_arg $environment
     validate_command_arg $command
     validate_app_setup $environment
-    source .buildx.env
+    # source .buildx.env
 
     # set environment variables
     export SERVICES_TODO=""
