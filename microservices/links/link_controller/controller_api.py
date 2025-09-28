@@ -11,7 +11,6 @@ def get_public_models():
 
 def get_private_models():
     return [
-        "GetLoginQuery",
         "RedisDeleteMutation",
     ]
 

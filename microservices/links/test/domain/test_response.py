@@ -1,6 +1,8 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
+import json
+
 import pytest
 from link_lib.microservice_general import LinkGeneral
 from link_lib.microservice_response import HTTPException
@@ -252,7 +254,9 @@ def test_success_response(benchmark, link_response: GeneralLinkResponse):
     with pytest.raises(HTTPException) as e:
         link_response.success_response(resultObject=BaseResponse, result=[], pageInfo=PageInfo(page_info_count=10))
 
-    base_response: BaseResponse = e.value.args[0]
+    # Parse the JSON string back to a BaseResponse object
+    response_data = json.loads(e.value.args[0])
+    base_response = BaseResponse(**response_data)
     assert base_response.response.code == 404
     assert base_response.response.success is False
     assert base_response.pageInfo == PageInfo()
@@ -284,7 +288,8 @@ def test_http_400_bad_request_response(benchmark, link_response: GeneralLinkResp
     with pytest.raises(HTTPException) as e:
         link_response.http_400_bad_request_response(msg="test error")
 
-    base_response: BaseResponse = e.value.args[0]
+    response_data = json.loads(e.value.args[0])
+    base_response = BaseResponse(**response_data)
     assert base_response.response.code == 400
     assert base_response.response.success is False
     assert base_response.response.message == "http_400_bad_request: test error"
@@ -302,7 +307,8 @@ def test_http_401_unauthorized_response(benchmark, link_response: GeneralLinkRes
     with pytest.raises(HTTPException) as e:
         link_response.http_401_unauthorized_response(msg="test error")
 
-    base_response: BaseResponse = e.value.args[0]
+    response_data = json.loads(e.value.args[0])
+    base_response = BaseResponse(**response_data)
     assert base_response.response.code == 401
     assert base_response.response.success is False
     assert base_response.response.message == "http_401_unauthorized: test error"
@@ -320,7 +326,8 @@ def test_http_403_forbidden_response(benchmark, link_response: GeneralLinkRespon
     with pytest.raises(HTTPException) as e:
         link_response.http_403_forbidden_response(msg="test error")
 
-    base_response: BaseResponse = e.value.args[0]
+    response_data = json.loads(e.value.args[0])
+    base_response = BaseResponse(**response_data)
     assert base_response.response.code == 403
     assert base_response.response.success is False
     assert base_response.response.message == "http_403_forbidden: test error"
@@ -338,7 +345,8 @@ def test_http_404_not_found_response(benchmark, link_response: GeneralLinkRespon
     with pytest.raises(HTTPException) as e:
         link_response.http_404_not_found_response(msg="test error")
 
-    base_response: BaseResponse = e.value.args[0]
+    response_data = json.loads(e.value.args[0])
+    base_response = BaseResponse(**response_data)
     assert base_response.response.code == 404
     assert base_response.response.success is False
     assert base_response.response.message == "http_404_not_found: test error"
@@ -356,7 +364,8 @@ def test_http_498_invalid_token_response(benchmark, link_response: GeneralLinkRe
     with pytest.raises(HTTPException) as e:
         link_response.http_498_invalid_token_response(msg="test error")
 
-    base_response: BaseResponse = e.value.args[0]
+    response_data = json.loads(e.value.args[0])
+    base_response = BaseResponse(**response_data)
     assert base_response.response.code == 498
     assert base_response.response.success is False
     assert base_response.response.message == "http_498_invalid_token: test error"
@@ -374,7 +383,8 @@ def test_http_499_token_required_response(benchmark, link_response: GeneralLinkR
     with pytest.raises(HTTPException) as e:
         link_response.http_499_token_required_response(msg="test error")
 
-    base_response: BaseResponse = e.value.args[0]
+    response_data = json.loads(e.value.args[0])
+    base_response = BaseResponse(**response_data)
     assert base_response.response.code == 499
     assert base_response.response.success is False
     assert base_response.response.message == "http_499_token_required: test error"
@@ -392,7 +402,8 @@ def test_http_500_internal_server_error(benchmark, link_response: GeneralLinkRes
     with pytest.raises(HTTPException) as e:
         link_response.http_500_internal_server_error(msg="test error")
 
-    base_response: BaseResponse = e.value.args[0]
+    response_data = json.loads(e.value.args[0])
+    base_response = BaseResponse(**response_data)
     assert base_response.response.code == 500
     assert base_response.response.success is False
     assert base_response.response.message == "http_500_internal_server_error: test error"

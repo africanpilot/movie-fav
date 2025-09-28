@@ -7,7 +7,7 @@ from link_lib.microservice_to_apollo import MicroserviceToApollo
 from shows.src.controller.controller_api import APISchema
 
 app = ControllerToFastApi(
-    APISchema.public_schema, APISchema.private_schema, APISchema.public_routes, APISchema.private_routes
+    APISchema.public_schema(), APISchema.private_schema(), APISchema.public_routes, APISchema.private_routes
 ).get_fastapi()
 
 if __name__ == "__main__":

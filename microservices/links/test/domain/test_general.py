@@ -6,7 +6,7 @@ from link_lib.microservice_general import LinkGeneral
 from link_test.fixtures.link_domain import GeneralBase
 
 # add general pytest markers
-GENERAL_PYTEST_MARK = LinkGeneral().compose_decos([pytest.mark.trackstar_domain_general, pytest.mark.trackstar])
+GENERAL_PYTEST_MARK = LinkGeneral().compose_decos([pytest.mark.link_domain_general, pytest.mark.links])
 
 
 @GENERAL_PYTEST_MARK
@@ -65,9 +65,9 @@ def test_rand_word_gen_range_alt(benchmark, link_general: GeneralBase):
 @GENERAL_PYTEST_MARK
 def test_compose_decos(benchmark, link_general: GeneralBase):
     # test works
-    markers = link_general.compose_decos([pytest.mark.link_domain_general, pytest.mark.skeleton])
+    markers = link_general.compose_decos([pytest.mark.link_domain_general, pytest.mark.links])
 
     assert markers is not None
 
     # run benchmark
-    benchmark(link_general.compose_decos, [pytest.mark.link_domain_general, pytest.mark.skeleton])
+    benchmark(link_general.compose_decos, [pytest.mark.link_domain_general, pytest.mark.links])

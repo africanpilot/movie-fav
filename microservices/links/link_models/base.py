@@ -4,7 +4,7 @@
 from typing import Optional
 
 from link_models.enums import OrderByEnum
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class GeneralResponse(BaseModel):
@@ -24,7 +24,7 @@ class ConstBase(BaseModel):
 
 
 class BaseResponse(ConstBase):
-    result: Optional[list] = None
+    result: Optional[list] = Field(default_factory=list)
 
 
 class PageInfoInput(BaseModel):

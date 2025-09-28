@@ -1,6 +1,7 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
+import os
 from typing import cast
 
 import pytest
@@ -16,7 +17,22 @@ from graphql import (
     execute_sync,
     parse,
 )
-from monxt.src.controller.controller_api import APISchema
+
+# Import the appropriate controller based on the current microservice
+microservice_name = os.getenv("MICROSERVICE_NAME")
+if microservice_name != "links":
+    from monxt.src.controller.controller_api import APISchema
+else:
+    # For other microservices like links, use a mock or simplified schema
+    class APISchema:
+        @staticmethod
+        def private_schema():
+            # Return a minimal schema for testing when not in monxt
+            from graphql import GraphQLField, GraphQLObjectType, GraphQLSchema, GraphQLString
+
+            return GraphQLSchema(
+                GraphQLObjectType("Query", {"test": GraphQLField(GraphQLString, resolve=lambda obj, info: "test")})
+            )
 
 
 # grabbed from https://github.com/graphql-python/graphql-core/blob/a1c15d128fcb6e981ba298419b6e66cf87efc17a/tests/execution/test_executor.py
@@ -64,4 +80,4 @@ def gql_info():
 
 @pytest.fixture
 def private_schema():
-    return APISchema.private_schema
+    return APISchema.private_schema()

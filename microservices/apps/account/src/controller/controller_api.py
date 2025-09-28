@@ -49,7 +49,13 @@ class APIController(ControllerToApollo):
 
 
 class APISchema:
-    public_schema = APIController(schema_type=SchemaTypeEnum.PUBLIC).get_graphql_schema()
-    private_schema = APIController(schema_type=SchemaTypeEnum.PRIVATE).get_graphql_schema()
+    @staticmethod
+    def public_schema():
+        return APIController(schema_type=SchemaTypeEnum.PUBLIC).get_graphql_schema()
+
+    @staticmethod
+    def private_schema():
+        return APIController(schema_type=SchemaTypeEnum.PRIVATE).get_graphql_schema()
+
     public_routes = APIController.public_routes_to_load
     private_routes = APIController.private_routes_to_load

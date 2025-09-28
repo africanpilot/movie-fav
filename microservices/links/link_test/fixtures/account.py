@@ -2,8 +2,6 @@
 # All Rights Reserved. Proprietary and confidential.
 
 import pytest
-
-# from account.test.fixtures.models.account_lib import GeneralAccountLib
 from account.src.domain.lib import AccountLib
 from account.src.models.account_company import AccountCompanyCreateInput
 from account.src.models.account_info import AccountInfo, AccountInfoCreate, AccountInfoCreateInput

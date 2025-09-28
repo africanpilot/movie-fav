@@ -11,6 +11,7 @@ class ShowsGrpcClient:
 
     @staticmethod
     def get(topic: str, body: dict):
+        # TODO: Move host and port to env vars
         return UnaryClient(message=dict(topic=topic, body=body), host="monxt", port=50051).execute()
 
     @staticmethod

@@ -70,11 +70,55 @@ class LinkResponse(LinkGeneral):
             self.log.warning(f"Error processing page info count: {e}, result[0]: {first_result}")
             return {}
 
-    def join_tables(self, sql_query: Select, dbJoinType: list[dict] = None) -> Select:
+    def join_tables(self, sql_query: Select, dbJoinType: list = None) -> Select:
         if dbJoinType:
             for j in dbJoinType:
-                sql_query = sql_query.join_from(**j)
+                # If j is a dictionary with join parameters, use it directly
+                if isinstance(j, dict):
+                    sql_query = sql_query.join_from(**j)
+                else:
+                    # If j is a model class, try to auto-detect the join relationship
+                    sql_query = self._auto_join_model(sql_query, j)
         return sql_query
+
+    def _auto_join_model(self, sql_query: Select, model_class) -> Select:
+        """
+        Auto-detect join relationship based on foreign keys in the model.
+        This method attempts to join the model with tables already in the query.
+        """
+        # Get the current tables in the query
+        current_tables = []
+        if hasattr(sql_query, "selected_columns"):
+            for col in sql_query.selected_columns:
+                if hasattr(col, "table"):
+                    current_tables.append(col.table)
+
+        # If we can't determine current tables, use the froms
+        if not current_tables and hasattr(sql_query, "froms"):
+            current_tables = list(sql_query.froms)
+
+        # Look for foreign key relationships
+        model_table = model_class.__table__
+
+        # Check each foreign key in the model to see if it references a table in our query
+        for fk in model_table.foreign_keys:
+            referenced_table = fk.column.table
+
+            # Check if the referenced table is in our current query
+            for current_table in current_tables:
+                if (
+                    hasattr(current_table, "name")
+                    and hasattr(referenced_table, "name")
+                    and current_table.name == referenced_table.name
+                ):
+
+                    # Create the join condition with the referenced column first
+                    # This matches the expected format: referenced_table.id = foreign_table.foreign_key_id
+                    join_condition = fk.column == fk.parent
+                    return sql_query.join(model_table, join_condition)
+
+        # If no foreign key match found, try simple join (fallback)
+        return sql_query.join(model_table)
 
     def query_filter(self, sql_query: Select, filterInput: list) -> Select:
         if filterInput:
@@ -186,10 +230,49 @@ class LinkResponse(LinkGeneral):
         return sql_query
 
     def general_response_model(self, resultObject):
+        # Import BaseResponse to check for it specifically
+        from link_models.base import BaseResponse
+
+        # Handle BaseResponse specifically
+        if resultObject is BaseResponse:
+            default_result = []
+        else:
+            # Determine the appropriate default value for result based on type annotation
+            result_field = resultObject.model_fields.get("result")
+            if result_field:
+                # Get the type annotation for the result field
+                annotation = result_field.annotation
+                # Check if it's Optional[list[...]] or Optional[SomeClass]
+                if hasattr(annotation, "__origin__"):
+                    # Handle Union types (Optional is Union[T, None])
+                    if annotation.__origin__ is Union:
+                        args = annotation.__args__
+                        # Find the non-None type
+                        for arg in args:
+                            if arg is not type(None):
+                                # Check if it's a list type
+                                if hasattr(arg, "__origin__") and arg.__origin__ is list:
+                                    default_result = []
+                                else:
+                                    default_result = None
+                                break
+                        else:
+                            default_result = None
+                    elif annotation.__origin__ is list:
+                        default_result = []
+                    else:
+                        default_result = None
+                else:
+                    # Non-generic type, assume single object
+                    default_result = None
+            else:
+                # Fallback to empty list if no result field found
+                default_result = []
+
         return resultObject(
             response=GeneralResponse(),
             pageInfo=PageInfo(),
-            result=None,
+            result=default_result,
         )
 
     def update_general_response(self, response: GeneralResponse, resultObject):

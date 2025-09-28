@@ -169,7 +169,7 @@ class LinkRequest(LinkRedis, LinkResponse):
     def strip_token(self, header: str) -> str:
         bearer, _, token = header.partition(" ")
         if bearer != "Bearer":
-            self.http_401_unauthorized_response(msg="Invalid token")
+            return None
         return token
 
     def get_token_from_header(self, info: GraphQLResolveInfo) -> str:
@@ -181,15 +181,23 @@ class LinkRequest(LinkRedis, LinkResponse):
             token = header.get(b"authorization")
 
         if not token:
-            self.http_401_unauthorized_response(msg="Invalid token")
+            return None
 
         if not isinstance(token, bytes):
-            self.http_401_unauthorized_response(msg="Invalid token")
+            return None
 
         return token.decode("utf-8")
 
     def get_token(self, info: GraphQLResolveInfo) -> str:
-        return self.strip_token(self.get_token_from_header(info))
+        token_header = self.get_token_from_header(info)
+        if token_header is None:
+            self.http_401_unauthorized_response(msg="Invalid token")
+
+        token = self.strip_token(token_header)
+        if token is None or token == "":
+            self.http_401_unauthorized_response(msg="Invalid token")
+
+        return token
 
     def decode_token(self, info: GraphQLResolveInfo, email: bool = False) -> TokenPayload:
         secret = os.environ["APP_DEFAULT_EMAIL_KEY"] if email else os.environ["APP_DEFAULT_ACCESS_KEY"]
@@ -206,10 +214,12 @@ class LinkRequest(LinkRedis, LinkResponse):
                 iat=token_decode["iat"],
                 exp=token_decode["exp"],
             )
-        except jwt.DecodeError:
-            self.http_401_unauthorized_response(msg="Invalid token")
-        except jwt.ExpiredSignatureError:
-            self.http_401_unauthorized_response(msg="Invalid token")
+        except jwt.DecodeError as e:
+            self.http_401_unauthorized_response(msg=f"Invalid token: {e}")
+        except jwt.ExpiredSignatureError as e:
+            self.http_401_unauthorized_response(msg=f"Invalid token: {e}")
+        except KeyError as e:
+            self.http_401_unauthorized_response(msg=f"Invalid token: {e}")
         except Exception as e:
             self.http_401_unauthorized_response(msg=f"Invalid token: {e}")
 

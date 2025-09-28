@@ -1,6 +1,7 @@
 # Copyright © 2025 by Richard Maku, Inc.
 # All Rights Reserved. Proprietary and confidential.
 
+import json
 import os
 import random
 from datetime import datetime, timedelta, timezone
@@ -13,7 +14,7 @@ from link_lib.microservice_general import LinkGeneral
 from link_lib.microservice_request import TokenPayload
 from link_lib.microservice_response import HTTPException
 from link_models.base import BaseResponse, PageInfo
-from link_models.enums import AccountRegistrationEnum, AccountStatusEnum, ServiceNameEnum
+from link_models.enums import AccountRegistrationEnum, AccountRoleEnum, AccountStatusEnum, ServiceNameEnum
 from link_test.fixtures.link_domain import GeneralRequest
 
 # add general pytest markers
@@ -66,7 +67,11 @@ def test_check_service_authorized(benchmark, gql_info, link_request: GeneralRequ
     with pytest.raises(HTTPException) as e:
         link_request.check_service_authorized(gql_info(context_value_2), [ServiceNameEnum.MOVIEFAV])
 
-    base_response: BaseResponse = e.value.args[0]
+    # Parse the JSON string from the exception and convert to BaseResponse
+    import json
+
+    response_dict = json.loads(e.value.args[0])
+    base_response = BaseResponse(**response_dict)
     assert base_response.response.code == 401
     assert base_response.response.success is False
     assert base_response.pageInfo == PageInfo()
@@ -164,7 +169,9 @@ def test_convert_to_db_cols(benchmark, link_request: GeneralRequest, gql_info: G
     with pytest.raises(HTTPException) as e:
         link_request.convert_to_db_cols(root_node="result")
 
-    base_response: BaseResponse = e.value.args[0]
+    # Parse the JSON string from the exception and convert to BaseResponse
+    response_dict = json.loads(e.value.args[0])
+    base_response = BaseResponse(**response_dict)
     assert base_response.response.code == 400
     assert base_response.response.success is False
     assert base_response.pageInfo == PageInfo()
@@ -182,7 +189,7 @@ def test_convert_to_db_cols_with_attr(benchmark, link_request: GeneralRequest, g
     # test works
     token = ("Bearer " + link_request.rand_word_gen_range(20, 30)).encode("utf-8")
     context_value_1 = {"request": {"headers": {b"authorization": token, b"service": b"moviefav"}}}
-    request_context_1 = """    request_context = \"\"\"{
+    request_context_1 = """{
         response{ success code message version }
         pageInfo{ page_info_count }
         result{ email
@@ -190,7 +197,7 @@ def test_convert_to_db_cols_with_attr(benchmark, link_request: GeneralRequest, g
             account_address{ id address city }
             registration_status
         }
-    }\"\"\""""
+    }"""
     info_1 = gql_info(context_value_1, request_context_1)
     query_context_1 = link_request.get_query_request(selections=info_1.field_nodes)
     get_cols_attr = link_request.convert_to_db_cols_with_attr(
@@ -270,7 +277,9 @@ def test_get_token(benchmark, gql_info, link_request: GeneralRequest):
     with pytest.raises(HTTPException) as e:
         link_request.get_token(gql_info(context_value_2))
 
-    base_response: BaseResponse = e.value.args[0]
+    # Parse the JSON string from the exception and convert to BaseResponse
+    response_dict = json.loads(e.value.args[0])
+    base_response = BaseResponse(**response_dict)
     assert base_response.response.code == 401
     assert base_response.response.success is False
     assert base_response.pageInfo == PageInfo()
@@ -282,7 +291,9 @@ def test_get_token(benchmark, gql_info, link_request: GeneralRequest):
     with pytest.raises(HTTPException) as e:
         link_request.get_token(gql_info(context_value_3))
 
-    base_response: BaseResponse = e.value.args[0]
+    # Parse the JSON string from the exception and convert to BaseResponse
+    response_dict = json.loads(e.value.args[0])
+    base_response = BaseResponse(**response_dict)
     assert base_response.response.code == 401
     assert base_response.response.success is False
     assert base_response.pageInfo == PageInfo()
@@ -298,10 +309,13 @@ def test_decode_token(benchmark, gql_info, link_request: GeneralRequest):
     header = {"alg": "HS256", "typ": "JWT"}
     secret_1 = os.environ["APP_DEFAULT_ACCESS_KEY"]
     payload = {
-        "account_id": 1,
+        "account_info_id": 1,
+        "account_company_id": 1,
+        "account_store_id": 1,
         "service_name": ServiceNameEnum.MOVIEFAV.value,
         "registration": AccountRegistrationEnum.APPROVED.value,
         "user_status": AccountStatusEnum.ACTIVE.value,
+        "user_role": AccountRoleEnum.ADMIN.value,
         "iat": datetime.now(),
         "exp": datetime.now() + timedelta(hours=1),
     }
@@ -311,10 +325,13 @@ def test_decode_token(benchmark, gql_info, link_request: GeneralRequest):
     token_decode_1 = link_request.decode_token(gql_info(context_value_1))
 
     assert token_decode_1 == TokenPayload(
-        account_id=payload["account_id"],
+        account_info_id=payload["account_info_id"],
+        account_company_id=payload["account_company_id"],
+        account_store_id=payload["account_store_id"],
         service_name=ServiceNameEnum(payload["service_name"]),
         registration=AccountRegistrationEnum(payload["registration"]),
         user_status=AccountStatusEnum(payload["user_status"]),
+        user_role=AccountRoleEnum(payload["user_role"]),
         iat=payload["iat"].replace(tzinfo=timezone.utc).replace(microsecond=0),
         exp=payload["exp"].replace(tzinfo=timezone.utc).replace(microsecond=0),
     )
@@ -328,22 +345,36 @@ def test_decode_token(benchmark, gql_info, link_request: GeneralRequest):
     with pytest.raises(HTTPException) as e:
         link_request.decode_token(gql_info(context_value_2))
 
-    base_response: BaseResponse = e.value.args[0]
+    # Parse the JSON string from the exception and convert to BaseResponse
+    response_dict = json.loads(e.value.args[0])
+    base_response = BaseResponse(**response_dict)
     assert base_response.response.code == 401
     assert base_response.response.success is False
     assert base_response.pageInfo == PageInfo()
     assert base_response.result == []
 
     # test ExpiredSignatureError
-    secret_3 = os.environ["APP_DEFAULT_EMAIL_KEY"]
-    token_3 = jwt.encode(headers=header, payload=payload, key=secret_3, algorithm="HS256")
+    expired_payload = {
+        "account_info_id": 1,
+        "account_company_id": 1,
+        "account_store_id": 1,
+        "service_name": ServiceNameEnum.MOVIEFAV.value,
+        "registration": AccountRegistrationEnum.APPROVED.value,
+        "user_status": AccountStatusEnum.ACTIVE.value,
+        "user_role": AccountRoleEnum.ADMIN.value,
+        "iat": datetime.now() - timedelta(hours=2),
+        "exp": datetime.now() - timedelta(hours=1),  # Expired 1 hour ago
+    }
+    token_3 = jwt.encode(headers=header, payload=expired_payload, key=secret_1, algorithm="HS256")
     token_bearer_3 = ("Bearer " + token_3).encode("utf-8")
     context_value_3 = {"request": {"headers": {b"authorization": token_bearer_3, b"service": b"moviefav"}}}
 
     with pytest.raises(HTTPException) as e:
         link_request.decode_token(gql_info(context_value_3))
 
-    base_response: BaseResponse = e.value.args[0]
+    # Parse the JSON string from the exception and convert to BaseResponse
+    response_dict = json.loads(e.value.args[0])
+    base_response = BaseResponse(**response_dict)
     assert base_response.response.code == 401
     assert base_response.response.success is False
     assert base_response.pageInfo == PageInfo()
@@ -359,10 +390,13 @@ def test_general_validation_process(benchmark, gql_info, link_request: GeneralRe
     header = {"alg": "HS256", "typ": "JWT"}
     secret_1 = os.environ["APP_DEFAULT_ACCESS_KEY"]
     payload_1 = {
-        "account_id": 1,
+        "account_info_id": 1,
+        "account_company_id": 1,
+        "account_store_id": 1,
         "service_name": ServiceNameEnum.MOVIEFAV.value,
         "registration": AccountRegistrationEnum.APPROVED.value,
         "user_status": AccountStatusEnum.ACTIVE.value,
+        "user_role": AccountRoleEnum.ADMIN.value,
         "iat": datetime.now(),
         "exp": datetime.now() + timedelta(hours=1),
     }
@@ -373,20 +407,26 @@ def test_general_validation_process(benchmark, gql_info, link_request: GeneralRe
     gen_validation_1 = link_request.general_validation_process(gql_info(context_value_1))
 
     assert gen_validation_1 == TokenPayload(
-        account_id=payload_1["account_id"],
+        account_info_id=payload_1["account_info_id"],
+        account_company_id=payload_1["account_company_id"],
+        account_store_id=payload_1["account_store_id"],
         service_name=ServiceNameEnum(payload_1["service_name"]),
         registration=AccountRegistrationEnum(payload_1["registration"]),
         user_status=AccountStatusEnum(payload_1["user_status"]),
+        user_role=AccountRoleEnum(payload_1["user_role"]),
         iat=payload_1["iat"].replace(tzinfo=timezone.utc).replace(microsecond=0),
         exp=payload_1["exp"].replace(tzinfo=timezone.utc).replace(microsecond=0),
     )
 
     # test when service name in request does not match in token
     payload_2 = {
-        "account_id": 1,
-        "service_name": ServiceNameEnum.ANIMESTAT.value,
+        "account_info_id": 1,
+        "account_company_id": 1,
+        "account_store_id": 1,
+        "service_name": ServiceNameEnum.THEATER.value,
         "registration": AccountRegistrationEnum.APPROVED.value,
         "user_status": AccountStatusEnum.ACTIVE.value,
+        "user_role": AccountRoleEnum.ADMIN.value,
         "iat": datetime.now(),
         "exp": datetime.now() + timedelta(hours=1),
     }
@@ -397,7 +437,9 @@ def test_general_validation_process(benchmark, gql_info, link_request: GeneralRe
     with pytest.raises(HTTPException) as e:
         link_request.general_validation_process(gql_info(context_value_2))
 
-    base_response: BaseResponse = e.value.args[0]
+    # Parse the JSON string from the exception and convert to BaseResponse
+    response_dict = json.loads(e.value.args[0])
+    base_response = BaseResponse(**response_dict)
     assert base_response.response.code == 499
     assert base_response.response.success is False
     assert base_response.pageInfo == PageInfo()
@@ -405,10 +447,13 @@ def test_general_validation_process(benchmark, gql_info, link_request: GeneralRe
 
     # test check active user
     payload_3 = {
-        "account_id": 1,
+        "account_info_id": 1,
+        "account_company_id": 1,
+        "account_store_id": 1,
         "service_name": ServiceNameEnum.MOVIEFAV.value,
         "registration": AccountRegistrationEnum.APPROVED.value,
         "user_status": AccountStatusEnum.DEACTIVATED.value,
+        "user_role": AccountRoleEnum.ADMIN.value,
         "iat": datetime.now(),
         "exp": datetime.now() + timedelta(hours=1),
     }
@@ -419,7 +464,9 @@ def test_general_validation_process(benchmark, gql_info, link_request: GeneralRe
     with pytest.raises(HTTPException) as e:
         link_request.general_validation_process(gql_info(context_value_3))
 
-    base_response: BaseResponse = e.value.args[0]
+    # Parse the JSON string from the exception and convert to BaseResponse
+    response_dict = json.loads(e.value.args[0])
+    base_response = BaseResponse(**response_dict)
     assert base_response.response.code == 401
     assert base_response.response.success is False
     assert base_response.pageInfo == PageInfo()
@@ -427,10 +474,13 @@ def test_general_validation_process(benchmark, gql_info, link_request: GeneralRe
 
     # test when reg not complete
     payload_4 = {
-        "account_id": 1,
+        "account_info_id": 1,
+        "account_company_id": 1,
+        "account_store_id": 1,
         "service_name": ServiceNameEnum.MOVIEFAV.value,
         "registration": AccountRegistrationEnum.NOT_COMPLETE.value,
         "user_status": AccountStatusEnum.ACTIVE.value,
+        "user_role": AccountRoleEnum.ADMIN.value,
         "iat": datetime.now(),
         "exp": datetime.now() + timedelta(hours=1),
     }
@@ -441,7 +491,9 @@ def test_general_validation_process(benchmark, gql_info, link_request: GeneralRe
     with pytest.raises(HTTPException) as e:
         link_request.general_validation_process(gql_info(context_value_4))
 
-    base_response: BaseResponse = e.value.args[0]
+    # Parse the JSON string from the exception and convert to BaseResponse
+    response_dict = json.loads(e.value.args[0])
+    base_response = BaseResponse(**response_dict)
     assert base_response.response.code == 401
     assert base_response.response.success is False
     assert base_response.pageInfo == PageInfo()
@@ -449,10 +501,13 @@ def test_general_validation_process(benchmark, gql_info, link_request: GeneralRe
 
     # test when reg is waiting or complete
     payload_5 = {
-        "account_id": 1,
+        "account_info_id": 1,
+        "account_company_id": 1,
+        "account_store_id": 1,
         "service_name": ServiceNameEnum.MOVIEFAV.value,
         "registration": random.choice([AccountRegistrationEnum.WAITING.value, AccountRegistrationEnum.COMPLETE.value]),
         "user_status": AccountStatusEnum.ACTIVE.value,
+        "user_role": AccountRoleEnum.ADMIN.value,
         "iat": datetime.now(),
         "exp": datetime.now() + timedelta(hours=1),
     }
@@ -463,7 +518,9 @@ def test_general_validation_process(benchmark, gql_info, link_request: GeneralRe
     with pytest.raises(HTTPException) as e:
         link_request.general_validation_process(gql_info(context_value_5))
 
-    base_response: BaseResponse = e.value.args[0]
+    # Parse the JSON string from the exception and convert to BaseResponse
+    response_dict = json.loads(e.value.args[0])
+    base_response = BaseResponse(**response_dict)
     assert base_response.response.code == 401
     assert base_response.response.success is False
     assert base_response.pageInfo == PageInfo()
