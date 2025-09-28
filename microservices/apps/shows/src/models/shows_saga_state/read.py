@@ -4,6 +4,7 @@
 from link_lib.microservice_response import LinkResponse
 from shows.src.models.shows_info import ShowsInfo
 from shows.src.models.shows_saga_state.base import ShowsSagaState
+from sqlalchemy import exists
 from sqlalchemy.engine.base import Connection
 from sqlmodel import Session, select
 
@@ -67,10 +68,17 @@ class ShowsSagaStateRead(LinkResponse):
         return db.execute(sql_query).all()
 
     def get_remaining_shows_sagas_to_ingest(self, db: Session, limit: int = 5) -> list[ShowsSagaState]:
+        """
+        Get all shows saga states that have succeeded but not yet ingested into shows_info table
+        """
+        # For performance at scale, use NOT EXISTS which is more efficient than NOT IN or LEFT JOIN
+        # NOT EXISTS with proper indexing will be O(n log m) instead of O(n×m)
         return db.exec(
             select(ShowsSagaState)
-            .select_from(ShowsSagaState)
-            .outerjoin(ShowsInfo, ShowsSagaState.shows_info_imdb_id == ShowsInfo.imdb_id)
-            .where(ShowsSagaState.status == "succeeded", ShowsSagaState.payload is not None, ShowsInfo.imdb_id is None)
+            .where(
+                ShowsSagaState.status == "succeeded",
+                ShowsSagaState.payload.is_not(None),
+                ~exists().where(ShowsInfo.imdb_id == ShowsSagaState.shows_info_imdb_id),
+            )
             .limit(limit)
         ).all()

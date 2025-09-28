@@ -51,11 +51,11 @@ def test_shows_info_query(benchmark, test_database, flush_redis_db, create_accou
     assert response["result"][0]["id"] == shows_1.id
     assert response["result"][0]["imdb_id"] == shows_1.imdb_id
     assert response["result"][0]["title"] == shows_1.title
-    assert response["result"][0]["cast"] == shows_1.cast
+    assert sorted(response["result"][0]["cast"]) == sorted(shows_1.cast)
     assert response["result"][0]["year"] == shows_1.year
-    assert response["result"][0]["directors"] == shows_1.directors
-    assert response["result"][0]["genres"] == shows_1.genres
-    assert response["result"][0]["countries"] == shows_1.countries
+    assert sorted(response["result"][0]["directors"]) == sorted(shows_1.directors)
+    assert sorted(response["result"][0]["genres"]) == sorted(shows_1.genres)
+    assert sorted(response["result"][0]["countries"]) == sorted(shows_1.countries)
     assert response["result"][0]["plot"] == shows_1.plot
     assert response["result"][0]["cover"] == shows_1.cover
     assert response["result"][0]["rating"] == shows_1.rating

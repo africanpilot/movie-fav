@@ -4,6 +4,7 @@
 from link_lib.microservice_response import LinkResponse
 from movie.src.models.movie_info.base import MovieInfo
 from movie.src.models.movie_saga_state.base import MovieSagaState
+from sqlalchemy import exists
 from sqlalchemy.engine.base import Connection
 from sqlmodel import Session, select
 
@@ -75,10 +76,17 @@ class MovieSagaStateRead(LinkResponse):
         ).all()
 
     def get_remaining_movie_sagas_to_ingest(self, db: Session, limit: int = 5) -> list[MovieSagaState]:
+        """
+        Get all movie saga states that have succeeded but not yet ingested into movie_info table
+        """
+        # For performance at scale, use NOT EXISTS which is more efficient than NOT IN
+        # NOT EXISTS with proper indexing will be O(n log m) instead of O(n×m)
         return db.exec(
             select(MovieSagaState)
-            .select_from(MovieSagaState)
-            .outerjoin(MovieInfo, MovieSagaState.movie_info_imdb_id == MovieInfo.imdb_id)
-            .where(MovieSagaState.status == "succeeded", MovieSagaState.payload is not None, MovieInfo.imdb_id is None)
+            .where(
+                MovieSagaState.status == "succeeded",
+                MovieSagaState.payload.is_not(None),
+                ~exists().where(MovieInfo.imdb_id == MovieSagaState.movie_info_imdb_id),
+            )
             .limit(limit)
         ).all()

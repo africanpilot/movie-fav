@@ -4,6 +4,7 @@
 from link_lib.microservice_response import LinkResponse
 from person.src.models.person_info import PersonInfo
 from person.src.models.person_saga_state.base import PersonSagaState
+from sqlalchemy import exists
 from sqlalchemy.engine.base import Connection
 from sqlmodel import Session, select
 
@@ -46,12 +47,17 @@ class PersonSagaStateRead(LinkResponse):
         return db.execute(sql_query).all()
 
     def get_remaining_person_sagas_to_ingest(self, db: Session, limit: int = 5) -> list[PersonSagaState]:
+        """
+        Get all person saga states that have succeeded but not yet ingested into person_info table
+        """
+        # For performance at scale, use NOT EXISTS which is more efficient than NOT IN or LEFT JOIN
+        # NOT EXISTS with proper indexing will be O(n log m) instead of O(n×m)
         return db.exec(
             select(PersonSagaState)
-            .select_from(PersonSagaState)
-            .outerjoin(PersonInfo, PersonSagaState.person_info_imdb_id == PersonInfo.imdb_id)
             .where(
-                PersonSagaState.status == "succeeded", PersonSagaState.payload is not None, PersonInfo.imdb_id is None
+                PersonSagaState.status == "succeeded",
+                PersonSagaState.payload.is_not(None),
+                ~exists().where(PersonInfo.imdb_id == PersonSagaState.person_info_imdb_id),
             )
             .limit(limit)
         ).all()

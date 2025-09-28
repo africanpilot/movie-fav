@@ -23,7 +23,7 @@ mutation movieImport ($pageInfo: PageInfoInput) {
 )
 
 # add general pytest markers
-GENERAL_PYTEST_MARK = LinkGeneral().compose_decos([pytest.mark.movie_info_popular_mutation, pytest.mark.movie])
+GENERAL_PYTEST_MARK = LinkGeneral().compose_decos([pytest.mark.movie_import_mutation, pytest.mark.movie])
 
 
 @GENERAL_PYTEST_MARK
