@@ -9,8 +9,11 @@ APP_DEFAULT_PORT=8000
 APP_PUBLIC_IP_ADDRESS=<>
 APP_RARBG_NUMBER_OF_MOVIES_TOP=10
 APP_SENDGRID_API_KEY=<>
+APP_TRPC_HOST=transmission
+APP_TRPC_PORT=9091
 STRIPE_API_KEY=test
 APP_DEFAULT_PHONE=<>
+APP_TOKEN_EXP=8760
 
 # auth
 AUTH0_CLIENT_ID=<>
@@ -21,22 +24,22 @@ APP_SECRET_KEY=<>
 # postgres db env
 DB_POSTGRES_DEFAULT=postgresql://trackstar:test@postgres:5432/dev_secure_postgresql_trackstar
 DB_POSTGRES_ACCOUNT=postgresql://trackstar:test@postgres:5432/dev_secure_postgresql_trackstar
-
+DB_POSTGRES_MOVIE=postgresql://trackstar:test@postgres:5432/dev_secure_postgresql_trackstar
 DB_POSTGRES_NOTIFICATIONS=postgresql://trackstar:test@postgres:5432/dev_secure_postgresql_trackstar
+DB_POSTGRES_PERSON=postgresql://trackstar:test@postgres:5432/dev_secure_postgresql_trackstar
+DB_POSTGRES_SHOWS=postgresql://trackstar:test@postgres:5432/dev_secure_postgresql_trackstar
 
 # redis db env
 DB_REDIS_DEFAULT=redis://:JJDKJGKUGKJBKJD88343JKIIURTVBS@redis:6379/0
 DB_REDIS_ACCOUNT=redis://:JJDKJGKUGKJBKJD88343JKIIURTVBS@redis:6379/1
-DB_REDIS_NOTIFICATIONS=redis://:JJDKJGKUGKJBKJD88343JKIIURTVBS@redis:6379/3
+DB_REDIS_MOVIE=redis://:JJDKJGKUGKJBKJD88343JKIIURTVBS@redis:6379/3
+DB_REDIS_NOTIFICATIONS=redis://:JJDKJGKUGKJBKJD88343JKIIURTVBS@redis:6379/4
+DB_REDIS_PERSON=redis://:JJDKJGKUGKJBKJD88343JKIIURTVBS@redis:6379/5
+DB_REDIS_SHOWS=redis://:JJDKJGKUGKJBKJD88343JKIIURTVBS@redis:6379/9
 DB_REDIS_PASSWORD=JJDKJGKUGKJBKJD88343JKIIURTVBS
-
-# Apollo
-APP_PORT_ACCOUNT=8000
 
 # client env
 REACT_APP_MOUNT_URI=localhost:3000/
-REACT_APP_GATEWAY_DEVELOPMENT=http://localhost:4000/graphql
-REACT_APP_GATEWAY_PRODUCTION=http://localhost:4000/graphql
 
 # dev env
 BENCHMARK=enable
