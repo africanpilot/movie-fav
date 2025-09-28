@@ -9,10 +9,17 @@ FLAKE8_EXCLUDES := $(if $(wildcard $(MICROSERVICE_PATH)/src),,--exclude=__pycach
 
 clean:
 	bash -c "find $(MICROSERVICE_PATH) -name "*.pyc" -exec rm -rf {} \;"
+	@if [ "$(CICD_MODE)" = "True" ]; then rm -f .coverage* htmlcov/ coverage.xml || true; fi
 
 pytest:
-	poetry run coverage run --source=$(SRC_PATH) -m pytest --benchmark-$(BENCHMARK) -x -s -vvvv  --ignore vendor $(MICROSERVICE_PATH)/$(TEST_DIR)
-	@if [ "$(CICD_MODE)" = "False" ] || [ -z "$(CICD_MODE)" ]; then poetry run coverage report --show-missing; fi
+	@if [ "$(CICD_MODE)" = "True" ]; then \
+		echo "Running tests in CI mode without coverage database..."; \
+		poetry run python -m pytest --benchmark-$(BENCHMARK) -x -s -vvvv --ignore vendor $(MICROSERVICE_PATH)/$(TEST_DIR); \
+	else \
+		echo "Running tests with coverage..."; \
+		poetry run coverage run --source=$(SRC_PATH) -m pytest --benchmark-$(BENCHMARK) -x -s -vvvv --ignore vendor $(MICROSERVICE_PATH)/$(TEST_DIR); \
+		poetry run coverage report --show-missing; \
+	fi
 
 lint-check:
 	poetry run autoflake $(SRC_PATH) $(MICROSERVICE_PATH)/test --check --recursive --remove-all-unused-imports --remove-unused-variables $(LINT_EXCLUDES)
