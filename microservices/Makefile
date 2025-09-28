@@ -1,5 +1,6 @@
 TEST_DIR ?= test/
 BENCHMARK := $(if $(BENCHMARK),$(BENCHMARK),disable)
+CICD_MODE ?= False
 
 # Dynamic path variables based on microservice structure
 SRC_PATH := $(if $(wildcard $(MICROSERVICE_PATH)/src),$(MICROSERVICE_PATH)/src,$(MICROSERVICE_PATH))
@@ -11,7 +12,7 @@ clean:
 
 pytest:
 	poetry run coverage run --source=$(SRC_PATH) -m pytest --benchmark-$(BENCHMARK) -x -s -vvvv  --ignore vendor $(MICROSERVICE_PATH)/$(TEST_DIR)
-	@if [ "$(CICD_MODE)" != "True" ]; then poetry run coverage report --show-missing; fi
+	@if [ "$(CICD_MODE)" = "False" ] || [ -z "$(CICD_MODE)" ]; then poetry run coverage report --show-missing; fi
 
 lint-check:
 	poetry run autoflake $(SRC_PATH) $(MICROSERVICE_PATH)/test --check --recursive --remove-all-unused-imports --remove-unused-variables $(LINT_EXCLUDES)

@@ -54,10 +54,10 @@ jobs:
   #       with:
   #         sarif_file: "trivy-results.sarif"
 
-  dependency-review:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+  # dependency-review:
+  #   runs-on: ubuntu-latest
+  #   if: github.event_name == 'pull_request'
 
-    steps:
-      - name: Dependency Review
-        uses: actions/dependency-review-action@v4
+  #   steps:
+  #     - name: Dependency Review
+  #       uses: actions/dependency-review-action@v4
