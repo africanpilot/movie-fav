@@ -11,7 +11,7 @@ clean:
 
 pytest:
 	poetry run coverage run --source=$(SRC_PATH) -m pytest --benchmark-$(BENCHMARK) -x -s -vvvv  --ignore vendor $(MICROSERVICE_PATH)/$(TEST_DIR)
-	poetry run coverage report --show-missing
+	@if [ "$(CICD_MODE)" != "True" ]; then poetry run coverage report --show-missing; fi
 
 lint-check:
 	poetry run autoflake $(SRC_PATH) $(MICROSERVICE_PATH)/test --check --recursive --remove-all-unused-imports --remove-unused-variables $(LINT_EXCLUDES)
