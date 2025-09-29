@@ -6,6 +6,7 @@ from link_models.base import PageInfoInput
 from movie.src.models.movie_info.base import MovieInfo
 from sqlalchemy import text
 from sqlalchemy.engine.base import Connection
+from sqlmodel import Session
 
 
 class MovieInfoRead(LinkResponse):
@@ -17,25 +18,25 @@ class MovieInfoRead(LinkResponse):
         sql_query = self.query_filter(sql_query, [MovieInfo.imdb_id.in_(imdb_ids)])
         return db.execute(sql_query).all()
 
-    def get_all_movie_cast(self, db: Connection) -> dict:
+    def get_all_movie_cast(self, db: Session) -> dict:
         sql_query = text(
             """
-      DROP AGGREGATE IF EXISTS array_concat_agg(anycompatiblearray);
+            DROP AGGREGATE IF EXISTS array_concat_agg(anycompatiblearray);
 
-      CREATE AGGREGATE array_concat_agg(anycompatiblearray) (
-        SFUNC = array_cat,
-        STYPE = anycompatiblearray
-      );
+            CREATE AGGREGATE array_concat_agg(anycompatiblearray) (
+                SFUNC = array_cat,
+                STYPE = anycompatiblearray
+            );
 
-      SELECT ARRAY(SELECT DISTINCT e FROM unnest(t1.cast_ids) AS a(e)) AS cast_ids
-      FROM(
-        SELECT array_concat_agg(movie_info.cast) AS cast_ids
-        FROM movie.movie_info
-      ) as t1
-    """
+            SELECT ARRAY(SELECT DISTINCT e FROM unnest(t1.cast_ids) AS a(e)) AS cast_ids
+            FROM(
+                SELECT array_concat_agg(movie_info.cast) AS cast_ids
+                FROM movie.movie_info
+            ) as t1
+        """
         )
 
-        return db.execute(sql_query).one()
+        return db.exec(sql_query).one()
 
     def get_no_movie_info(self, db: Connection) -> list[MovieInfo]:
         sql_query = self.query_cols([MovieInfo.imdb_id]).filter(MovieInfo.title is None)

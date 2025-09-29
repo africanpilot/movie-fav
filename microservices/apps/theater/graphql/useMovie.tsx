@@ -3,28 +3,12 @@ import {
   MovieInfoPageInfoInput,
   useMovieDetailsQuery,
   MovieInfoFilterInput,
-  useMovieUpdateMutation,
 } from "./schema";
 
 export const useMovie = (
   pageInfo: MovieInfoPageInfoInput = {},
   filterInput: MovieInfoFilterInput = {},
 ) => {
-  const [movieUpdate, { loading: isMovieUpdate }] = useMovieUpdateMutation();
-
-  const handleMovieUpdate = async (movieInfoId: number) => {
-    try {
-      const { data } = await movieUpdate({ variables: { movieInfoId } });
-      return data?.movieUpdate;
-    } catch (error: any) {
-      try {
-        return JSON.parse(error.message);
-      } catch (error: any) {
-        throw error;
-      }
-    }
-  };
-
   try {
     const {
       data,
@@ -53,7 +37,7 @@ export const useMovie = (
     });
 
     const movieDetailsData = movieDetails?.movieInfo?.result?.[0];
-    const isSaving = isMovieUpdate;
+    const isSaving = false;
 
     return {
       moviePopular,
@@ -64,7 +48,6 @@ export const useMovie = (
       isMovieDetails,
       isMovieDetailsError,
       movieDetailsRefetch,
-      movieUpdate: handleMovieUpdate,
       isSaving,
     };
   } catch (error) {

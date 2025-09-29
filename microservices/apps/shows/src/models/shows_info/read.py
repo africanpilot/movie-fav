@@ -21,25 +21,25 @@ class ShowsInfoRead(LinkResponse):
     def get_show_by_id(self, db: Session, shows_info_id: int) -> ShowsInfo:
         return db.exec(select(ShowsInfo).where(ShowsInfo.id == shows_info_id)).one()
 
-    def get_all_shows_cast(self, db: Connection) -> dict:
+    def get_all_shows_cast(self, db: Session) -> dict:
         sql_query = text(
             """
-      DROP AGGREGATE IF EXISTS array_concat_agg(anycompatiblearray);
+            DROP AGGREGATE IF EXISTS array_concat_agg(anycompatiblearray);
 
-      CREATE AGGREGATE array_concat_agg(anycompatiblearray) (
-        SFUNC = array_cat,
-        STYPE = anycompatiblearray
-      );
+            CREATE AGGREGATE array_concat_agg(anycompatiblearray) (
+                SFUNC = array_cat,
+                STYPE = anycompatiblearray
+            );
 
-      SELECT ARRAY(SELECT DISTINCT e FROM unnest(t1.cast_ids) AS a(e)) AS cast_ids
-      FROM(
-        SELECT array_concat_agg(shows_info.cast) AS cast_ids
-        FROM shows.shows_info
-      ) as t1
-    """
+            SELECT ARRAY(SELECT DISTINCT e FROM unnest(t1.cast_ids) AS a(e)) AS cast_ids
+            FROM(
+                SELECT array_concat_agg(shows_info.cast) AS cast_ids
+                FROM shows.shows_info
+            ) as t1
+        """
         )
 
-        return db.execute(sql_query).one()
+        return db.exec(sql_query).one()
 
     def get_no_shows_info(self, db: Connection) -> list[ShowsInfo]:
         sql_query = self.query_cols([ShowsInfo.imdb_id]).filter(ShowsInfo.title is None)

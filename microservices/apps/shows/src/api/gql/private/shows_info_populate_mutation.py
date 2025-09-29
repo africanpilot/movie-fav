@@ -9,7 +9,8 @@ from shows.src.controller.controller_worker import worker
 from shows.src.domain.lib import ShowsLib
 from shows.src.domain.orchestrator.create_shows_saga import CreateShowsSaga
 from shows.src.models.shows_info import ShowsInfoPageInfoInput, ShowsInfoResponse
-from shows.src.models.shows_saga_state import ShowsSagaStateCreateInput, ShowsSagaStateUpdate
+from shows.src.models.shows_saga_state import ShowsSagaStateCreateInput
+from shows.src.models.shows_saga_state.optimized_update import OptimizedShowsSagaStateUpdate
 
 
 class ShowsInfoPopulateMutation(GraphQLModel, ShowsLib):
@@ -77,22 +78,62 @@ class ShowsInfoPopulateMutation(GraphQLModel, ShowsLib):
 
                 self.log.info(f"shows_popular_todo={len(shows_popular_todo)}, all_create={len(all_create)}")
 
-                for saga_state in all_create:
+                # Commit the saga state creation before scheduling tasks
+                db.commit()
 
-                    self.load_to_redis(
-                        self.shows_redis_engine, f"get_saga_state_by_id:{saga_state.id}", dict(saga_state)
-                    )
+                # Process sagas in batches to avoid connection overload
+                batch_size = 100  # Optimize batch size with improved connection handling
+                saga_batches = [all_create[i : i + batch_size] for i in range(0, len(all_create), batch_size)]
 
-                    try:
-                        CreateShowsSaga(
-                            saga_state_repository=ShowsSagaStateUpdate(),
-                            celery_app=worker,
-                            saga_id=saga_state.id,
-                        ).execute()
-                    except Exception as e:
-                        self.log.error(
-                            f"Unable to schedule create shows saga: {saga_state.id} for imdb_id {saga_state.shows_info_imdb_id}"
+                # Use optimized saga repository with thread-local connection pooling
+                saga_update_repo = OptimizedShowsSagaStateUpdate(use_thread_local_pool=True)
+
+                try:
+                    for batch_idx, batch in enumerate(saga_batches):
+                        self.log.info(f"Processing batch {batch_idx + 1}/{len(saga_batches)} with {len(batch)} sagas")
+
+                        # Load to Redis for the batch
+                        for saga_state in batch:
+                            self.load_to_redis(
+                                self.shows_redis_engine, f"get_saga_state_by_id:{saga_state.id}", dict(saga_state)
+                            )
+
+                        successful_schedules = []
+                        failed_schedules = []
+
+                        # Use batch mode for all saga operations in this batch
+                        with saga_update_repo.batch_mode(auto_commit=True):
+                            for saga_state in batch:
+                                try:
+                                    CreateShowsSaga(
+                                        saga_state_repository=saga_update_repo,
+                                        celery_app=worker,
+                                        saga_id=saga_state.id,
+                                    ).execute()
+                                    successful_schedules.append(saga_state)
+                                except Exception as e:
+                                    self.log.error(
+                                        f"Unable to schedule create shows saga: {saga_state.id} for imdb_id {saga_state.shows_info_imdb_id}"
+                                    )
+                                    self.log.error(e)
+                                    failed_schedules.append(
+                                        (saga_state.id, {"status": "failed", "failure_details": str(e)})
+                                    )
+
+                            # Batch update failed saga states if any
+                            if failed_schedules:
+                                saga_update_repo.batch_update(failed_schedules)
+
+                        self.log.info(
+                            f"Batch {batch_idx + 1} processed: {len(successful_schedules)} successful, {len(failed_schedules)} failed"
                         )
-                        self.log.error(e)
+
+                    # Commit all thread-local connections at the end
+                    saga_update_repo.commit_all_thread_connections()
+
+                except Exception as e:
+                    # Rollback all thread-local connections on error
+                    saga_update_repo.rollback_all_thread_connections()
+                    raise e
 
             return self.success_response(ShowsInfoResponse, nullPass=True)

@@ -11,7 +11,7 @@ from notifications.src.models.notifications_info import NotificationsInfoRespons
 from notifications.src.models.notifications_saga_state import (
     NotificationsBodyCreateInput,
     NotificationsSagaStateCreateInput,
-    NotificationsSagaStateUpdate,
+    OptimizedNotificationsSagaStateUpdate,
 )
 
 
@@ -36,24 +36,34 @@ class NotificationsCreateMutation(GraphQLModel, NotificationsLib):
                 )
             ]
 
+            # Use single database session for creating saga states
             with self.get_session("psqldb_notifications") as db:
-
                 all_create = self.notifications_saga_state_create.notifications_saga_state_create(db, createInputs)
+                db.commit()  # Explicit commit
 
-                db.close()
+            self.log.info(f"Created {len(all_create)} notification saga states for processing")
 
-            for saga_state in all_create:
-                try:
-                    CreateNotifySaga(
-                        saga_state_repository=NotificationsSagaStateUpdate(),
-                        celery_app=worker,
-                        saga_id=saga_state.id,
-                    ).execute()
-                except Exception as e:
-                    self.log.error(e)
-                    self.log.error(
-                        f"Unable to schedule create notifications saga: {saga_state.id} for notifications {saga_state.body.get('email', 'Unknown email')}"
-                    )
+            # Initialize optimized saga repository once for all sagas
+            saga_repository = OptimizedNotificationsSagaStateUpdate()
+
+            try:
+                # Process all sagas with connection reuse
+                with saga_repository.batch_mode():
+                    for saga_state in all_create:
+                        try:
+                            CreateNotifySaga(
+                                saga_state_repository=saga_repository,
+                                celery_app=worker,
+                                saga_id=saga_state.id,
+                            ).execute()
+                        except Exception as e:
+                            self.log.error(e)
+                            self.log.error(
+                                f"Unable to schedule create notifications saga: {saga_state.id} for notifications {saga_state.body.get('email', 'Unknown email')}"
+                            )
+            finally:
+                # Cleanup thread-local connections
+                saga_repository.cleanup_connections()
 
             self.redis_delete_notifications_saga_state_keys(token_decode.account_store_id)
 

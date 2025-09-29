@@ -6,7 +6,7 @@ from kombu import Queue
 from link_models.messaging import CREATE_NOTIFY_SAGA_RESPONSE_QUEUE, NOTIFICATIONS_COMMANDS_QUEUE
 from notifications.src.app_lib.config import APP_CELERY_BROKER
 from notifications.src.domain.orchestrator import CreateNotifySaga
-from notifications.src.models.notifications_saga_state import NotificationsSagaStateUpdate
+from notifications.src.models.notifications_saga_state import OptimizedNotificationsSagaStateUpdate
 
 worker_include = ["notifications.src.domain.step_handler"]
 worker_queues = (
@@ -25,7 +25,7 @@ worker.conf.task_queues = worker_queues
 
 class WorkerController:
     def __init__(self):
-        self.saga_state_repository = NotificationsSagaStateUpdate()
+        self.saga_state_repository = OptimizedNotificationsSagaStateUpdate()
         self._register_create_notify_saga()
 
     def _register_create_notify_saga(self):

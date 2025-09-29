@@ -3,6 +3,7 @@
 
 from movie.src.models.movie_saga_state.base import MovieSagaState, MovieSagaStateBase
 from movie.src.models.movie_saga_state.create import MovieSagaStateCreate, MovieSagaStateCreateInput
+from movie.src.models.movie_saga_state.optimized_update import OptimizedMovieSagaStateUpdate
 from movie.src.models.movie_saga_state.read import MovieSagaStateRead
 from movie.src.models.movie_saga_state.update import MovieSagaStateUpdate
 
@@ -13,4 +14,5 @@ __all__ = (
     "MovieSagaStateUpdate",
     "MovieSagaStateRead",
     "MovieSagaStateCreateInput",
+    "OptimizedMovieSagaStateUpdate",
 )

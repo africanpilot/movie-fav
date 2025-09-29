@@ -24,7 +24,7 @@ def upgrade() -> None:
     # This composite index optimizes the NOT EXISTS query with status and payload filtering
     op.execute(
         """
-        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_shows_saga_state_status_payload
+        CREATE INDEX IF NOT EXISTS idx_shows_saga_state_status_payload
         ON shows.shows_saga_state (status)
         WHERE payload IS NOT NULL
     """
@@ -34,7 +34,7 @@ def upgrade() -> None:
     # This helps with the NOT EXISTS subquery performance
     op.execute(
         """
-        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_shows_saga_state_imdb_id
+        CREATE INDEX IF NOT EXISTS idx_shows_saga_state_imdb_id
         ON shows.shows_saga_state (shows_info_imdb_id)
     """
     )
@@ -42,7 +42,7 @@ def upgrade() -> None:
     # Optional: Index for common query patterns on shows_info
     op.execute(
         """
-        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_shows_info_popular_id
+        CREATE INDEX IF NOT EXISTS idx_shows_info_popular_id
         ON shows.shows_info (popular_id)
         WHERE popular_id IS NOT NULL
     """
@@ -54,6 +54,6 @@ def downgrade() -> None:
     Remove performance indexes
     """
 
-    op.execute("DROP INDEX CONCURRENTLY IF EXISTS shows.idx_shows_saga_state_status_payload")
-    op.execute("DROP INDEX CONCURRENTLY IF EXISTS shows.idx_shows_saga_state_imdb_id")
-    op.execute("DROP INDEX CONCURRENTLY IF EXISTS shows.idx_shows_info_popular_id")
+    op.execute("DROP INDEX IF EXISTS shows.idx_shows_saga_state_status_payload")
+    op.execute("DROP INDEX IF EXISTS shows.idx_shows_saga_state_imdb_id")
+    op.execute("DROP INDEX IF EXISTS shows.idx_shows_info_popular_id")

@@ -439,12 +439,6 @@ export enum DownloadLocationEnum {
   Redis = "REDIS",
 }
 
-export enum DownloadTypeEnum {
-  Download_480p = "DOWNLOAD_480p",
-  Download_720p = "DOWNLOAD_720p",
-  Download_1080p = "DOWNLOAD_1080p",
-}
-
 export type GeneralResponse = {
   __typename?: "GeneralResponse";
   code: Scalars["Int"];
@@ -462,9 +456,6 @@ export type MovieInfo = {
   cover?: Maybe<Scalars["String"]>;
   creators?: Maybe<Array<Maybe<Scalars["String"]>>>;
   directors?: Maybe<Array<Maybe<Scalars["String"]>>>;
-  download_480p_url?: Maybe<Scalars["String"]>;
-  download_720p_url?: Maybe<Scalars["String"]>;
-  download_1080p_url?: Maybe<Scalars["String"]>;
   full_cover?: Maybe<Scalars["String"]>;
   genres?: Maybe<Array<Maybe<Scalars["String"]>>>;
   id?: Maybe<Scalars["Int"]>;
@@ -483,7 +474,6 @@ export type MovieInfo = {
 };
 
 export type MovieInfoDownloadInput = {
-  download_type: DownloadTypeEnum;
   imdb_id: Scalars["String"];
 };
 
@@ -544,10 +534,6 @@ export type Mutation = {
   accountUpdate?: Maybe<AccountInfoResponse>;
   accountUpdatePassword?: Maybe<AccountInfoResponse>;
   debug?: Maybe<Scalars["String"]>;
-  movieDownload?: Maybe<MovieInfoResponse>;
-  movieUpdate?: Maybe<MovieInfoResponse>;
-  showsDownload?: Maybe<ShowsInfoResponse>;
-  showsEpisodeUpdate?: Maybe<ShowsEpisodeResponse>;
 };
 
 export type MutationAccountAuthenticationLoginArgs = {
@@ -628,22 +614,6 @@ export type MutationAccountUpdatePasswordArgs = {
   updateInput: AccountInfoUpdatePasswordInput;
 };
 
-export type MutationMovieDownloadArgs = {
-  searchInput?: InputMaybe<Array<InputMaybe<MovieInfoDownloadInput>>>;
-};
-
-export type MutationMovieUpdateArgs = {
-  movie_info_id: Scalars["Int"];
-};
-
-export type MutationShowsDownloadArgs = {
-  searchInput?: InputMaybe<Array<InputMaybe<ShowsDownloadInput>>>;
-};
-
-export type MutationShowsEpisodeUpdateArgs = {
-  shows_episode_id: Scalars["Int"];
-};
-
 export type NotificationsSagaState = {
   __typename?: "NotificationsSagaState";
   id?: Maybe<Scalars["Int"]>;
@@ -659,14 +629,7 @@ export enum NotifyStatusEnum {
 }
 
 export enum NotifyTemplateEnum {
-  AllNationContact = "ALL_NATION_CONTACT",
-  LabelleAppointment = "LABELLE_APPOINTMENT",
-  LabelleContact = "LABELLE_CONTACT",
-  LabelleRsvp = "LABELLE_RSVP",
-  PromedexpressContact = "PROMEDEXPRESS_CONTACT",
-  PromedexpressRequestTransport = "PROMEDEXPRESS_REQUEST_TRANSPORT",
-  SumexusContact = "SUMEXUS_CONTACT",
-  SumexusRequestTransport = "SUMEXUS_REQUEST_TRANSPORT",
+  TheaterContact = "THEATER_CONTACT",
 }
 
 export enum OrderByEnum {
@@ -793,7 +756,6 @@ export enum RedisDatabaseEnum {
 }
 
 export type ShowsDownloadInput = {
-  download_type: DownloadTypeEnum;
   episode: Scalars["Int"];
   imdb_id: Scalars["String"];
   season: Scalars["Int"];
@@ -803,9 +765,6 @@ export type ShowsDownloadInput = {
 export type ShowsEpisode = {
   __typename?: "ShowsEpisode";
   cover?: Maybe<Scalars["String"]>;
-  download_480p_url?: Maybe<Scalars["String"]>;
-  download_720p_url?: Maybe<Scalars["String"]>;
-  download_1080p_url?: Maybe<Scalars["String"]>;
   episode?: Maybe<Scalars["Int"]>;
   full_cover?: Maybe<Scalars["String"]>;
   id?: Maybe<Scalars["Int"]>;
@@ -1294,9 +1253,6 @@ export type MovieDetailsQuery = {
       cover?: string | null;
       votes?: number | null;
       year?: number | null;
-      download_1080p_url?: string | null;
-      download_720p_url?: string | null;
-      download_480p_url?: string | null;
       videos?: Array<string | null> | null;
       casts?: Array<{
         __typename?: "PersonInfo";
@@ -1306,27 +1262,6 @@ export type MovieDetailsQuery = {
         imdb_id?: string | null;
       } | null> | null;
     } | null> | null;
-  } | null;
-};
-
-export type MovieDownloadMutationVariables = Exact<{
-  searchInput?: InputMaybe<
-    | Array<InputMaybe<MovieInfoDownloadInput>>
-    | InputMaybe<MovieInfoDownloadInput>
-  >;
-}>;
-
-export type MovieDownloadMutation = {
-  __typename?: "Mutation";
-  movieDownload?: {
-    __typename?: "MovieInfoResponse";
-    response: {
-      __typename?: "GeneralResponse";
-      code: number;
-      success?: boolean | null;
-      message?: string | null;
-      version?: string | null;
-    };
   } | null;
 };
 
@@ -1358,29 +1293,8 @@ export type MoviePopularQuery = {
       full_cover?: string | null;
       cover?: string | null;
       trailer_link?: string | null;
-      download_1080p_url?: string | null;
-      download_720p_url?: string | null;
-      download_480p_url?: string | null;
       plot?: string | null;
     } | null> | null;
-  } | null;
-};
-
-export type MovieUpdateMutationVariables = Exact<{
-  movieInfoId: Scalars["Int"];
-}>;
-
-export type MovieUpdateMutation = {
-  __typename?: "Mutation";
-  movieUpdate?: {
-    __typename?: "MovieInfoResponse";
-    response: {
-      __typename?: "GeneralResponse";
-      code: number;
-      success?: boolean | null;
-      message?: string | null;
-      version?: string | null;
-    };
   } | null;
 };
 
@@ -1437,34 +1351,11 @@ export type ShowsDetailsQuery = {
           episode?: number | null;
           shows_info_id?: number | null;
           shows_season_id?: number | null;
-          download_1080p_url?: string | null;
-          download_720p_url?: string | null;
-          download_480p_url?: string | null;
           cover?: string | null;
           full_cover?: string | null;
         } | null> | null;
       } | null> | null;
     } | null> | null;
-  } | null;
-};
-
-export type ShowsDownloadMutationVariables = Exact<{
-  searchInput?: InputMaybe<
-    Array<InputMaybe<ShowsDownloadInput>> | InputMaybe<ShowsDownloadInput>
-  >;
-}>;
-
-export type ShowsDownloadMutation = {
-  __typename?: "Mutation";
-  showsDownload?: {
-    __typename?: "ShowsInfoResponse";
-    response: {
-      __typename?: "GeneralResponse";
-      code: number;
-      success?: boolean | null;
-      message?: string | null;
-      version?: string | null;
-    };
   } | null;
 };
 
@@ -1500,31 +1391,10 @@ export type ShowsEpisodeDetailsQuery = {
       rating?: number | null;
       plot?: string | null;
       release_date?: string | null;
-      download_1080p_url?: string | null;
-      download_720p_url?: string | null;
-      download_480p_url?: string | null;
       cover?: string | null;
       full_cover?: string | null;
       run_times?: Array<string | null> | null;
     } | null> | null;
-  } | null;
-};
-
-export type ShowsEpisodeUpdateMutationVariables = Exact<{
-  showsEpisodeId: Scalars["Int"];
-}>;
-
-export type ShowsEpisodeUpdateMutation = {
-  __typename?: "Mutation";
-  showsEpisodeUpdate?: {
-    __typename?: "ShowsEpisodeResponse";
-    response: {
-      __typename?: "GeneralResponse";
-      code: number;
-      success?: boolean | null;
-      message?: string | null;
-      version?: string | null;
-    };
   } | null;
 };
 
@@ -1564,9 +1434,6 @@ export type ShowsPopularQuery = {
           id?: number | null;
           shows_info_id?: number | null;
           shows_season_id?: number | null;
-          download_1080p_url?: string | null;
-          download_720p_url?: string | null;
-          download_480p_url?: string | null;
         } | null> | null;
       } | null> | null;
     } | null> | null;
@@ -2408,9 +2275,6 @@ export const MovieDetailsDocument = gql`
         cover
         votes
         year
-        download_1080p_url
-        download_720p_url
-        download_480p_url
         videos
       }
     }
@@ -2467,61 +2331,6 @@ export type MovieDetailsQueryResult = Apollo.QueryResult<
   MovieDetailsQuery,
   MovieDetailsQueryVariables
 >;
-export const MovieDownloadDocument = gql`
-  mutation MovieDownload($searchInput: [MovieInfoDownloadInput]) {
-    movieDownload(searchInput: $searchInput) {
-      response {
-        code
-        success
-        message
-        version
-      }
-    }
-  }
-`;
-export type MovieDownloadMutationFn = Apollo.MutationFunction<
-  MovieDownloadMutation,
-  MovieDownloadMutationVariables
->;
-
-/**
- * __useMovieDownloadMutation__
- *
- * To run a mutation, you first call `useMovieDownloadMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useMovieDownloadMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [movieDownloadMutation, { data, loading, error }] = useMovieDownloadMutation({
- *   variables: {
- *      searchInput: // value for 'searchInput'
- *   },
- * });
- */
-export function useMovieDownloadMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    MovieDownloadMutation,
-    MovieDownloadMutationVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    MovieDownloadMutation,
-    MovieDownloadMutationVariables
-  >(MovieDownloadDocument, options);
-}
-export type MovieDownloadMutationHookResult = ReturnType<
-  typeof useMovieDownloadMutation
->;
-export type MovieDownloadMutationResult =
-  Apollo.MutationResult<MovieDownloadMutation>;
-export type MovieDownloadMutationOptions = Apollo.BaseMutationOptions<
-  MovieDownloadMutation,
-  MovieDownloadMutationVariables
->;
 export const MoviePopularDocument = gql`
   query MoviePopular($pageInfo: MovieInfoPageInfoInput) {
     movieInfo(pageInfo: $pageInfo) {
@@ -2542,9 +2351,6 @@ export const MoviePopularDocument = gql`
         full_cover
         cover
         trailer_link
-        download_1080p_url
-        download_720p_url
-        download_480p_url
         plot
       }
     }
@@ -2601,61 +2407,6 @@ export type MoviePopularQueryResult = Apollo.QueryResult<
   MoviePopularQuery,
   MoviePopularQueryVariables
 >;
-export const MovieUpdateDocument = gql`
-  mutation MovieUpdate($movieInfoId: Int!) {
-    movieUpdate(movie_info_id: $movieInfoId) {
-      response {
-        code
-        success
-        message
-        version
-      }
-    }
-  }
-`;
-export type MovieUpdateMutationFn = Apollo.MutationFunction<
-  MovieUpdateMutation,
-  MovieUpdateMutationVariables
->;
-
-/**
- * __useMovieUpdateMutation__
- *
- * To run a mutation, you first call `useMovieUpdateMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useMovieUpdateMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [movieUpdateMutation, { data, loading, error }] = useMovieUpdateMutation({
- *   variables: {
- *      movieInfoId: // value for 'movieInfoId'
- *   },
- * });
- */
-export function useMovieUpdateMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    MovieUpdateMutation,
-    MovieUpdateMutationVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<MovieUpdateMutation, MovieUpdateMutationVariables>(
-    MovieUpdateDocument,
-    options,
-  );
-}
-export type MovieUpdateMutationHookResult = ReturnType<
-  typeof useMovieUpdateMutation
->;
-export type MovieUpdateMutationResult =
-  Apollo.MutationResult<MovieUpdateMutation>;
-export type MovieUpdateMutationOptions = Apollo.BaseMutationOptions<
-  MovieUpdateMutation,
-  MovieUpdateMutationVariables
->;
 export const ShowsDetailsDocument = gql`
   query ShowsDetails($filterInput: ShowsInfoFilterInput) {
     showsInfo(filterInput: $filterInput) {
@@ -2698,9 +2449,6 @@ export const ShowsDetailsDocument = gql`
             episode
             shows_info_id
             shows_season_id
-            download_1080p_url
-            download_720p_url
-            download_480p_url
             cover
             full_cover
           }
@@ -2760,61 +2508,6 @@ export type ShowsDetailsQueryResult = Apollo.QueryResult<
   ShowsDetailsQuery,
   ShowsDetailsQueryVariables
 >;
-export const ShowsDownloadDocument = gql`
-  mutation ShowsDownload($searchInput: [ShowsDownloadInput]) {
-    showsDownload(searchInput: $searchInput) {
-      response {
-        code
-        success
-        message
-        version
-      }
-    }
-  }
-`;
-export type ShowsDownloadMutationFn = Apollo.MutationFunction<
-  ShowsDownloadMutation,
-  ShowsDownloadMutationVariables
->;
-
-/**
- * __useShowsDownloadMutation__
- *
- * To run a mutation, you first call `useShowsDownloadMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useShowsDownloadMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [showsDownloadMutation, { data, loading, error }] = useShowsDownloadMutation({
- *   variables: {
- *      searchInput: // value for 'searchInput'
- *   },
- * });
- */
-export function useShowsDownloadMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    ShowsDownloadMutation,
-    ShowsDownloadMutationVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    ShowsDownloadMutation,
-    ShowsDownloadMutationVariables
-  >(ShowsDownloadDocument, options);
-}
-export type ShowsDownloadMutationHookResult = ReturnType<
-  typeof useShowsDownloadMutation
->;
-export type ShowsDownloadMutationResult =
-  Apollo.MutationResult<ShowsDownloadMutation>;
-export type ShowsDownloadMutationOptions = Apollo.BaseMutationOptions<
-  ShowsDownloadMutation,
-  ShowsDownloadMutationVariables
->;
 export const ShowsEpisodeDetailsDocument = gql`
   query ShowsEpisodeDetails($filterInput: ShowsEpisodeFilterInput) {
     showsEpisode(filterInput: $filterInput) {
@@ -2839,9 +2532,6 @@ export const ShowsEpisodeDetailsDocument = gql`
         rating
         plot
         release_date
-        download_1080p_url
-        download_720p_url
-        download_480p_url
         cover
         full_cover
         run_times
@@ -2900,61 +2590,6 @@ export type ShowsEpisodeDetailsQueryResult = Apollo.QueryResult<
   ShowsEpisodeDetailsQuery,
   ShowsEpisodeDetailsQueryVariables
 >;
-export const ShowsEpisodeUpdateDocument = gql`
-  mutation ShowsEpisodeUpdate($showsEpisodeId: Int!) {
-    showsEpisodeUpdate(shows_episode_id: $showsEpisodeId) {
-      response {
-        code
-        success
-        message
-        version
-      }
-    }
-  }
-`;
-export type ShowsEpisodeUpdateMutationFn = Apollo.MutationFunction<
-  ShowsEpisodeUpdateMutation,
-  ShowsEpisodeUpdateMutationVariables
->;
-
-/**
- * __useShowsEpisodeUpdateMutation__
- *
- * To run a mutation, you first call `useShowsEpisodeUpdateMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useShowsEpisodeUpdateMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [showsEpisodeUpdateMutation, { data, loading, error }] = useShowsEpisodeUpdateMutation({
- *   variables: {
- *      showsEpisodeId: // value for 'showsEpisodeId'
- *   },
- * });
- */
-export function useShowsEpisodeUpdateMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    ShowsEpisodeUpdateMutation,
-    ShowsEpisodeUpdateMutationVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    ShowsEpisodeUpdateMutation,
-    ShowsEpisodeUpdateMutationVariables
-  >(ShowsEpisodeUpdateDocument, options);
-}
-export type ShowsEpisodeUpdateMutationHookResult = ReturnType<
-  typeof useShowsEpisodeUpdateMutation
->;
-export type ShowsEpisodeUpdateMutationResult =
-  Apollo.MutationResult<ShowsEpisodeUpdateMutation>;
-export type ShowsEpisodeUpdateMutationOptions = Apollo.BaseMutationOptions<
-  ShowsEpisodeUpdateMutation,
-  ShowsEpisodeUpdateMutationVariables
->;
 export const ShowsPopularDocument = gql`
   query ShowsPopular($pageInfo: ShowsInfoPageInfoInput) {
     showsInfo(pageInfo: $pageInfo) {
@@ -2981,9 +2616,6 @@ export const ShowsPopularDocument = gql`
             id
             shows_info_id
             shows_season_id
-            download_1080p_url
-            download_720p_url
-            download_480p_url
           }
         }
       }

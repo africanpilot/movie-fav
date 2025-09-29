@@ -12,7 +12,10 @@ class GetRemainingMovieCastQuery(MovieLib):
         self.body = kwargs.get("body")
 
     def execute(self):
-        with self.get_connection("psqldb_movie") as db:
+        with self.get_session("psqldb_movie") as db:
             result = self.movie_info_read.get_all_movie_cast(db)
 
-        return dict(message=json.dumps(dict(result), cls=GeneralJSONEncoder), received=True)
+        # Convert SQLAlchemy Row to dict properly
+        result_dict = result._asdict() if hasattr(result, "_asdict") else dict(result._mapping)
+
+        return dict(message=json.dumps(result_dict, cls=GeneralJSONEncoder), received=True)

@@ -107,6 +107,8 @@ class ImdbHelper(LinkRequest):
         return [shows.getID() for shows in self.get_popular_shows()]
 
     def get_person_by_id(self, imdbId: str):
+        if imdbId.startswith("nm"):
+            imdbId = imdbId[2:]
         return ia.get_person(imdbId)
 
     def get_videos(self, imdbId: str) -> list[str]:

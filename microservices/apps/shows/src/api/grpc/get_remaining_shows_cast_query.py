@@ -15,4 +15,7 @@ class GetRemainingShowsCastQuery(ShowsLib):
         with self.get_session("psqldb_shows") as db:
             result = self.shows_info_read.get_all_shows_cast(db)
 
-        return dict(message=json.dumps(dict(result), cls=GeneralJSONEncoder), received=True)
+        # Convert SQLAlchemy Row to dict properly
+        result_dict = result._asdict() if hasattr(result, "_asdict") else dict(result._mapping)
+
+        return dict(message=json.dumps(result_dict, cls=GeneralJSONEncoder), received=True)

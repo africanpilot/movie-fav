@@ -4,31 +4,12 @@ import {
   useShowsDetailsQuery,
   ShowsInfoFilterInput,
   useShowsEpisodeDetailsQuery,
-  useShowsEpisodeUpdateMutation,
 } from "./schema";
 
 export const useShows = (
   pageInfo: ShowsInfoPageInfoInput = {},
   filterInput: ShowsInfoFilterInput = {},
 ) => {
-  const [showsEpisodeUpdate, { loading: isShowsEpisodeUpdate }] =
-    useShowsEpisodeUpdateMutation();
-
-  const handleShowsEpisodeUpdate = async (showsEpisodeId: number) => {
-    try {
-      const { data } = await showsEpisodeUpdate({
-        variables: { showsEpisodeId },
-      });
-      return data?.showsEpisodeUpdate;
-    } catch (error: any) {
-      try {
-        return JSON.parse(error.message);
-      } catch (error: any) {
-        throw error;
-      }
-    }
-  };
-
   try {
     const {
       data,
@@ -72,7 +53,7 @@ export const useShows = (
 
     const showsEpisodeDetailsData =
       showsEpisodeDetails?.showsEpisode?.result?.[0];
-    const isSaving = isShowsEpisodeUpdate;
+    const isSaving = false;
 
     return {
       showsPopular,
@@ -87,7 +68,6 @@ export const useShows = (
       isShowsEpisodeDetails,
       isShowsEpisodeDetailsError,
       showsEpisodeDetailsRefetch,
-      showsEpisodeUpdate: handleShowsEpisodeUpdate,
       isSaving,
     };
   } catch (error) {

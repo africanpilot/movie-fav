@@ -25,7 +25,10 @@ def create_movie_task(self: Task, saga_id: int, payload: dict) -> Union[dict, No
         )
     else:
         try:
-            lib.movie_saga_state_update.update(saga_id, payload=movie_payload)
+            # Use a single database session for the entire task to reduce connection overhead
+            with lib.get_session("psqldb_movie") as db:
+                lib.movie_saga_state_update.update(saga_id, db=db, payload=movie_payload)
+                db.commit()
         except Exception as e:
             raise lib.http_500_internal_server_error(
                 f"Failed to update movie info saga imdbId {request_data.imdb_id} for saga id {saga_id} -- {e}"
