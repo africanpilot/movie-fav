@@ -19,6 +19,15 @@ command="${3:-}"
 target="${4:-}"
 
 # Validate minimum required arguments
+if [ "$script" = "docker" ] || [ "$script" = "deploy" ]; then
+    if [ -z "$environment" ] || [ -z "$command" ]; then
+        echo "ERROR: Missing required arguments" >&2
+        echo "Usage: $0 [SCRIPT] [ENVIRONMENT] [COMMAND] [TARGET]" >&2
+        echo "Run '$0 help' for more information" >&2
+        exit 1
+    fi
+fi
+
 if [ -z "$script" ] || [ -z "$environment" ] || [ -z "$command" ]; then
     echo "ERROR: Missing required arguments" >&2
     echo "Usage: $0 [SCRIPT] [ENVIRONMENT] [COMMAND] [TARGET]" >&2

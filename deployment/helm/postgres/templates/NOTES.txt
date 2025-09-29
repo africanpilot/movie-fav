@@ -1,0 +1,39 @@
+1. Get the PostgreSQL hostname by running these commands:
+   export POSTGRES_HOST={{ include "postgres.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+
+2. Get the PostgreSQL port:
+   export POSTGRES_PORT={{ .Values.service.port }}
+
+3. Get the PostgreSQL database name:
+   export POSTGRES_DB=$(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "postgres.fullname" . }}-secret -o jsonpath="{.data.database}" | base64 --decode)
+
+4. Get the PostgreSQL username:
+   export POSTGRES_USER=$(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "postgres.fullname" . }}-secret -o jsonpath="{.data.username}" | base64 --decode)
+
+5. Get the PostgreSQL password:
+   export POSTGRES_PASSWORD=$(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "postgres.fullname" . }}-secret -o jsonpath="{.data.password}" | base64 --decode)
+
+6. Connect to PostgreSQL from within the cluster:
+   kubectl run {{ include "postgres.fullname" . }}-client --rm --tty -i --restart='Never' --namespace {{ .Release.Namespace }} --image postgres --env="PGPASSWORD=$POSTGRES_PASSWORD" --command -- psql --host {{ include "postgres.fullname" . }} -U $POSTGRES_USER -d $POSTGRES_DB -p {{ .Values.service.port }}
+
+7. To connect from outside the cluster, you may need to create a port-forward:
+   kubectl --namespace {{ .Release.Namespace }} port-forward svc/{{ include "postgres.fullname" . }} {{ .Values.service.port }}:{{ .Values.service.port }}
+
+   Then connect using:
+   psql --host 127.0.0.1 -U $POSTGRES_USER -d $POSTGRES_DB -p {{ .Values.service.port }}
+
+{{- if .Values.persistence.enabled }}
+
+8. Your PostgreSQL data is persisted using PVC {{ include "postgres.fullname" . }}-data
+{{- else }}
+
+8. WARNING: PostgreSQL data is not persisted. Enable persistence in values.yaml to avoid data loss.
+{{- end }}
+
+{{- if not .Values.networkPolicy.enabled }}
+
+9. WARNING: Network policies are disabled. Consider enabling them for better security.
+{{- end }}
+
+For more information on running PostgreSQL, visit:
+https://www.postgresql.org/docs/

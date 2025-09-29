@@ -1,6 +1,6 @@
 apiVersion: v2
-name: movie
-description: A Helm chart for Kubernetes
+name: postgres
+description: A Helm chart for PostgreSQL database with production configurations
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -21,4 +21,15 @@ version: 0.1.0
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "1.16.0"
+appVersion: "15.0"
+
+keywords:
+  - postgresql
+  - database
+  - sql
+home: https://www.postgresql.org/
+sources:
+  - https://github.com/postgres/postgres
+maintainers:
+  - name: Movie Fav Team
+    email: admin@moviefav.com

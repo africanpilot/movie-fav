@@ -41,7 +41,7 @@ EOF
 
 validate_engine () {
     local engine="$1"
-    if [ "$engine" = "docker" ]; then
+    if [ "$engine" = "docker" ] || [ "$engine" = "deploy" ]; then
         if command -v docker &> /dev/null; then
             DOCKER="docker"
             DOCKER_COMPOSE="docker compose"
