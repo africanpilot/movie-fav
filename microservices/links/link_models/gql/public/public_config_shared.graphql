@@ -1,0 +1,31 @@
+type AccountInfo {
+    id: Int
+}
+
+type AccountCompany {
+    id: Int
+}
+
+type AccountStore {
+    id: Int
+}
+
+type AccountStoreEmployee {
+    id: Int
+}
+
+type MovieInfo {
+    id: Int
+}
+
+type PersonInfo {
+    id: Int
+}
+
+type ShowsInfo {
+    id: Int
+}
+
+type NotificationsSagaState {
+    id: Int
+}

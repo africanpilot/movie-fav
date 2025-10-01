@@ -1,70 +1,115 @@
-# Introduction
+## Commands
 
-This project aims to create a ready to use tech stack with a focus on a development friendly environment. A single script entry point will allow one to transition between local, dev, test, and prod enviornments. The tech stack is meant to be for a monolithic application but some higher level microservices concepts are included in order to improve development time. General tech stack includes Apollo Graphql, Python, Reactjs, Docker/Docker compose, Postgresql, and Redis.
+| Objective        | Command                                               |
+| ---------------- | ----------------------------------------------------- |
+| Help             | `./run.sh help` or `./run.sh -h` or `./run.sh --help` |
+| General          | `./run.sh [script] [environment] [command] [target]`  |
+| Dev Server       | `./run.sh docker dev up`                              |
+| Prod Server      | `./run.sh docker prod up`                             |
+| Test Server      | `./run.sh docker test up`                             |
+| Specific Service | `./run.sh docker dev up movie`                        |
+| Dry Run          | `./run.sh docker dev dry`                             |
+| Helm Deployment  | `./run.sh deploy prod up`                             |
+| Helm Dry Run     | `./run.sh deploy dev dry`                             |
 
-A working copy of the "Movie Fav" application can be found here https://www.moviefav.xyz 
+## Installation
 
-The focus for the application has been mainly backend, server, and deployment related but there is plenty of client side implementaion to explore. Working more on the client side in the days to come.
+### Prerequisites
 
-The end result has been published on a simple AWS EC2 instance mainly using docker-compose. You can signup with your own email (check spam folder for email verification), or use the included account 
-- username:makurichard14@gmail.com
-- password:richardMaku1!
+- **Docker**: This repo uses a Docker workflow for development, running tests, and simulating production environments
+- **Docker Desktop**: Recommended for easy container management, viewing server logs, and other useful Docker features
+- **Helm**: Required for Kubernetes deployments (if using deploy commands)
 
-Feel free to reach out if you have any improvements, questions, or comments :) makurichard14@gmail.com
+### Setup Steps
 
-# Deployment
-- for continuos deployment after initial set-up
-  ```bash
-      source run.sh pipeline prod up
-  ```
-  
-# Development
- ### First Time Setup all dev
- - Install prerequisites in from admin/docs/linuxLocalDev.md
- - rename the sample-env file to .env and configure
- - run 
-  ```bash 
-     source run.sh docker dev build
-     source run.sh docker dev up
-  ```
+1. **Environment Configuration**:
+   - Copy `sample-env` to `.dev.env`, `.test.env`, or `.prod.env` as needed
+   - Edit the environment files with your specific configuration values
 
- ### Enviornments and commands
+2. **Service Selection**:
+   - Use the `SERVICES_TODO` variable in your `.env` file to specify which services to run
+   - Alternatively, pass the service name as the fourth argument: `./run.sh docker dev up movie`
 
-   - you can run devlopment enviornments and deployments with: 
-  
-     ```bash 
-        source run.sh [script] [enviornment] [command]
-     ```
-       - script = local, docker, delpoy, pipeline
-       - enviornment = dev, prod, test
-       - command = build, up, down
+3. **Dependency Management**:
+   - The script will automatically create environment files from the sample if they don't exist
+   - Docker bind mounts connect the local codebase to containers for development hot-reloading
 
-       example: 
-        ```bash 
-           source run.sh docker dev build
-           source run.sh docker dev up
-        ```
+## pre-commit
 
- ### Running pytest
- - must be in local environment
+- Install: https://pre-commit.com/
+- running locally: This will also happen automatically before committing to a branch, but you can also run the tasks with `pre-commit run --all-files`
 
-     ```bash 
-         source run.sh local test up
-         source run.sh local test down
-     ```
+## Run Options
 
-   example:
-     ```python 
-       pytest -v -m account server/apps/account
-       pytest -v -m account_bench server/apps/account
-     ```
-# TODO
+| Objective   | Command Options                      |
+| ----------- | ------------------------------------ |
+| script      | `docker`, `deploy`                   |
+| environment | `dev`, `test`, `prod`                |
+| command     | `build`, `up`, `down`, `pull`, `dry` |
 
-- [x] add redis
-- [x] add ci/cd pipelines
-- [ ] add search
-- [ ] clean up frontend for reusability
-- [ ] create test enviornment for frontend
-- [ ] possibly add protable kubernetes for orchestration
-- [ ] add Cython or C extensions
-- [ ] add multithreading
+## Script Types
+
+- **docker**: Run Docker Compose operations for containerized services
+- **deploy**: Run Helm deployments for Kubernetes
+
+## Environment Types
+
+- **dev**: Development environment with debug settings and hot reloading
+- **test**: Testing environment for running automated tests
+- **prod**: Production environment with optimized settings
+
+## Commands
+
+- **build**: Build Docker images for services
+- **up**: Start services (runs in detached mode by default)
+- **down**: Stop and remove running services
+- **pull**: Pull latest Docker images from registry
+- **dry**: Show what would be executed without actually running commands
+
+## Features
+
+### Help System
+
+- Run `./run.sh help`, `./run.sh -h`, or `./run.sh --help` for usage information
+- Improved error messages with helpful suggestions
+
+### Service Targeting
+
+- Target specific services: `./run.sh docker dev up movie`
+- Use the `SERVICES_TODO` environment variable to specify which services to operate on
+
+### Enhanced Error Handling
+
+- Strict error checking with `set -euo pipefail`
+- Descriptive error messages with suggested fixes
+- Proper exit codes for scripting integration
+
+### Dry Run Support
+
+- Use `dry` command to see what would be executed without running
+- Works for both Docker and Helm operations
+
+## Directories
+
+#### admin:
+
+- here we can store general purpose scripts that will help with development. Documents for this repo will be stored here too
+
+#### deployment
+
+- placeholder for developing with deployment repos
+
+#### microservices
+
+- all core microservices go here.
+- The use of the links directory allows us to have a space to share code between different microservices, thus reducing on duplicate code.
+- This directory approach also focuses on providing standards, here the Dockerfile, makefile, start, and others apply to all microservices. However, one can still create a microservice with its own independent rules, but lets try not to do that.
+- You are free to checkout other backend microservices that have not been officially migrated. There are some that have been tried and added to the docker-compose files.
+
+## TODO
+
+- should be all postgres dialect (from sqlalchemy import ...)
+- change to movie_cast (person_cast: [String] @external)
+- change ALL_MODELS to (ALL_DB_MODELS)
+- ensure sitecustomize for links works and remove links files
+- - fix grpc and fix it when in monxt mode

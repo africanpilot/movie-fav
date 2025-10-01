@@ -1,0 +1,48 @@
+query ShowsDetails($filterInput: ShowsInfoFilterInput) {
+  showsInfo(filterInput: $filterInput) {
+    response {
+      code
+      message
+      success
+      version
+    }
+    pageInfo {
+      page_info_count
+    }
+    result {
+      id
+      imdb_id
+      title
+      popular_id
+      full_cover
+      cover
+      genres
+      plot
+      cast
+      casts {
+        id
+        head_shot
+        name
+        imdb_id
+      }
+      trailer_link
+      release_date
+      total_seasons
+      total_episodes
+      videos
+      shows_season {
+        id
+        season
+        shows_episode {
+          id
+          season
+          episode
+          shows_info_id
+          shows_season_id
+          cover
+          full_cover
+        }
+      }
+    }
+  }
+}

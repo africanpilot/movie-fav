@@ -1,0 +1,8 @@
+type ShowsSeason @key(fields: "id") {
+    id: Int
+    shows_info_id: Int
+    season: Int
+    total_episodes: Int
+    release_date: String
+    shows_episode: [ShowsEpisode]
+}

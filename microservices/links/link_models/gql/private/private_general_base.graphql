@@ -1,0 +1,15 @@
+extend type Query {
+  getLogin: LoginInfo
+}
+
+extend type Mutation {
+  redisDelete(name: RedisDatabaseEnum!, key: String!): RedisInfo
+}
+
+type LoginInfo {
+  token: String
+}
+
+type RedisInfo {
+  success: Boolean
+}

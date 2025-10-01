@@ -1,0 +1,123 @@
+extend type Query {
+  accountCompany(pageInfo: AccountCompanyPageInfoInput, filterInput: AccountCompanyFilterInput): AccountCompanyResponse
+}
+
+extend type Mutation {
+  accountCompanyCreate(createInput: AccountCompanyCreateInput!, pageInfo: AccountCompanyPageInfoInput, filterInput: AccountCompanyFilterInput): AccountCompanyResponse
+  accountCompanyUpdate(updateInput: AccountCompanyUpdateInput!, pageInfo: AccountCompanyPageInfoInput, filterInput: AccountCompanyFilterInput): AccountCompanyResponse
+  accountCompanyDelete(deleteInput: [Int]!, pageInfo: AccountCompanyPageInfoInput, filterInput: AccountCompanyFilterInput): AccountCompanyResponse
+}
+
+type AccountCompanyResponse {
+  response: GeneralResponse!
+  pageInfo: PageInfo
+  result: [AccountCompany]
+}
+
+extend type AccountCompany @key(fields: "id") {
+  name: String
+  registration_date: String
+  cover_image: String
+  logo: String
+  profile_thumbnail: String
+  status: AccountStatusEnum
+  business_type: AccountBusinessTypeEnum
+  dba: String
+  phone_number: String
+  classification: AccountClassificationEnum
+  ein: String
+  product_description: String
+  website: String
+  address: String
+  city: String
+  state: String
+  zip_code: Int
+  sole_first_name: String
+  sole_last_name: String
+  sole_job_title: String
+  sole_phone_number: String
+  sole_email: String
+  sole_birthday: String
+  sole_ssn: String
+  sole_address: String
+  sole_city: String
+  sole_state: String
+  sole_zip_code: Int
+  account_store: [AccountStore]
+}
+
+input AccountCompanyFilterInput {
+  id: [Int]
+  name: [String]
+}
+
+input AccountCompanyPageInfoInput {
+  first: Int
+  pageNumber: Int
+  minId: Int
+  maxId: Int
+  orderBy: OrderByEnum
+  sortBy: [AccountCompanySortByEnum]
+}
+
+input AccountCompanyCreateInput {
+  name: String!
+  cover_image: String
+  logo: String
+  profile_thumbnail: String
+  status: AccountStatusEnum
+  business_type: AccountBusinessTypeEnum
+  dba: String
+  phone_number: String
+  classification: AccountClassificationEnum
+  ein: String
+  product_description: String
+  website: String!
+  address: String
+  city: String
+  state: String
+  zip_code: Int
+  sole_first_name: String
+  sole_last_name: String
+  sole_job_title: String
+  sole_phone_number: String
+  sole_email: String!
+  sole_birthday: String
+  sole_ssn: String
+  sole_address: String
+  sole_city: String
+  sole_state: String
+  sole_zip_code: Int
+  account_store: AccountStoreCreateInput
+}
+
+input AccountCompanyUpdateInput {
+  name: String
+  cover_image: String
+  logo: String
+  profile_thumbnail: String
+  status: AccountStatusEnum
+  business_type: AccountBusinessTypeEnum
+  dba: String
+  phone_number: String
+  classification: AccountClassificationEnum
+  ein: String
+  product_description: String
+  website: String
+  address: String
+  city: String
+  state: String
+  zip_code: Int
+  sole_first_name: String
+  sole_last_name: String
+  sole_job_title: String
+  sole_phone_number: String
+  sole_email: String
+  sole_birthday: String
+  sole_ssn: String
+  sole_address: String
+  sole_city: String
+  sole_state: String
+  sole_zip_code: Int
+  account_store: AccountStoreUpdateInput
+}

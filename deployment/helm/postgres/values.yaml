@@ -1,0 +1,144 @@
+# Default values for postgres.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Global settings
+global:
+  postgresql:
+    auth:
+      username: "trackstar" # From DB_USERNAME in .prod.env
+      password: "test" # From DB_PASSWORD in .prod.env
+      database: "secmsdb" # From DB_DATABASE_INIT in .prod.env
+      postgresPassword: "test" # From DB_PASSWORD in .prod.env
+
+replicaCount: 2
+
+image:
+  repository: postgres
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "15"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# PostgreSQL configuration
+postgresql:
+  # Database configuration
+  auth:
+    # These will be overridden by environment variables from .prod.env
+    username: "trackstar" # From DB_USERNAME in .prod.env
+    password: "test" # From DB_PASSWORD in .prod.env
+    database: "secmsdb" # From DB_DATABASE_INIT in .prod.env
+    postgresPassword: "test" # From DB_PASSWORD in .prod.env
+
+  # PostgreSQL configuration file
+  configuration: |
+    # PostgreSQL configuration
+    listen_addresses = '*'
+    max_connections = 100
+    shared_buffers = 128MB
+    effective_cache_size = 512MB
+    maintenance_work_mem = 64MB
+    checkpoint_completion_target = 0.7
+    wal_buffers = 16MB
+    default_statistics_target = 100
+    random_page_cost = 1.1
+    effective_io_concurrency = 200
+
+  # Custom initialization scripts
+  initdbScripts:
+    001-create_all_db.sql: |
+      -- Database initialization script
+      -- Content from microservices/apps/postgres/prod/create_all_db.sql
+      CREATE DATABASE prod_secure_postgresql_trackstar;
+
+# Environment configuration
+environment:
+  APP_DEFAULT_ENV: prod
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 5432
+  targetPort: 5432
+
+# Persistence configuration
+persistence:
+  enabled: true
+  # storageClass: ""  # Use default storage class
+  accessMode: ReadWriteOnce
+  size: 3Gi
+  # existingClaim: ""  # Use existing PVC if specified
+
+# Health checks configuration
+healthcheck:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 5
+
+# Resource configuration
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+# Node selection
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Pod Security Context
+podSecurityContext:
+  fsGroup: 999
+
+# Security Context
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 999
+  runAsGroup: 999
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+
+# Service Account
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# Pod annotations
+podAnnotations: {}
+
+# Pod labels
+podLabels: {}
+
+# Autoscaling (disabled for PostgreSQL as it's stateful)
+autoscaling:
+  enabled: false
+
+# Network Policy
+networkPolicy:
+  enabled: false
+
+# Monitoring
+monitoring:
+  enabled: false

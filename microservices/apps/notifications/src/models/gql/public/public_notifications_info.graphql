@@ -1,0 +1,80 @@
+extend type Query {
+    notificationsSagaState(pageInfo: NotificationsSagaStatePageInfoInput, filterInput: NotificationsSagaStateFilterInput): NotificationsSagaStateResponse
+}
+
+extend type Mutation {
+  notificationsCreate(createInput: NotificationsInfoCreateInput!): NotificationsInfoResponse
+  notificationsUpdate(updateInput: NotificationsSagaStateUpdateInput!, pageInfo: NotificationsSagaStatePageInfoInput, filterInput: NotificationsSagaStateFilterInput): NotificationsSagaStateResponse
+}
+
+type NotificationsInfoResponse {
+  response: GeneralResponse!
+  pageInfo: PageInfo
+  result: [String]
+}
+
+type NotificationsSagaStateResponse {
+  response: GeneralResponse!
+  pageInfo: PageInfo
+  result: [NotificationsSagaState]
+}
+
+extend type NotificationsSagaState @key(fields: "id") {
+  last_message_id: String
+  status: String
+  failed_step: String
+  failed_at: String
+  failure_details: String
+  account_store_id: Int
+  body: NotificationsSagaStateBody
+  modified_body: NotificationsSagaStateBody
+}
+
+type NotificationsSagaStateBody {
+  email: String
+  template: String
+  name: String
+  message: String
+  number: String
+  subject: String
+  date: String
+  status: String
+}
+
+input NotificationsSagaStateFilterInput {
+    id: [Int]
+}
+
+input NotificationsSagaStatePageInfoInput {
+  first: Int
+  pageNumber: Int
+  minId: Int
+  maxId: Int
+  orderBy: OrderByEnum
+  sortBy: [NotificationsSagaStateSortByEnum]
+}
+
+input NotificationsInfoCreateInput {
+  email: String!
+  template: NotifyTemplateEnum!
+  name: String
+  message: String
+  number: String
+  subject: String
+  date: String
+  status: String
+}
+
+input NotificationsSagaStateUpdateInput {
+  saga_id: Int!
+  modified_body: NotificationsSagaStateBodyUpdateInput!
+}
+
+input NotificationsSagaStateBodyUpdateInput {
+  name: String
+  message: String
+  number: String
+  subject: String
+  date: String
+  status: String
+}

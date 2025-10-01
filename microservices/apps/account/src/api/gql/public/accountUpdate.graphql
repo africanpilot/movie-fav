@@ -1,0 +1,36 @@
+mutation AccountUpdate($updateInput: AccountInfoUpdateInput!) {
+  accountUpdate(updateInput: $updateInput) {
+    response {
+      code
+      success
+      message
+      version
+    }
+    pageInfo {
+      page_info_count
+    }
+    result {
+      id
+      email
+      registration_date
+      registration_status
+      verified_email
+      last_login_date
+      last_logout_date
+      profile_image
+      profile_thumbnail
+      status
+      first_name
+      last_name
+      middle_name
+      maiden_name
+      title
+      preferred_name
+      birthday
+      address
+      city
+      state
+      zip_code
+    }
+  }
+}

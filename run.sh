@@ -1,79 +1,68 @@
 #!/bin/bash
 
-# Copyright © 2022 by Richard Maku.
-# All Rights Reserved. Proprietary and confidential.
-
-set -e
+set -euo pipefail
 
 # imports
-location=admin/tools
-source $location/general-func.sh
+tools_location=admin/tools
+source $tools_location/general-func.sh
 
-todo="\
-    db/postgres \
-    db/redis \
-    server \
-    api/apollo \
-    client \
-    api/nginx-apollo
-"
+# Check for help flag or no arguments
+if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ] || [ "$1" = "help" ]; then
+    show_help
+    exit 0
+fi
 
-# db/postgres \
-# db/redis \
-# server \
-# api/apollo \
-# client \
-# api/nginx-apollo \
-
-export SERVICES_TODO="$todo"
+# get args
 script="$1"
-environment="$2"
-command="$3"
-shift 2
+environment="${2:-}"
+command="${3:-}"
+target="${4:-}"
 
-# validation process
-validate_app_setup
-
-validate_script_agr $script
-
-validate_enviornment_agr $environment
-
-validate_command_agr $command
-
-# set environment variables
-sed -i "/APP_DEFAULT_ENV/c\APP_DEFAULT_ENV=$environment" .env
-if [ "$script" == "local" ]; then
-    sed -i "/APP_DEFAULT_ENV/c\APP_DEFAULT_ENV=local" .env
-    if [ "$command" == "down" ]; then
-        set +e
+# Validate minimum required arguments
+if [ "$script" = "docker" ] || [ "$script" = "deploy" ]; then
+    if [ -z "$environment" ] || [ -z "$command" ]; then
+        echo "ERROR: Missing required arguments" >&2
+        echo "Usage: $0 [SCRIPT] [ENVIRONMENT] [COMMAND] [TARGET]" >&2
+        echo "Run '$0 help' for more information" >&2
+        exit 1
     fi
 fi
-export $(grep -v '^#' .env | xargs)
-pass_down_env_copies
 
-# redirect to script
-if [ "$script" == "local" ]; then
-    prep_for_dev
-    validate_local_setup $todo $location
-    source $location/run-local.sh $environment $command
-elif [ "$script" == "docker" ]; then
-    prep_for_dev
-    source $location/run-docker.sh $environment $command
-elif [ "$script" == "deploy" ]; then
-    prep_for_deploy
-    aws_erc_login ${AWS_ACCOUNT_ID} ${AWS_REGION}
-    source $location/run-deploy.sh $environment $command
-elif [ "$script" == "pipeline" ]; then
-    if [ "$command" == "up" ] && [ "$environment" == "prod" ]; then 
-        prep_for_deploy
-        source $location/run-pipeline.sh
-    else
-        echo "WARNING ERROR: Only pipeline prod up command allowed for pipeline script"
-        return 1 
+if [ -z "$script" ] || [ -z "$environment" ] || [ -z "$command" ]; then
+    echo "ERROR: Missing required arguments" >&2
+    echo "Usage: $0 [SCRIPT] [ENVIRONMENT] [COMMAND] [TARGET]" >&2
+    echo "Run '$0 help' for more information" >&2
+    exit 1
+fi
+
+# validation process
+if [ "$script" = "docker" ] || [ "$script" = "deploy" ]; then
+    shift 2
+    validate_engine $script
+    validate_script_arg $script
+    validate_environment_arg $environment
+    validate_command_arg $command
+    validate_app_setup $environment
+    # source .buildx.env
+
+    # set environment variables
+    export SERVICES_TODO=""
+    export DOCKER_COMPOSE_FILE_NAME="docker-compose-$environment.yml"
+    export_env_var $environment
+
+    # update service todo if necessary
+    if [ ! -z "$target" ]; then
+        export SERVICES_TODO=$target
+        echo "service todo update: $SERVICES_TODO"
     fi
+fi
+# redirect to script
+if [ "$script" = "docker" ] || [ "$script" = "nerdctl" ]; then
+    source $tools_location/run-container.sh $environment $command $*
+elif [ "$script" = "deploy" ]; then
+    source $tools_location/run-deploy.sh $environment $command $*
 else
-    echo "Unknown Exception met"
-    return 1
+    source $tools_location/general-func.sh $*
 fi
 
 # $SHELL

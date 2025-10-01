@@ -1,0 +1,100 @@
+extend type Query {
+  accountStore(pageInfo: AccountStorePageInfoInput, filterInput: AccountStoreFilterInput): AccountStoreResponse
+}
+
+extend type Mutation {
+  accountStoreCreate(createInput: AccountStoreCreateInput!, pageInfo: AccountStorePageInfoInput, filterInput: AccountStoreFilterInput): AccountStoreResponse
+  accountStoreUpdate(updateInput: AccountStoreUpdateInput!, pageInfo: AccountStorePageInfoInput, filterInput: AccountStoreFilterInput): AccountStoreResponse
+  accountStoreDelete(deleteInput: [Int]!, pageInfo: AccountStorePageInfoInput, filterInput: AccountStoreFilterInput): AccountStoreResponse
+}
+
+type AccountStoreResponse {
+  response: GeneralResponse!
+  pageInfo: PageInfo
+  result: [AccountStore]
+}
+
+extend type AccountStore @key(fields: "id") {
+  account_company_id: Int
+  name: String
+  ein: String
+  phone_number: String
+  website: String
+  fax_number: String
+  tax_rate_applied: Float
+  image: String
+  thumb_nail: String
+  images: [String]
+  logo: String
+  logo_thumbnail: String
+  is_closed: Boolean
+  return_policy: String
+  address: String
+  city: String
+  state: String
+  zip_code: Int
+  latitude: Float
+  longitude: Float
+  account_store_employee: [AccountStoreEmployee]
+}
+
+input AccountStoreFilterInput {
+  id: [Int]
+  name: [String]
+}
+
+input AccountStorePageInfoInput {
+  first: Int
+  pageNumber: Int
+  minId: Int
+  maxId: Int
+  orderBy: OrderByEnum
+  sortBy: [AccountStoreSortByEnum]
+}
+
+input AccountStoreCreateInput {
+  name: String!
+  ein: String!
+  phone_number: String
+  website: String!
+  fax_number: String
+  tax_rate_applied: Float!
+  image: String
+  thumb_nail: String
+  images: [String]
+  logo: String
+  logo_thumbnail: String
+  is_closed: Boolean
+  return_policy: String
+  address: String
+  city: String
+  state: String
+  zip_code: Int
+  latitude: Float
+  longitude: Float
+  account_store_employee: [AccountStoreEmployeeCreateInput]
+}
+
+input AccountStoreUpdateInput {
+  account_store_id: Int!
+  name: String
+  ein: String
+  phone_number: String
+  website: String
+  fax_number: String
+  tax_rate_applied: Float
+  image: String
+  thumb_nail: String
+  images: [String]
+  logo: String
+  logo_thumbnail: String
+  is_closed: Boolean
+  return_policy: String
+  address: String
+  city: String
+  state: String
+  zip_code: Int
+  latitude: Float
+  longitude: Float
+  account_store_employee: [AccountStoreEmployeeUpdateInput]
+}

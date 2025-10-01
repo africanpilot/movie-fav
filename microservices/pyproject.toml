@@ -1,0 +1,158 @@
+[tool.black]
+line-length = 120
+target-version = ['py313']
+include = '\.pyi?$'
+exclude = '.venv/*'
+
+[tool.poetry]
+name = "microservices"
+version = "0.1.0"
+description = ""
+authors = ["Richard Maku <makurichard14@gmail.com>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.13,<3.14"
+tenacity = "9.1.2"
+SQLAlchemy = "2.0.43"
+SQLAlchemy-Utils = "0.42.0"
+redis = "6.4.0"
+fastapi = "0.117.1"
+ariadne = "0.26.2"
+uvicorn = "0.36.0"
+setproctitle = "^1.3.2"
+gunicorn = {extras = ["setproctitle"], version = "23.0.0"}
+PyJWT = "2.10.1"
+bcrypt = "4.3.0"
+pydantic = "2.11.9"
+requests = "2.32.5"
+cinemagoer = "2023.5.1"
+sendgrid = "6.12.5"
+sqlmodel = "0.0.25"
+selenium = "4.35.0"
+watchgod = "0.8.2"
+celery = "5.5.3"
+asyncapi = {extras = ["http", "yaml", "redis", "subscriber", "docs"], version = "0.14.1"}
+grpcio = "1.75.0"
+grpcio-tools = "1.75.0"
+psycopg2 = "2.9.10"
+authlib = "1.6.4"
+httpx = "0.28.1"
+pandas = "2.3.2"
+webdriver-manager = "4.0.2"
+alembic = "1.16.5"
+beautifulsoup4 = "4.13.5"
+itsdangerous = "2.2.0"
+numpy = "2.3.3"
+geopy = "2.4.1"
+parsel = "1.10.0"
+loguru = "0.7.3"
+cinemagoerng = "0.4"
+graphql-core = "3.2.5"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "8.4.2"
+pytest-benchmark = "5.1.0"
+pre-commit = "4.3.0"
+autoflake = "2.3.1"
+black = "25.9.0"
+isort = "6.0.1"
+flake8 = "7.3.0"
+pytest-cov = "7.0.0"
+freezegun = "1.5.5"
+pytest-asyncio = "1.2.0"
+requests-mock = "1.12.1"
+bandit = "1.8.6"
+mypy = "1.18.2"
+types-requests = "2.32.4.20250913"
+autopep8 = "2.3.1"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["test"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--verbose",
+    "--tb=short",
+    "--cov=src",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+    "--cov-fail-under=80"
+]
+markers = [
+    "links: marks tests as links related",
+    "link_domain_request: marks tests as link domain request related",
+    "link_domain_response: marks tests as link domain response related",
+    "link_domain_general: marks tests as link domain general related",
+    "link_domain_imdb_helper: marks tests as IMDB helper related",
+    "link_lib_microservice_dynamic_link: marks tests as dynamic link related",
+    "account: marks tests as account related",
+    "account_bench: marks tests as account benchmark related",
+    "account_create_mutation: marks tests as account creation related",
+    "account_confirm_email_mutation: marks tests as email confirmation related",
+    "account_resend_confirm_mutation: marks tests as resend confirmation related",
+    "account_forgot_password_mutation: marks tests as password reset related",
+    "slow: marks tests as slow running",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests"
+]
+
+[tool.coverage.run]
+omit = [
+    "*/tests/*",
+    "*/test/*",
+    "*/__pycache__/*",
+    "*/migrations/*",
+    "*/venv/*",
+    "*/.venv/*",
+    "packages/*"
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:"
+]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[tool.isort]
+profile = "black"
+line_length = 120
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+known_first_party = ["apps", "links"]
+known_third_party = ["fastapi", "sqlalchemy", "pydantic", "pytest"]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

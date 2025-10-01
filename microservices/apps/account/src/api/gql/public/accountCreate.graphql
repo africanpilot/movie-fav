@@ -1,0 +1,13 @@
+mutation AccountCreate($createInput: AccountInfoCreateInput!){
+    accountCreate(createInput: $createInput) {
+        response{ code success message version}
+        pageInfo{ ...PageInfo}
+        result{
+            id
+            email
+            status
+            registration_status
+            profile_image
+        }
+    }
+}

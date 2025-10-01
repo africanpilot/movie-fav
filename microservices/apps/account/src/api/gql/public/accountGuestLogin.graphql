@@ -1,0 +1,11 @@
+mutation AccountGuestLogin {
+  accountGuestLogin {
+    response{ code success message version}
+    pageInfo{ ...PageInfo}
+    result {
+      authenticationToken
+      authenticationTokenType
+      registrationStatus
+    }
+  }
+}

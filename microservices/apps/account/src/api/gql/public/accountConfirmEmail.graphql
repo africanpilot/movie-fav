@@ -1,0 +1,6 @@
+mutation AccountConfirmEmail {
+    accountConfirmEmail {
+        response{ code success message version}
+        pageInfo{ ...PageInfo}
+    }
+}

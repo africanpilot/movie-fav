@@ -1,0 +1,203 @@
+{
+  "folders": [
+    {
+      "name": "Movie-Fav Root",
+      "path": "."
+    },
+    {
+      "name": "Microservices",
+      "path": "./microservices"
+    },
+    {
+      "name": "Theater App",
+      "path": "./microservices/apps/theater"
+    },
+    {
+      "name": "Deployment",
+      "path": "./deployment"
+    }
+  ],
+  "settings": {
+    "python.defaultInterpreterPath": "./microservices/.venv/bin/python",
+    "python.formatting.provider": "black",
+    "python.formatting.blackArgs": ["--config", "./microservices/pyproject.toml"],
+    "python.linting.enabled": true,
+    "python.linting.flake8Enabled": true,
+    "python.linting.flake8Args": ["--config", "./microservices/.flake8"],
+    "python.testing.pytestEnabled": true,
+    "python.testing.pytestArgs": [
+      "./microservices",
+      "--benchmark-disable"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "eslint.workingDirectories": [
+      "./microservices"
+    ],
+    "typescript.preferences.includePackageJsonAutoImports": "on",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.fixAll.eslint": "explicit"
+    },
+    "files.exclude": {
+      "**/__pycache__": true,
+      "**/*.pyc": true,
+      "**/node_modules": true,
+      "**/.venv": true,
+      "**/dist": true,
+      "**/.next": true
+    },
+    "search.exclude": {
+      "**/__pycache__": true,
+      "**/node_modules": true,
+      "**/.venv": true,
+      "**/dist": true,
+      "**/.next": true,
+      "**/coverage": true
+    },
+    "docker.defaultRegistryPath": "localhost:5000",
+    "files.associations": {
+      "*.yml": "yaml",
+      "*.yaml": "yaml",
+      "docker-compose*.yml": "dockercompose"
+    },
+    "yaml.schemas": {
+      "https://json.schemastore.org/github-workflow.json": ".github/workflows/*.yml",
+      "https://json.schemastore.org/docker-compose.json": "docker-compose*.yml"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-python.black-formatter",
+      "ms-python.flake8",
+      "ms-python.isort",
+      "esbenp.prettier-vscode",
+      "bradlc.vscode-tailwindcss",
+      "ms-vscode.vscode-typescript-next",
+      "ms-azuretools.vscode-docker",
+      "ms-kubernetes-tools.vscode-kubernetes-tools",
+      "redhat.vscode-yaml",
+      "github.vscode-github-actions",
+      "ms-vscode.test-adapter-converter",
+      "hbenl.vscode-test-explorer",
+      "ms-python.pytest",
+      "humao.rest-client",
+      "formulahendry.auto-rename-tag",
+      "christian-kohler.path-intellisense",
+      "visualstudioexptteam.vscodeintellicode",
+      "github.copilot",
+      "github.copilot-chat"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Install Python Dependencies",
+        "type": "shell",
+        "command": "poetry install",
+        "options": {
+          "cwd": "${workspaceFolder}/microservices"
+        },
+        "group": "build",
+        "problemMatcher": []
+      },
+      {
+        "label": "Install Node Dependencies",
+        "type": "shell",
+        "command": "yarn install",
+        "options": {
+          "cwd": "${workspaceFolder}/microservices"
+        },
+        "group": "build",
+        "problemMatcher": []
+      },
+      {
+        "label": "Run Python Tests",
+        "type": "shell",
+        "command": "poetry run pytest --benchmark-disable -v",
+        "options": {
+          "cwd": "${workspaceFolder}/microservices"
+        },
+        "group": "test",
+        "problemMatcher": []
+      },
+      {
+        "label": "Run Pre-commit",
+        "type": "shell",
+        "command": "pre-commit run --all-files",
+        "options": {
+          "cwd": "${workspaceFolder}"
+        },
+        "group": "test",
+        "problemMatcher": []
+      },
+      {
+        "label": "Start Dev Environment",
+        "type": "shell",
+        "command": "./run.sh docker dev up",
+        "options": {
+          "cwd": "${workspaceFolder}"
+        },
+        "group": "build",
+        "isBackground": true,
+        "problemMatcher": []
+      },
+      {
+        "label": "Stop Dev Environment",
+        "type": "shell",
+        "command": "./run.sh docker dev down",
+        "options": {
+          "cwd": "${workspaceFolder}"
+        },
+        "group": "build",
+        "problemMatcher": []
+      }
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Python: Current File",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "${file}",
+        "console": "integratedTerminal",
+        "cwd": "${workspaceFolder}/microservices",
+        "env": {
+          "APP_DEFAULT_ENV": "dev"
+        }
+      },
+      {
+        "name": "Python: Django Debug",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "${workspaceFolder}/microservices/manage.py",
+        "args": ["runserver", "0.0.0.0:8000"],
+        "django": true,
+        "cwd": "${workspaceFolder}/microservices",
+        "env": {
+          "APP_DEFAULT_ENV": "dev"
+        }
+      },
+      {
+        "name": "Attach to Docker",
+        "type": "debugpy",
+        "request": "attach",
+        "connect": {
+          "host": "localhost",
+          "port": 5678
+        },
+        "pathMappings": [
+          {
+            "localRoot": "${workspaceFolder}/microservices",
+            "remoteRoot": "/home/svc/microservices"
+          }
+        ]
+      }
+    ]
+  }
+}

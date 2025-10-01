@@ -1,0 +1,4 @@
+extend type Mutation {
+  personInfoPopulate(pageInfo: PersonInfoPageInfoInput): PersonInfoResponse
+  personImport(pageInfo: PageInfoInput): PersonInfoResponse
+}

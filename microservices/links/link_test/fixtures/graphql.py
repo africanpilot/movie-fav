@@ -1,0 +1,83 @@
+# Copyright © 2025 by Richard Maku, Inc.
+# All Rights Reserved. Proprietary and confidential.
+
+import os
+from typing import cast
+
+import pytest
+from graphql import (
+    FieldNode,
+    GraphQLField,
+    GraphQLObjectType,
+    GraphQLResolveInfo,
+    GraphQLSchema,
+    GraphQLString,
+    OperationDefinitionNode,
+    ResponsePath,
+    execute_sync,
+    parse,
+)
+
+# Import the appropriate controller based on the current microservice
+microservice_name = os.getenv("MICROSERVICE_NAME")
+if microservice_name != "links":
+    from monxt.src.controller.controller_api import APISchema
+else:
+    # For other microservices like links, use a mock or simplified schema
+    class APISchema:
+        @staticmethod
+        def private_schema():
+            # Return a minimal schema for testing when not in monxt
+            from graphql import GraphQLField, GraphQLObjectType, GraphQLSchema, GraphQLString
+
+            return GraphQLSchema(
+                GraphQLObjectType("Query", {"test": GraphQLField(GraphQLString, resolve=lambda obj, info: "test")})
+            )
+
+
+# grabbed from https://github.com/graphql-python/graphql-core/blob/a1c15d128fcb6e981ba298419b6e66cf87efc17a/tests/execution/test_executor.py
+def create_gql_info(context_value, result_context: str = None):
+    resolved_infos = []
+
+    def resolve(_obj, info):
+        resolved_infos.append(info)
+
+    test_type = GraphQLObjectType("Test", {"test": GraphQLField(GraphQLString, resolve=resolve)})
+
+    schema = GraphQLSchema(test_type)
+
+    result_context = result_context or "{ result: test }"
+
+    document = parse(f"""query ($var: String) {result_context}""")
+    root_value = {"root": "val"}
+    variable_values = {"var": "abc"}
+    execute_sync(schema, document, root_value, variable_values=variable_values)
+
+    operation = cast(OperationDefinitionNode, document.definitions[0])
+    assert operation and operation.kind == "operation_definition"
+    field = cast(FieldNode, operation.selection_set.selections)
+
+    return GraphQLResolveInfo(
+        field_name="test",
+        field_nodes=field,
+        return_type=GraphQLString,
+        parent_type=cast(GraphQLObjectType, schema.query_type),
+        path=ResponsePath(None, "result", "Test"),
+        schema=schema,
+        fragments={},
+        root_value=root_value,
+        operation=operation,
+        variable_values=variable_values,
+        context=context_value,
+        is_awaitable=None,
+    )
+
+
+@pytest.fixture
+def gql_info():
+    return create_gql_info
+
+
+@pytest.fixture
+def private_schema():
+    return APISchema.private_schema()

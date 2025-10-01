@@ -1,0 +1,613 @@
+services:
+  ###################
+  # Database
+  ###################
+  postgres:
+    image: postgres
+    hostname: postgres
+    container_name: postgres
+    restart: always
+    volumes:
+      - postgres_secmsdb_test:/var/lib/postgresql/data:delegated
+      - ./microservices/apps/postgres/postgres.conf:/etc/postgresql/postgresql.conf
+      - ./microservices/apps/postgres/dev/create_all_db.sql:/docker-entrypoint-initdb.d/001-create_all_db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE_INIT}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      APP_DEFAULT_ENV: test
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE_INIT}
+    env_file:
+      - .test.env
+    ports:
+      - "5432:5432"
+    networks:
+      - secms
+
+  pgadmin:
+    image: dpage/pgadmin4
+    hostname: pgadmin
+    container_name: pgadmin
+    restart: always
+    environment:
+      APP_DEFAULT_ENV: test
+    env_file:
+      - .test.env
+    ports:
+      - "5050:80"
+    networks:
+      - secms
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    hostname: rabbitmq
+    container_name: rabbitmq
+    restart: always
+    volumes:
+      - rabbitmq_secmsdb_test:/var/lib/rabbitmq/
+      - rabbitmq_secmsdb_test:/var/log/rabbitmq
+    environment:
+      - "RABBITMQ_DEFAULT_USER=trackstar"
+      - "RABBITMQ_DEFAULT_PASS=test"
+      - "RABBITMQ_DEFAULT_VHOST=/"
+    env_file:
+      - .test.env
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      - secms
+
+  redis:
+    image: redis:6.2-alpine
+    hostname: redis
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server /usr/local/etc/redis/redis.conf --save 20 1 --loglevel warning --requirepass ${DB_REDIS_PASSWORD}
+    volumes:
+      - "./microservices/apps/redis/redis.conf:/usr/local/etc/redis/redis.conf"
+      - redis_secmsdb_test:/usr/local/etc/redis/data:delegated
+    environment:
+      APP_DEFAULT_ENV: test
+    env_file:
+      - .test.env
+    networks:
+      - secms
+
+  selenium:
+    image: seleniarm/standalone-chromium
+    hostname: selenium
+    container_name: selenium
+    restart: always
+    environment:
+      - DOCKER_DEFAULT_PLATFORM=linux/amd64
+      - GRID_MAX_SESSION=20
+      - SE_NODE_MAX_SESSIONS=20
+      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+      - VNC_NO_PASSWORD=1
+    ports:
+      - "4013:4444"
+    volumes:
+      - /dev/shm:/dev/shm
+    networks:
+      - secms
+
+  ###################
+  # Nginx Routing
+  ###################
+  nginx:
+    image: nginx:test
+    hostname: nginx
+    container_name: nginx
+    build:
+      context: ./api/nginx
+      dockerfile: Dockerfile
+    restart: "on-failure"
+    environment:
+      APP_DEFAULT_ENV: test
+    env_file:
+      - .test.env
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - secms
+
+  ###################
+  # Apollo Gateway
+  ###################
+  apollo:
+    image: apollo:dev
+    hostname: apollo
+    container_name: apollo
+    build:
+      context: ./api/apollo
+      dockerfile: Dockerfile
+    entrypoint: npm run start-gateway-development
+    restart: "on-failure"
+    volumes:
+      - "./microservices/apps/apollo:/home/svc/apollo"
+    environment:
+      APP_DEFAULT_ENV: test
+    env_file:
+      - .test.env
+    ports:
+      - "4000:4000"
+      - "4001:4001"
+    networks:
+      - secms
+
+  ###################
+  # Client
+  ###################
+  theater:
+    image: theater:dev
+    hostname: theater
+    container_name: theater
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint: yarn test
+    restart: "on-failure"
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    env_file:
+      - .test.env
+    networks:
+      - secms
+
+  ###################
+  # Microservices
+  ###################
+  account:
+    image: microservices:dev
+    hostname: account
+    container_name: account
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint: make test
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      account-worker:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: test
+      BENCHMARK: enable
+      MICROSERVICE_PATH: apps/account
+      MICROSERVICE_NAME: account
+      TEST_DIR: "${TEST_DIR:-test/}"
+      CICD_MODE: ${CICD_MODE:-"False"}
+    env_file:
+      - .test.env
+    networks:
+      - secms
+
+  account-worker:
+    image: microservices:dev
+    hostname: account-worker
+    container_name: account-worker
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint:
+      [
+        "celery",
+        "--workdir",
+        "/home/svc/microservices/apps/account/src/app_lib",
+        "-A",
+        "worker",
+        "worker",
+        "-l",
+        "INFO",
+        "-E",
+      ]
+    restart: "on-failure"
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: test
+      CICD_MODE: ${CICD_MODE:-"False"}
+    env_file:
+      - .test.env
+    networks:
+      - secms
+
+  links:
+    image: microservices:dev
+    hostname: links
+    container_name: links
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint: make test
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: test
+      BENCHMARK: enable
+      MICROSERVICE_PATH: links
+      MICROSERVICE_NAME: links
+      TEST_DIR: "${TEST_DIR:-test/}"
+      CICD_MODE: ${CICD_MODE:-"False"}
+    env_file:
+      - .test.env
+    networks:
+      - secms
+
+  monxt:
+    image: microservices:dev
+    hostname: monxt
+    container_name: monxt
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint: make test
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      monxt-worker:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: test
+      BENCHMARK: enable
+      MICROSERVICE_PATH: apps/monxt
+      MICROSERVICE_NAME: monxt
+      TEST_DIR: "${TEST_DIR:-test/}"
+      CICD_MODE: ${CICD_MODE:-"False"}
+    env_file:
+      - .test.env
+    networks:
+      - secms
+
+  monxt-worker:
+    image: microservices:dev
+    hostname: monxt-worker
+    container_name: monxt-worker
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint:
+      [
+        "celery",
+        "--workdir",
+        "/home/svc/microservices/apps/monxt/src/app_lib",
+        "-A",
+        "worker",
+        "worker",
+        "-l",
+        "INFO",
+        "-E",
+      ]
+    restart: "on-failure"
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: test
+      CICD_MODE: ${CICD_MODE:-"False"}
+    env_file:
+      - .test.env
+    networks:
+      - secms
+
+  movie:
+    image: microservices:dev
+    hostname: movie
+    container_name: movie
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint: make test
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      movie-worker:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: test
+      BENCHMARK: enable
+      MICROSERVICE_PATH: apps/movie
+      MICROSERVICE_NAME: movie
+      TEST_DIR: "${TEST_DIR:-test/}"
+      CICD_MODE: ${CICD_MODE:-"False"}
+    env_file:
+      - .test.env
+    networks:
+      - secms
+
+  movie-worker:
+    image: microservices:dev
+    hostname: movie-worker
+    container_name: movie-worker
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint:
+      [
+        "celery",
+        "--workdir",
+        "/home/svc/microservices/apps/movie/src/app_lib",
+        "-A",
+        "worker",
+        "worker",
+        "-l",
+        "INFO",
+      ]
+    restart: "on-failure"
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      selenium:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: test
+      CICD_MODE: ${CICD_MODE:-"False"}
+    env_file:
+      - .test.env
+    networks:
+      - secms
+
+  notifications:
+    image: microservices:dev
+    hostname: notifications
+    container_name: notifications
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint: make test
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      notifications-worker:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: test
+      BENCHMARK: enable
+      MICROSERVICE_PATH: apps/notifications
+      MICROSERVICE_NAME: notifications
+      TEST_DIR: "${TEST_DIR:-test/}"
+      CICD_MODE: ${CICD_MODE:-"False"}
+    env_file:
+      - .test.env
+    networks:
+      - secms
+
+  notifications-worker:
+    image: microservices:dev
+    hostname: notifications-worker
+    container_name: notifications-worker
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint:
+      [
+        "celery",
+        "--workdir",
+        "/home/svc/microservices/apps/notifications/src/app_lib",
+        "-A",
+        "worker",
+        "worker",
+        "-l",
+        "INFO",
+      ]
+    restart: "on-failure"
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: test
+      CICD_MODE: ${CICD_MODE:-"False"}
+    env_file:
+      - .test.env
+    networks:
+      - secms
+
+  person:
+    image: microservices:dev
+    hostname: person
+    container_name: person
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint: make test
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      person-worker:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: test
+      BENCHMARK: enable
+      MICROSERVICE_PATH: apps/person
+      MICROSERVICE_NAME: person
+      TEST_DIR: "${TEST_DIR:-test/}"
+      CICD_MODE: ${CICD_MODE:-"False"}
+    env_file:
+      - .test.env
+    networks:
+      - secms
+
+  person-worker:
+    image: microservices:dev
+    hostname: person-worker
+    container_name: person-worker
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint:
+      [
+        "celery",
+        "--workdir",
+        "/home/svc/microservices/apps/person/src/app_lib",
+        "-A",
+        "worker",
+        "worker",
+        "-l",
+        "INFO",
+      ]
+    restart: "on-failure"
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: test
+      CICD_MODE: ${CICD_MODE:-"False"}
+    env_file:
+      - .test.env
+    networks:
+      - secms
+
+  shows:
+    image: microservices:dev
+    hostname: shows
+    container_name: shows
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint: make test
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      shows-worker:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: test
+      BENCHMARK: enable
+      MICROSERVICE_PATH: apps/shows
+      MICROSERVICE_NAME: shows
+      TEST_DIR: "${TEST_DIR:-test/}"
+      CICD_MODE: ${CICD_MODE:-"False"}
+    env_file:
+      - .test.env
+    networks:
+      - secms
+
+  shows-worker:
+    image: microservices:dev
+    hostname: shows-worker
+    container_name: shows-worker
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint:
+      [
+        "celery",
+        "--workdir",
+        "/home/svc/microservices/apps/shows/src/app_lib",
+        "-A",
+        "worker",
+        "worker",
+        "-l",
+        "INFO",
+      ]
+    restart: "on-failure"
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      selenium:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: test
+      CICD_MODE: ${CICD_MODE:-"False"}
+    env_file:
+      - .test.env
+    networks:
+      - secms
+
+###################################################
+# List of all networks needed
+networks:
+  secms:
+    driver: bridge
+volumes:
+  postgres_secmsdb_test:
+  redis_secmsdb_test:
+  rabbitmq_secmsdb_test:

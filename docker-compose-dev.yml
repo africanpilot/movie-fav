@@ -1,0 +1,565 @@
+services:
+  ###################
+  # Database
+  ###################
+  postgres:
+    image: postgres:17
+    hostname: postgres
+    container_name: postgres
+    restart: always
+    volumes:
+      - postgres_secmsdb_dev:/var/lib/postgresql/data:delegated
+      - ./microservices/apps/postgres/postgres.conf:/etc/postgresql/postgresql.conf
+      - ./microservices/apps/postgres/dev/create_all_db.sql:/docker-entrypoint-initdb.d/001-create_all_db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE_INIT}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      APP_DEFAULT_ENV: dev
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE_INIT}
+    env_file:
+      - .dev.env
+    ports:
+      - "5432:5432"
+    networks:
+      - secms
+
+  pgadmin:
+    image: dpage/pgadmin4
+    hostname: pgadmin
+    container_name: pgadmin
+    restart: always
+    environment:
+      APP_DEFAULT_ENV: dev
+    env_file:
+      - .dev.env
+    ports:
+      - "5050:80"
+    networks:
+      - secms
+
+  rabbitmq:
+    image: rabbitmq:4.1.4-management
+    hostname: rabbitmq
+    container_name: rabbitmq
+    restart: always
+    volumes:
+      - rabbitmq_secmsdb_dev:/var/lib/rabbitmq/
+      - rabbitmq_secmsdb_dev:/var/log/rabbitmq
+    environment:
+      - "RABBITMQ_DEFAULT_USER=trackstar"
+      - "RABBITMQ_DEFAULT_PASS=test"
+      - "RABBITMQ_DEFAULT_VHOST=/"
+    env_file:
+      - .dev.env
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      - secms
+
+  redis:
+    image: redis:8.2.1-alpine
+    hostname: redis
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server /usr/local/etc/redis/redis.conf --save 20 1 --loglevel warning --requirepass ${DB_REDIS_PASSWORD}
+    volumes:
+      - "./microservices/apps/redis/redis.conf:/usr/local/etc/redis/redis.conf"
+      - redis_secmsdb_dev:/usr/local/etc/redis/data:delegated
+    environment:
+      APP_DEFAULT_ENV: dev
+    env_file:
+      - .dev.env
+    networks:
+      - secms
+
+  selenium:
+    # image: selenium/standalone-chrome
+    image: seleniarm/standalone-chromium:124.0
+    hostname: selenium
+    container_name: selenium
+    restart: always
+    environment:
+      - DOCKER_DEFAULT_PLATFORM=linux/amd64
+      - GRID_MAX_SESSION=20
+      - SE_NODE_MAX_SESSIONS=20
+      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+      - VNC_NO_PASSWORD=1
+    ports:
+      - "4013:4444"
+    volumes:
+      - /dev/shm:/dev/shm
+    networks:
+      - secms
+
+  ###################
+  # Monitoring
+  ###################
+  flower:
+    image: mher/flower:master
+    hostname: flower
+    container_name: flower
+    restart: always
+    entrypoint: ["celery", "--broker=${APP_CELERY_BROKER}", "flower"]
+    depends_on:
+      rabbitmq:
+        condition: service_started
+    environment:
+      FLOWER_PORT: 5566
+    env_file:
+      - .dev.env
+    ports:
+      - "5566:5566"
+    networks:
+      - secms
+
+  ###################
+  # Nginx Routing
+  ###################
+  nginx:
+    image: nginx
+    hostname: nginx
+    container_name: nginx
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: nginx-production
+    restart: "on-failure"
+    env_file:
+      - .dev.env
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - secms
+
+  ###################
+  # Apollo Gateway
+  ###################
+  apollo:
+    image: apollo:dev
+    hostname: apollo
+    container_name: apollo
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: apollo-production
+    entrypoint: npm run start-gateway-production
+    restart: "on-failure"
+    environment:
+      APP_DEFAULT_ENV: dev
+    env_file:
+      - .dev.env
+    ports:
+      - "4000:4000"
+      - "4001:4001"
+    networks:
+      - secms
+
+  ###################
+  # Microservices
+  ###################
+  account:
+    image: microservices:dev
+    hostname: account
+    container_name: account
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint: python3 start account
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      account-worker:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: dev
+    env_file:
+      - .dev.env
+    ports:
+      - "4002:8000"
+    networks:
+      - secms
+
+  account-worker:
+    image: microservices:dev
+    hostname: account-worker
+    container_name: account-worker
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint:
+      [
+        "celery",
+        "--workdir",
+        "/home/svc/microservices/apps/account/src/app_lib",
+        "-A",
+        "worker",
+        "worker",
+        "-l",
+        "INFO",
+        "-E",
+      ]
+    restart: "on-failure"
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: dev
+    env_file:
+      - .dev.env
+    networks:
+      - secms
+
+  movie:
+    image: microservices:dev
+    hostname: movie
+    container_name: movie
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint: python3 start movie
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      movie-worker:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: dev
+    env_file:
+      - .dev.env
+    ports:
+      - "4004:8000"
+    networks:
+      - secms
+
+  movie-worker:
+    image: microservices:dev
+    hostname: movie-worker
+    container_name: movie-worker
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint:
+      [
+        "celery",
+        "--workdir",
+        "/home/svc/microservices/apps/movie/src/app_lib",
+        "-A",
+        "worker",
+        "worker",
+        "-l",
+        "INFO",
+        "-E",
+      ]
+    restart: "on-failure"
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      selenium:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: test
+    env_file:
+      - .dev.env
+    networks:
+      - secms
+
+  notifications:
+    image: microservices:dev
+    hostname: notifications
+    container_name: notifications
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint: python3 start notifications
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      notifications-worker:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: dev
+    env_file:
+      - .dev.env
+    ports:
+      - "4005:8000"
+    networks:
+      - secms
+
+  notifications-worker:
+    image: microservices:dev
+    hostname: notifications-worker
+    container_name: notifications-worker
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint:
+      [
+        "celery",
+        "--workdir",
+        "/home/svc/microservices/apps/notifications/src/app_lib",
+        "-A",
+        "worker",
+        "worker",
+        "-l",
+        "INFO",
+        "-E",
+      ]
+    restart: "on-failure"
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: dev
+    env_file:
+      - .dev.env
+    networks:
+      - secms
+
+  person:
+    image: microservices:dev
+    hostname: person
+    container_name: person
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint: python3 start person
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      person-worker:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: dev
+    env_file:
+      - .dev.env
+    ports:
+      - "4006:8000"
+    networks:
+      - secms
+
+  person-worker:
+    image: microservices:dev
+    hostname: person-worker
+    container_name: person-worker
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint:
+      [
+        "celery",
+        "--workdir",
+        "/home/svc/microservices/apps/person/src/app_lib",
+        "-A",
+        "worker",
+        "worker",
+        "-l",
+        "INFO",
+        "-E",
+      ]
+    restart: "on-failure"
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: test
+    env_file:
+      - .dev.env
+    networks:
+      - secms
+
+  shows:
+    image: microservices:dev
+    hostname: shows
+    container_name: shows
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint: python3 start shows
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      shows-worker:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: dev
+    env_file:
+      - .dev.env
+    ports:
+      - "4007:8000"
+    networks:
+      - secms
+
+  shows-worker:
+    image: microservices:dev
+    hostname: shows-worker
+    container_name: shows-worker
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint:
+      [
+        "celery",
+        "--workdir",
+        "/home/svc/microservices/apps/shows/src/app_lib",
+        "-A",
+        "worker",
+        "worker",
+        "-l",
+        "INFO",
+        "-E",
+      ]
+    restart: "on-failure"
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: dev
+    env_file:
+      - .dev.env
+    networks:
+      - secms
+
+  monxt:
+    image: microservices:dev
+    hostname: monxt
+    container_name: monxt
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint: python3 start monxt
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      monxt-worker:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: dev
+    env_file:
+      - .dev.env
+    ports:
+      - "4009:8000"
+    networks:
+      - secms
+
+  monxt-worker:
+    image: microservices:dev
+    hostname: monxt-worker
+    container_name: monxt-worker
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile
+      target: development
+    entrypoint:
+      [
+        "celery",
+        "--workdir",
+        "/home/svc/microservices/apps/monxt/src/app_lib",
+        "-A",
+        "worker",
+        "worker",
+        "-l",
+        "INFO",
+        "-E",
+      ]
+    restart: "on-failure"
+    volumes:
+      - "./microservices:/home/svc/microservices"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      selenium:
+        condition: service_started
+    environment:
+      APP_DEFAULT_ENV: dev
+    env_file:
+      - .dev.env
+    networks:
+      - secms
+
+###################################################
+# List of all networks needed
+networks:
+  secms:
+    driver: bridge
+volumes:
+  postgres_secmsdb_dev:
+  redis_secmsdb_dev:
+  rabbitmq_secmsdb_dev:

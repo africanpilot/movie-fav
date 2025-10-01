@@ -1,0 +1,108 @@
+extend type Query {
+  accountMe: AccountInfoResponse
+}
+
+extend type Mutation {
+  accountCreate(createInput: AccountInfoCreateInput!): AccountInfoResponse
+  accountDelete: AccountInfoResponse
+  accountUpdate(updateInput: AccountInfoUpdateInput!): AccountInfoResponse
+  accountUpdatePassword(updateInput: AccountInfoUpdatePasswordInput!): AccountInfoResponse
+
+  accountConfirmEmail: AccountInfoResponse
+  accountResendConfirm(accountLogin: String!): AccountInfoResponse
+  accountForgotPassword(accountLogin: String!): AccountInfoResponse
+  accountForgotPasswordConfirmEmail: AccountInfoResponse
+
+  accountAuthenticationLogin(accountLoginInput: AccountLoginInput!): AccountAuthenticationResponse
+  accountGuestLogin: AccountAuthenticationResponse
+  accountAuthenticationLogout: AccountAuthenticationResponse
+}
+
+type AccountInfoResponse {
+  response: GeneralResponse!
+  pageInfo: PageInfo
+  result: [AccountInfo]
+}
+
+type AccountAuthenticationResponse {
+  response: GeneralResponse!
+  pageInfo: PageInfo
+  result: AccountAuthentication
+}
+
+type AccountAuthentication {
+  authenticationToken: String
+  authenticationTokenType: AuthenticationTokenTypeEnum
+  registrationStatus: AccountRegistrationEnum
+  account_info: [AccountInfo]
+}
+
+extend type AccountInfo @key(fields: "id") {
+  email: String
+  registration_date: String
+  registration_status: AccountRegistrationEnum
+  verified_email: Boolean
+  last_login_date: String
+  last_logout_date: String
+  profile_image: String
+  profile_thumbnail: String
+  status: AccountStatusEnum
+  first_name: String
+  last_name: String
+  middle_name: String
+  maiden_name: String
+  title: String
+  preferred_name: String
+  birthday: String
+  address: String
+  city: String
+  state: String
+  zip_code: Int
+}
+
+input AccountInfoCreateInput {
+  email: String!
+  password: String!
+  reTypePassword: String!
+  profile_image: String
+  profile_thumbnail: String
+  first_name: String
+  last_name: String
+  middle_name: String
+  maiden_name: String
+  title: String
+  preferred_name: String
+  birthday: String
+  address: String
+  city: String
+  state: String
+  zip_code: Int
+  account_company: AccountCompanyCreateInput
+}
+
+input AccountInfoUpdateInput {
+  profile_image: String
+  profile_thumbnail: String
+  first_name: String
+  last_name: String
+  middle_name: String
+  maiden_name: String
+  title: String
+  preferred_name: String
+  birthday: String
+  address: String
+  city: String
+  state: String
+  zip_code: Int
+}
+
+input AccountInfoUpdatePasswordInput {
+  password: String!
+  password_retype: String!
+}
+
+
+input AccountLoginInput {
+  login: String!
+  password: String!
+}

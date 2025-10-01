@@ -1,0 +1,9 @@
+{
+  "appId": "com.theater.app",
+  "appName": "theater",
+  "webDir": "out",
+  "server": {
+    "url": "http://10.0.0.179:3000",
+    "androidScheme": "https"
+  }
+}

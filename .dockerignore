@@ -16,6 +16,7 @@ devspace.yaml
 composer.phar
 vendor/
 # NODE
+**/node_modules
 node_modules/
 npm-debug.log*
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
@@ -29,3 +30,12 @@ wheels/
 pip-log.txt
 pip-wheel-metadata/
 *.pyc
+.venv/
+.venv
+
+**/postgres/tmp
+**/redis/tmp
+**/movies
+
+.*env
+*.pem

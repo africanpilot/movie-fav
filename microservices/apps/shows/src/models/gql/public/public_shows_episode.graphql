@@ -1,0 +1,44 @@
+extend type Query {
+    showsEpisode(pageInfo: ShowsEpisodePageInfoInput, filterInput: ShowsEpisodeFilterInput): ShowsEpisodeResponse
+}
+
+type ShowsEpisodeResponse {
+    response: GeneralResponse!
+    pageInfo: PageInfo
+    result: [ShowsEpisode]
+}
+
+type ShowsEpisode @key(fields: "id") {
+    id: Int
+    shows_info_id: Int
+    shows_season_id: Int
+    shows_imdb_id: String
+    imdb_id: String
+    title: String
+    rating: Float
+    votes: Int
+    release_date: String
+    plot: String
+    year: Int
+    season: Int
+    episode: Int
+    cover: String
+    full_cover: String
+    run_times: [String]
+}
+
+
+input ShowsEpisodeFilterInput {
+    id: [Int]
+    title: [String]
+    year: [Int]
+}
+
+input ShowsEpisodePageInfoInput {
+  first: Int
+  pageNumber: Int
+  minId: Int
+  maxId: Int
+  orderBy: OrderByEnum
+  sortBy: [ShowsEpisodeSortByEnum]
+}

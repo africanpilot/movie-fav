@@ -1,0 +1,58 @@
+extend type Query {
+    showsInfo(pageInfo: ShowsInfoPageInfoInput, filterInput: ShowsInfoFilterInput): ShowsInfoResponse
+}
+
+type ShowsInfoResponse {
+    response: GeneralResponse!
+    pageInfo: PageInfo
+    result: [ShowsInfo]
+}
+
+extend type ShowsInfo @key(fields: "id") {
+    imdb_id: String
+    title: String
+    cast: [String]
+    year: Int
+    directors: [String]
+    genres: [String]
+    countries: [String]
+    plot: String
+    cover: String
+    rating: Float
+    votes: Int
+    run_times: [String]
+    series_years: String
+    creators: [String]
+    full_cover: String
+    popular_id: Int
+    release_date: String
+    trailer_link: String
+    added_count: Int
+    provider: ProviderTypeEnum
+    total_seasons: Int
+    total_episodes: Int
+    videos: [String]
+    shows_season: [ShowsSeason]
+}
+
+input ShowsInfoFilterInput {
+    id: [Int]
+    title: [String]
+    year: [Int]
+}
+
+input ShowsInfoPageInfoInput {
+  first: Int
+  pageNumber: Int
+  minId: Int
+  maxId: Int
+  orderBy: OrderByEnum
+  sortBy: [ShowsInfoSortByEnum]
+}
+
+input ShowsDownloadInput {
+    imdb_id: String!
+    shows_imdb_id: String!
+    season: Int!
+    episode: Int!
+}

@@ -1,0 +1,45 @@
+extend type Query {
+    personInfo(pageInfo: PersonInfoPageInfoInput, filterInput: PersonInfoFilterInput): PersonInfoResponse
+}
+
+type PersonInfoResponse {
+    response: GeneralResponse!
+    pageInfo: PageInfo
+    result: [PersonInfo]
+}
+
+extend type PersonInfo @key(fields: "id") {
+    imdb_id: String
+    name: String
+    birth_place: String
+    akas: [String]
+    filmography: [String]
+    mini_biography: String
+    birth_date: String
+    titles_refs: [String]
+    head_shot: String
+}
+
+extend type MovieInfo @key(fields: "person_cast") {
+    person_cast: [String] @external
+    casts: [PersonInfo]
+}
+
+extend type ShowsInfo @key(fields: "shows_cast") {
+    shows_cast: [String] @external
+    casts: [PersonInfo]
+}
+
+input PersonInfoFilterInput {
+    id: [Int]
+    name: [String]
+}
+
+input PersonInfoPageInfoInput {
+  first: Int
+  pageNumber: Int
+  minId: Int
+  maxId: Int
+  orderBy: OrderByEnum
+  sortBy: [PersonInfoSortByEnum]
+}

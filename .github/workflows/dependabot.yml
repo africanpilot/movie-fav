@@ -1,0 +1,12 @@
+name: Dependabot Updates
+
+on:
+  schedule:
+    - cron: "0 0 * * 1" # Weekly on Mondays
+
+jobs:
+  dependabot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Dependabot
+        run: echo "Dependabot will handle dependency updates"

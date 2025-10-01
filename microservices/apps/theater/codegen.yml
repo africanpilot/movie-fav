@@ -1,0 +1,24 @@
+overwrite: true
+schema:
+  [
+    "../../links/link_models/gql/public/**/*.{gql,graphql}",
+    "../account/src/models/gql/public/**/*.{gql,graphql}",
+    "../movie/src/models/gql/public/**/*.{gql,graphql}",
+    "../person/src/models/gql/public/**/*.{gql,graphql}",
+    "../shows/src/models/gql/public/**/*.{gql,graphql}",
+  ]
+documents:
+  [
+    "graphql/**/*.{gql,graphql}",
+    "../account/src/api/gql/public/**/*.{gql,graphql}",
+    "../movie/src/api/gql/public/**/*.{gql,graphql}",
+    "../person/src/api/gql/public/**/*.{gql,graphql}",
+    "../shows/src/api/gql/public/**/*.{gql,graphql}",
+    "../../links/link_api/gql/public/**/*.{gql,graphql}",
+  ]
+generates:
+  ./graphql/schema.ts:
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-react-apollo"

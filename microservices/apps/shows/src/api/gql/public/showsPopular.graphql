@@ -1,0 +1,30 @@
+query ShowsPopular($pageInfo: ShowsInfoPageInfoInput) {
+  showsInfo(pageInfo: $pageInfo) {
+    response {
+      code
+      message
+      success
+      version
+    }
+    pageInfo {
+      page_info_count
+    }
+    result {
+      id
+      imdb_id
+      title
+      popular_id
+      full_cover
+      cover
+      trailer_link
+      shows_season {
+        id
+        shows_episode {
+          id
+          shows_info_id
+          shows_season_id
+        }
+      }
+    }
+  }
+}

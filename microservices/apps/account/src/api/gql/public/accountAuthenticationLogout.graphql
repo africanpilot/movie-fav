@@ -1,0 +1,13 @@
+mutation AccountAuthenticationLogout {
+  accountAuthenticationLogout {
+        response {
+            code
+            success
+            message
+            version
+        }
+        pageInfo {
+            page_info_count
+        }
+    }
+}

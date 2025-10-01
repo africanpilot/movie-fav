@@ -1,0 +1,31 @@
+mutation NotificationsUpdate($updateInput: NotificationsSagaStateUpdateInput!, $pageInfo: NotificationsSagaStatePageInfoInput, $filterInput: NotificationsSagaStateFilterInput) {
+  notificationsUpdate(updateInput: $updateInput, pageInfo: $pageInfo, filterInput: $filterInput) {
+    response{ code success message version}
+    pageInfo{ ...PageInfo}
+    result{
+      id
+      status
+      account_store_id
+      body{
+        email
+        template
+        name
+        message
+        number
+        subject
+        date
+        status
+      }
+      modified_body{
+        email
+        template
+        name
+        message
+        number
+        subject
+        date
+        status
+      }
+    }
+  }
+}
