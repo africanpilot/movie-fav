@@ -33,7 +33,7 @@ selenium = "4.35.0"
 watchgod = "0.8.2"
 celery = "5.5.3"
 asyncapi = {extras = ["http", "yaml", "redis", "subscriber", "docs"], version = "0.14.1"}
-grpcio = "1.75.0"
+grpcio = "1.75.1"
 grpcio-tools = "1.75.0"
 psycopg2 = "2.9.10"
 authlib = "1.6.4"
