@@ -61,18 +61,18 @@ class TwilioHelper(LinkResponse):
 
         try:
             if templete == "NewOrderReceipt":
-                body_templete = f"We've received your Noa order #{order_id}"
+                body_templete = f"We've received your  order #{order_id}"
 
             if templete == "NewOrderReady":
                 store_order_id = msg["body"]["store_order_id"]
                 storeName = resp["stores"][0]["storeName"]
                 address = resp["stores"][0]["address"]
-                body_templete = f"Your Noa order #{store_order_id} from {storeName} is ready for pick-up at {address}."
+                body_templete = f"Your  order #{store_order_id} from {storeName} is ready for pick-up at {address}."
 
             if templete in ["OrderModify", "OrderRefund"]:
                 store_order_id = msg["body"]["store_order_id"]
                 storeName = resp["stores"][0]["storeName"]
-                body_templete = f"Your Noa order #{store_order_id} from {storeName} has been adjusted."
+                body_templete = f"Your  order #{store_order_id} from {storeName} has been adjusted."
 
             self.twilio_client.messages.create(from_="+15717079530", to=self.user_phone, body=body_templete)
             self.log.debug(f"Message sent for order #{order_id}")
@@ -88,16 +88,16 @@ class TwilioHelper(LinkResponse):
         self.log.debug(f"Create Twilio binding: {binding.sid}")
 
     def twilio_send_push_notification(self, msg, data, resp={}):
-        body_templete = "Shop Noa! Earn Labor Coin!"
+        body_templete = "Shop ! Earn Labor Coin!"
         # New order Templete
         if data["template"] == "NewOrder":
             order_id = msg["body"]["order_id"]
-            body_templete = f"We've received your Noa order #{order_id}"
+            body_templete = f"We've received your  order #{order_id}"
 
         if data["template"] == "InProgress":
             store_order_id = msg["body"]["store_order_id"]
             storeName = resp["stores"][0]["storeName"]
-            body_templete = f"Your Noa store order #{store_order_id} from {storeName} is in progress."
+            body_templete = f"Your  store order #{store_order_id} from {storeName} is in progress."
 
         notification = self.twilio_client.notify.services(config.TWILIO_NOTIFY_SID).notifications.create(
             body=body_templete, identity=[data["user_id"]]
