@@ -121,7 +121,7 @@ COPY --from=constant-files-development --chown=svc:svc /home/svc/microservices /
 #######################################################################
 # apollo stage
 #######################################################################
-FROM node:24.7.0-slim AS apollo-production
+FROM node:25.1.0-slim AS apollo-production
 
 # Default environment
 ENV PATH="$PATH:/home/svc/.local/bin"
@@ -159,7 +159,7 @@ ENTRYPOINT ["nginx", "-g", "daemon off;"]
 #######################################################################
 # Node base stage for theater builds
 #######################################################################
-FROM node:24.7.0-slim AS node-base
+FROM node:25.1.0-slim AS node-base
 
 # #######################################################################
 # # Main build for theater-production
