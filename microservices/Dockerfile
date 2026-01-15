@@ -148,7 +148,7 @@ COPY ./apps/apollo /home/svc/apollo
 #######################################################################
 # nginx stage
 #######################################################################
-FROM nginx:1.29.1-alpine3.22-slim AS nginx-production
+FROM nginx:1.29.3-alpine3.22-slim AS nginx-production
 
 COPY apps/nginx/conf/nginx.conf /etc/nginx/nginx.conf
 COPY apps/nginx/conf /etc/nginx
